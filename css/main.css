@@ -1,0 +1,92 @@
+body{
+	background-color: #ecf0f1;
+}
+h1{
+	font-size: 26px;
+	font-family: Lato;
+	font-weight: 700;
+}
+h2{
+	font-size: 22px;
+	font-family: Lato;
+	font-weight: 700;
+}
+h3{
+	font-size: 20px;
+	font-family: Lato;
+	font-weight: 400;
+}
+h4{
+	font-size: 18px;
+	font-family: Lato;
+	font-weight: 400;
+}
+h5{
+	font-size: 16px;
+	font-family: Lato;
+	font-weight: 400;
+}
+p, a{
+	font-size: 18px;
+	font-family: Lato;
+	font-weight: 300;
+}
+header{
+	height: 50px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0px 20px;
+	background-color: white;
+}
+
+/********************/
+/****** HEADER ******/
+/********************/
+
+header h1, header h2, header h3, header h4, header h5, header h6, header p, footer h5, header ul{
+	margin: 0;
+}
+header{
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	padding: 10px 30px;
+	height: auto;
+}
+header *{
+	display: flex;
+	align-items: center;
+	margin: 0 10px;
+	color: black;
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+}
+header img{
+	max-height: 32px;
+}
+header a{
+	line-height: 40px;
+	text-decoration: none;
+}
+header a:hover{
+	text-decoration: underline 2px #3498db;
+	color: black;
+}
+/******************/
+/****** MAIN ******/
+/******************/
+
+
+
+/********************/
+/****** FOOTER ******/
+/********************/
+
+footer{
+	display: flex;
+	justify-content: space-between;
+	background-color: #34495e;
+	padding: 10px 40px;
+	color: white;
+}

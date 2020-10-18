@@ -1,2 +1,4 @@
-# Common-Graphs-Composer
-VueJs WEB app in order to create common graphics like timeline for now
+# Common-Graphs-Composer - https://clementgre.github.io/Common-Graphs-Composer/
+
+Common Graphs Composer is a website who offers some free online software, developed in VueJs.
+The first software I have to develop is the Timeline Tool.

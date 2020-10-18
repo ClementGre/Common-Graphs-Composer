@@ -1,0 +1,77 @@
+main{
+	margin: 40px;
+}
+@media (max-width: 800px){
+	main{
+		margin: 20px;
+	}
+}
+@media (max-width: 500px){
+	main{
+		margin: 10px;
+	}
+}
+
+main hr{
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+
+
+main .title{
+	margin: 60px auto;
+}
+main .title div{
+	max-width: 700px;
+	height: auto;
+	border: 1px solid #c0392b;
+	border-radius: 5px;
+	padding: 30px 30px;
+}
+main .title div *{
+	margin: 0;
+}
+
+
+
+main .description{
+	text-align: center;
+	max-width: 700px;
+	margin: 40px auto;
+}
+
+
+
+main .tools{
+	margin: 40px auto;
+	text-align: center;
+	max-width: 700px;
+}
+main .tools-list{
+	display: flex;
+	justify-content: center;
+	align-items: stretch;
+	flex-wrap: wrap;
+	margin: -10px -10px;
+	margin-top: 20px;
+}
+main .tools-list a{
+	min-width: 220px;
+	max-width: 340px;
+	border-radius: 5px;
+	padding: 20px;
+	margin: 10px;
+	border: 1px solid black;
+	transition: all .3s ease-in-out;
+	text-decoration: none;
+	color: black;
+}
+main .tools-list a:hover{
+	background-color: #bdc3c7;
+	text-decoration: none;
+	color: black;
+}
+main .tools-list a p{
+	margin: 0;
+}
