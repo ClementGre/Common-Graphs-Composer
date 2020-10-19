@@ -14,8 +14,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/timeline.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -23,12 +25,31 @@
             
         </app-nav>
 
-        <main id="app-timeline">
-            <app-preview>
-            </app-preview>
+        <main>
+            <p style="font-size: 11px;"> {{renderData}}</p>
 
-            <app-panel>
-            </app-panel>
+            <div class="timeline" id="timeline">
+                <div class="events" id="events">
+                    <app-year v-for="(events, year, index) in sortedTimeline.dateevents"
+                            v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index" v-bind:yearpx="renderData.yearPx">
+                    </app-year>
+                </div>
+                <div class="time">
+                    <app-year v-for="(events, year, index) in sortedTimeline.dateevents"
+                            v-bind:key="year" v-bind:year="year" v-bind:index="index" v-bind:showyear="true">
+                    </app-year>
+                </div>
+                <div class="periodes">
+                    <app-year v-for="(events, year, index) in sortedTimeline.periodeevents"
+                            v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index" v-bind:periode="true">
+                    </app-year>
+                </div>
+                
+            </div>
+
+            <div class="panel">
+               <p style="font-size: 11px;"> {{sortedTimeline.dateevents}}</p>
+            </div>
         </main>
 
         <app-footer>
@@ -37,5 +58,4 @@
 </body>
 
 <script src="js/timeline.js"></script>
-<script src="js/main.js"></script>
 </html>

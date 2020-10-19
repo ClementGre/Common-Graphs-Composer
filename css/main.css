@@ -53,6 +53,7 @@ header{
 	flex-wrap: wrap;
 	padding: 10px 30px;
 	height: auto;
+	border-bottom: 1px solid #c0392b;
 }
 header *{
 	display: flex;

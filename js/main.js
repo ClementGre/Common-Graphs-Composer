@@ -19,8 +19,6 @@ Vue.component("app-footer", {
 	}
 });
 
-
-
 var app = new Vue({
 	el: "#app",
 	data: {

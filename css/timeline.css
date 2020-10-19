@@ -1,0 +1,117 @@
+main{
+	height: calc(100vh - 61px - 39.2px);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+/*****************************/
+/****** GLOBAL TIMELINE ******/
+/*****************************/
+
+main .timeline{
+	overflow-y: scroll;
+	display: block;
+	background-color: white;
+	margin: 0;
+	padding: 10px 20px;
+	padding-right: 200px;
+	box-sizing: content-box;
+}
+main .timeline div{
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+}
+main .timeline .year{
+	margin: 0;
+	width: 10vw;
+}
+
+/******************/
+/****** TIME ******/
+/******************/
+
+main .timeline .time{
+	
+}
+main .timeline .time .year{
+	background-color: #e74c3c;
+	height: 50px;
+	border: 1px solid black;
+}
+main .timeline .time .title{
+	line-height: 50px;
+	margin: 0 0 0 10px;
+}
+
+/********************/
+/****** EVENTS ******/
+/********************/
+
+main .timeline .events *{
+	flex-direction: column;
+	justify-content: flex-end;
+	overflow: visible;
+}
+main .timeline .events .year .event{
+	background-color: rgba(170, 170, 170, 0.6);
+	margin: 0 0 10px 0;
+	border: 0px solid black;
+	width: 200px;
+	padding: 5px;
+	border-radius: 3px;
+}
+main .timeline .events .year .space{
+	
+}
+main .timeline .events .year .event *{
+	word-wrap: break-word;
+	margin: 0;
+	width: 200px;
+	display: block;
+}
+main .timeline .events .year .event .title{
+	font-size: 16px;
+	font-weight: 700;
+	font-family: 'Lato'
+}
+main .timeline .events .year .event .date{
+	font-size: 14px;
+	font-weight: 300;
+	font-family: 'lato'
+}
+main .timeline .events .year .event .description{
+	font-size: 14px;
+	font-weight: 400;
+	font-family: 'Source Sans Pro'
+}
+
+/*********************/
+/****** PERIODS ******/
+/*********************/
+
+main .timeline .periodes *{
+	flex-direction: column;
+	background-color: #ecf0f1;
+}
+main .timeline .periodes .year .periode{
+	background-color: #e74c3c;
+	margin: 10px 0 0 0;
+	border: 1px solid black;
+}
+main .timeline .periodes .year .space{
+	
+}
+main .timeline .periodes .year .periode *{
+	word-wrap: break-word;
+	margin: 0;
+}
+
+/*******************/
+/****** PANEL ******/
+/*******************/
+
+main .panel{
+	
+}
