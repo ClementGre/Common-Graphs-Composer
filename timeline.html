@@ -19,36 +19,39 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
 </head>
-<body>
+<body id="body">
     <div id="app">
         <app-nav>
             
         </app-nav>
 
         <main>
-            <p style="font-size: 11px;"> {{renderData}}</p>
+            <p style="font-size: 11px;"> {{renderData}} <input v-model="timeline.dateevents[1830][0].title" type="text"/></p>
 
-            <div class="timeline" id="timeline">
+            <div class="timeline" id="timeline" >
                 <div class="events" id="events">
-                    <app-year v-for="(events, year, index) in sortedTimeline.dateevents"
-                            v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index" v-bind:yearpx="renderData.yearPx">
+                    <app-year v-for="(events, year, index) in sortedTimeline.dateevents" v-if="events.length != 0 || index == 0"
+                            v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index"
+                            v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor">
                     </app-year>
                 </div>
                 <div class="time">
-                    <app-year v-for="(events, year, index) in sortedTimeline.dateevents"
-                            v-bind:key="year" v-bind:year="year" v-bind:index="index" v-bind:showyear="true">
+                    <app-year v-for="(events, year, index) in sortedTimeline.dateevents" v-if="year % renderData.yearDivideFactor === 0 || index == sortedTimeline.dateevents.length-1"
+                            v-bind:key="year" v-bind:year="year" v-bind:index="index" v-bind:showyear="true"
+                            v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" >
                     </app-year>
                 </div>
                 <div class="periodes">
-                    <app-year v-for="(events, year, index) in sortedTimeline.periodeevents"
-                            v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index" v-bind:periode="true">
+                    <app-year v-for="(events, year, index) in sortedTimeline.periodeevents" v-if="events.length != 0 && index != 0"
+                            v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index" v-bind:periode="true"
+                            v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor">
                     </app-year>
                 </div>
                 
             </div>
 
             <div class="panel">
-               <p style="font-size: 11px;"> {{sortedTimeline.dateevents}}</p>
+               <p style="font-size: 1px;"> {{sortedTimeline.dateevents}}</p>
             </div>
         </main>
 

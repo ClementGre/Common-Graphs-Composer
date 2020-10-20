@@ -14,8 +14,8 @@ main .timeline{
 	display: block;
 	background-color: white;
 	margin: 0;
-	padding: 10px 20px;
-	padding-right: 200px;
+	padding: 20px;
+	padding-right: 220px;
 	box-sizing: content-box;
 }
 main .timeline div{
@@ -38,7 +38,7 @@ main .timeline .time{
 main .timeline .time .year{
 	background-color: #e74c3c;
 	height: 50px;
-	border: 1px solid black;
+	border-right: 1px solid gray;
 }
 main .timeline .time .title{
 	line-height: 50px;
@@ -49,9 +49,9 @@ main .timeline .time .title{
 /****** EVENTS ******/
 /********************/
 
-main .timeline .events *{
-	flex-direction: column;
-	justify-content: flex-end;
+main .timeline .events .year{
+	flex-direction: column-reverse;
+	justify-content: flex-start;
 	overflow: visible;
 }
 main .timeline .events .year .event{
@@ -61,6 +61,7 @@ main .timeline .events .year .event{
 	width: 200px;
 	padding: 5px;
 	border-radius: 3px;
+	display: block;
 }
 main .timeline .events .year .space{
 	
@@ -68,8 +69,6 @@ main .timeline .events .year .space{
 main .timeline .events .year .event *{
 	word-wrap: break-word;
 	margin: 0;
-	width: 200px;
-	display: block;
 }
 main .timeline .events .year .event .title{
 	font-size: 16px;
@@ -85,6 +84,14 @@ main .timeline .events .year .event .description{
 	font-size: 14px;
 	font-weight: 400;
 	font-family: 'Source Sans Pro'
+}
+main .timeline .events .year .event .linker{
+	position: relative;
+	height: 100vh;
+	width: 1px;
+	left: -5px;
+	display: block;
+	background-color: rgba(170, 170, 170, 0.6);
 }
 
 /*********************/
