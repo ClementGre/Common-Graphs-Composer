@@ -14,11 +14,15 @@ main .timeline{
 	display: block;
 	background-color: white;
 	margin: 0;
-	padding: 20px;
-	padding-right: 220px;
+	padding: 0;
 	box-sizing: content-box;
 }
-main .timeline div{
+main .timeline .content{
+	display: block;
+	margin: 0;
+	padding: 20px;
+}
+main .timeline .content div{
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
@@ -49,6 +53,9 @@ main .timeline .time .title{
 /****** EVENTS ******/
 /********************/
 
+main .timeline .events{
+	overflow: hidden;
+}
 main .timeline .events .year{
 	flex-direction: column-reverse;
 	justify-content: flex-start;
@@ -58,7 +65,6 @@ main .timeline .events .year .event{
 	background-color: rgba(170, 170, 170, 0.6);
 	margin: 0 0 10px 0;
 	border: 0px solid black;
-	width: 200px;
 	padding: 5px;
 	border-radius: 3px;
 	display: block;
@@ -90,8 +96,10 @@ main .timeline .events .year .event .linker{
 	height: 100vh;
 	width: 1px;
 	left: -5px;
+	overflow: hidden;
 	display: block;
 	background-color: rgba(170, 170, 170, 0.6);
+	z-index: 100;
 }
 
 /*********************/
@@ -121,4 +129,56 @@ main .timeline .periodes .year .periode *{
 
 main .panel{
 	
+}
+
+/********************/
+/****** FILTER ******/
+/********************/
+
+.filter .export{
+	display: none;
+	position: relative;
+	background-color: rgba(0, 0, 0, 0.7);
+	max-width: 1000px;
+	padding: 30px;
+	margin: 50vh auto 0;
+  transform: translateY(-50%);
+}
+.filter .export #closepreview{
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	color: #d0d0d0;
+	margin: 0 3px;
+	padding: 0;
+	line-height: 0;
+	font-size: 25px;
+	transition: all .3s ease-in-out;
+}
+.filter .export #closepreview:hover{
+	cursor: pointer;
+	color: white;
+}
+.filter .export #rendercanvas{
+	max-width: 100%;
+}
+.filter .export #rendercanvas canvas{
+	max-width: 100%;
+}
+.filter .export #downloadpreview, .filter .export #showpreview{
+	cursor: pointer;
+	text-align: center;
+	margin: 0 10px;
+	padding: 3px 5px;
+	border-radius: 5px;
+	background-color: #d0d0d0;
+	border: 2px solid #d0d0d0;
+	color: black;
+	font-weight: 400;
+	box-sizing: content-box;
+	transition: all .3s ease-in-out;
+	font-size: 16px;
+}
+.filter .export #downloadpreview:hover, .filter .export #showpreview:hover{
+	border-color: white;
 }

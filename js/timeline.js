@@ -21,12 +21,12 @@ Vue.component("app-footer", {
 var appEventComp = {
     name: "appevent",
     template: `
-        <div class="event" v-bind:style="'margin-left:' + getshiftpx() + 'px;'">
+        <div class="event" v-bind:style="'margin-left:' + getshiftpx() + 'px; width: ' + settings.eventWidth + 'px;'">
             <div style="position: relative; width: 0; height: 0; display: block;"><div class="linker"></div></div>
             <h4 class="title">{{event.title}}</h4><h4 class="date">{{event.date}}</h4>
             <p class="description">{{event.description}}</p>
         </div>`,
-    props: ["event", "yearpx"],
+    props: ["event", "yearpx", "settings"],
     methods: {
         getshiftpx: function() {
             return this.yearpx / 12.0 * (this.event.month-1);
@@ -53,20 +53,20 @@ var appYearComp = {
     <div class="year" v-bind:class="'year-'+year" v-bind:style="
         'order:' + year + ';' +
         'width:' + getMinWidth(yearpx, yeardividefactor, showyear) + 'px;' +
-        'margin-left:' + getMargin(year, yearpx, showyear) + 'px;' +
+        'margin-left:' + getMargin(year, yearpx, showyear, periode, index) + 'px;' +
         'z-index: ' + getIndex(index) + ';'">
         
         <h4 class="title" v-if="showyear && year % yeardividefactor === 0">{{year}}</h4>
 
         <app-event v-if="!showyear && !periode" v-for="(event, index) in events"
-            v-bind:key="index" v-bind:event="event" v-bind:yearpx="yearpx"></app-event>
+            v-bind:key="index" v-bind:event="event" v-bind:yearpx="yearpx" v-bind:settings="settings"></app-event>
 
         <app-periode v-if="!showyear && periode" v-for="(event, index) in events"
-            v-bind:key="index" v-bind:event="event"></app-periode>
+            v-bind:key="index" v-bind:event="event" v-bind:settings="settings"></app-periode>
 
         <div class="space" v-bind:style="'height:' +  + 'px;'"></div>
     </div>`,
-    props: ["events", "year", "index", "showyear", "periode", "yearpx", "yeardividefactor"],
+    props: ["events", "year", "index", "showyear", "periode", "yearpx", "yeardividefactor", "settings"],
     components: {
         "app-event": appEventComp,
         "app-periode": appPeriodeComp
@@ -76,17 +76,25 @@ var appYearComp = {
             return 99999-index;
         },
         getMinWidth: function(yearpx, yeardividefactor, showyear){
-            console.log("yearpx*yeardividefactor" +" = " + yearpx+"*"+yeardividefactor + " = " + yearpx*yeardividefactor);
             return showyear ? yearpx*yeardividefactor : yearpx;
         },
-        getMargin: function(year, yearpx, showyear){
+        getMargin: function(year, yearpx, showyear, periode, index){
             if(showyear) return 0;
-            if(lastYear == undefined){
-                lastYear = year; return 0;
+            if(!periode){
+                console.log(yearpx + " | " + year + " : " + index);
+                //console.log("lastyear = " + lastYear);
+                if(lastYear == undefined){
+                    //console.log("lastYear undefined : return 0");
+                    lastYear = year; return 0;
+                }
+                var margin = (year-lastYear-1) * yearpx;
+                lastYear = year;
+                //if(margin < 0) console.log("margin negative : return 0");
+                //else console.log("return " + margin)
+                return (margin >= 0) ? margin : 0;
+            }else{
+
             }
-            var margin = (year-lastYear-1) * yearpx;
-            lastYear = year;
-            return (margin >= 0) ? margin : 0;
         }
     }
 }
@@ -118,12 +126,15 @@ var app = new Vue({
                 1830: [
                     {date: "3 Juin 1830", day: 3, month: 6, title: "Les trois glorieuses", description: "Des journalistes se révoltent dans Paris car Charles X a supprimé la liberté d'expression -> révolution, Louis Phillipe au pouvoir."},
                 ],
-                1899: [
+                1820: [
                     {date: "1820", day: 0, month: 1, title: "Révolte Espagnole"},
                     {date: "3 Aout 1820", day: 16, month: 8, title: "Commencement de la révolte Grecque", description: "Le massacre de Chaos commence cette année, massacre des grecques sur l'île de Chaos"}
                 ],
-                920: [
+                1821: [
                     {date: "1 Janvier 1821", day: 1, month: 1, title: "Révolte Allemande", description: "(Ceci est un faux élènement...)"}
+                ],
+                1849: [
+                    {date: "1848", day: 31, month: 12, title: "2em révolution Française", description: ""}
                 ]
                 
             }
@@ -135,7 +146,9 @@ var app = new Vue({
             yearDivideFactor: 1,
         },
         settings: {
-
+            timelineName: "untiteled",
+            eventWidth: 200,
+            backgroundColor: "#ffffff"
         }
     },
     computed: {
@@ -148,8 +161,59 @@ var app = new Vue({
     },
     methods: {
         updateYearPx: function(){
-            var yearpx = document.getElementById("events").offsetWidth / Object.keys(this.sortedTimeline.dateevents).length;
-            console.log("yearpx = " + yearpx);
+            var lastAndFirstYears = this.getFirstAndLastYears();
+            var yearsLength = lastAndFirstYears.lastYear - lastAndFirstYears.firstYear + 1;
+            var showyearpx = (document.getElementById("timeline").offsetWidth-this.settings.eventWidth-40) / Object.keys(this.sortedTimeline.dateevents).length;
+            var yearpx = (document.getElementById("timeline").offsetWidth-this.settings.eventWidth-40) / yearsLength;
+            
+            if(yearpx === 0) yearpx = 0.001;
+            if(showyearpx === 0) showyearpx = 0.001;
+            var factor = 1;
+            if(yearpx <= 65){
+                factor = 2;
+                if((yearpx*factor) <= 65){
+                    var factor = 5;
+                    if((yearpx*factor) <= 65){
+                        var factor = 10;
+                        while((yearpx*factor) <= 65){
+                            var factor = factor * 10;
+                        }
+                    }
+                }
+            }
+            this.renderData.yearPx = showyearpx;
+            if(this.renderData.yearDivideFactor !== factor){
+                this.renderData.yearDivideFactor = factor;
+                this.sortTimeline();
+            }
+            
+        },
+        getFirstAndLastYears: function(){
+            var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
+            var orderedPeriodeEventsYears = _.sortBy(Object.keys(this.timeline.periodeevents).map(Number));
+            var firstYear = orderedDateEventsYears[0] < orderedPeriodeEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodeEventsYears[0];
+            var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodeEventsYears[orderedPeriodeEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodeEventsYears[orderedPeriodeEventsYears.length-1];
+            if(firstYear == undefined) firstYear = lastYear;
+            if(lastYear == undefined){
+                if(firstYear == undefined){
+                    lastYear = 0;
+                    firstYear = 0;
+                }else{
+                    lastYear = firstYear;
+                }
+            }
+            return {firstYear: firstYear, lastYear: lastYear};
+            
+        },
+        getSortedTimeLine: function (){
+
+            // Get first and last years
+            var lastAndFirstYears = this.getFirstAndLastYears();
+            var firstYear = lastAndFirstYears.firstYear;
+            var lastYear = lastAndFirstYears.lastYear;
+
+            // Check if some years are skipped, to add the years in order to round down.
+            var yearpx = (document.getElementById("timeline").offsetWidth-this.settings.eventWidth-40) / (lastYear-firstYear);
             if(yearpx === 0) yearpx = 0.001;
             var factor = 1;
             if(yearpx <= 65){
@@ -164,27 +228,10 @@ var app = new Vue({
                     }
                 }
             }
-            this.renderData.yearPx = yearpx;
-            this.renderData.yearDivideFactor = factor;
-        },
-        getSortedTimeLine: function (){
-
-            var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
-            var orderedPeriodeEventsYears = _.sortBy(Object.keys(this.timeline.periodeevents).map(Number));
-            var firstYear = orderedDateEventsYears[0] < orderedPeriodeEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodeEventsYears[0];
-            var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodeEventsYears[orderedPeriodeEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodeEventsYears[orderedPeriodeEventsYears.length-1];
-            if(firstYear == undefined) firstYear = lastYear;
-            if(lastYear == undefined){
-                if(firstYear == undefined){
-                    lastYear = 0;
-                    firstYear = 0;
-                }else{
-                    lastYear = firstYear;
-                }
-            }
             if(firstYear % this.renderData.yearDivideFactor != 0) firstYear -= firstYear % this.renderData.yearDivideFactor;
             if((lastYear+1) % this.renderData.yearDivideFactor != 0) lastYear += this.renderData.yearDivideFactor - (lastYear % this.renderData.yearDivideFactor)-1;
 
+            // Update arrays
             var dateevents = {};
             var periodeevents = {};
             console.log('Define ends : ' + firstYear + ' < ' + lastYear);
@@ -207,8 +254,10 @@ var app = new Vue({
             }
             return {dateevents: dateevents, periodeevents: periodeevents};
         },
-        updateTimeline: function(){
-
+        sortTimeline: function(){
+            var sorted = this.getSortedTimeLine();
+            this.sortedTimeline.dateevents = sorted.dateevents;
+            this.sortedTimeline.periodeevents = sorted.periodeevents;
         }
     },
     watch: {
@@ -216,13 +265,7 @@ var app = new Vue({
             deep: true,
             immediate: true,
             handler: function (val, oldVal) {
-                var sorted = this.getSortedTimeLine();
-                this.sortedTimeline.dateevents = sorted.dateevents;
-                this.sortedTimeline.periodeevents = sorted.periodeevents;
-                this.updateYearPx();
-                var sorted = this.getSortedTimeLine();
-                this.sortedTimeline.dateevents = sorted.dateevents;
-                this.sortedTimeline.periodeevents = sorted.periodeevents;
+                this.sortTimeline();
             }
         },
         sortedTimeline: {
@@ -230,17 +273,13 @@ var app = new Vue({
             immediate: true,
             handler: function (val, oldVal) {
                 console.log('sorted timeline data changed');
-                
-                
+                this.updateYearPx();
             }
         },
         renderData: {
             deep: true,
             handler: function (val, oldVal) {
-
-                var sorted = this.getSortedTimeLine();
-                this.sortedTimeline.dateevents = sorted.dateevents;
-                this.sortedTimeline.periodeevents = sorted.periodeevents;
+                
             }
         }
     },
@@ -254,6 +293,44 @@ var app = new Vue({
 window.onresize = function resize() {
     app.updateYearPx();
 };
+
+$(document).ready(function() { 
+          
+    var getCanvas;
+    console.log($("#timeline .content").height());
+    $("button#exporttimeline").on('click', function() { 
+        html2canvas($("#timeline .content"), {
+            onrendered: function(canvas){
+                $("div#rendercanvas").html(canvas);
+                $(".filter").attr('style', 'display: block;');
+                $(".filter .export").attr('style', 'display: block;');
+                getCanvas = canvas;
+            }
+        }); 
+    }); 
+
+    $("a#downloadpreview").on('click', function() { 
+        var imgageData = getCanvas.toDataURL("image/png"); 
+        var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
+        $("a#downloadpreview").attr("download", app.settings.timelineName + ".png").attr("href", newData);
+        $(".filter").attr('style', 'display: none;');
+        $(".filter .export").attr('style', 'display: none;');
+    }); 
+    $("a#showpreview").on('click', function() { 
+        var imgageData = getCanvas.toDataURL("image/png"); 
+        var newData = imgageData;
+        $("a#showpreview").attr("href", newData);
+    });
+    $(".filter").on('click', function(e) {
+        if(e.target != this) return;
+        $(".filter").attr('style', 'display: none;');
+        $(".filter .export").attr('style', 'display: none;');
+    });
+    $("a#closepreview").on('click', function(e) {
+        $(".filter").attr('style', 'display: none;');
+        $(".filter .export").attr('style', 'display: none;');
+    }); 
+}); 
 
 setTimeout(() => {
     //app.timeline.dateevents[1820] = app.timeline.dateevents[1820].splice(0, 1);
