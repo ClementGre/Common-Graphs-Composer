@@ -34,30 +34,38 @@
 
     <div id="app">
         <app-nav>
-            
         </app-nav>
 
         <main>
-            <p style="font-size: 11px;"> {{renderData}} <input v-model="timeline.dateevents[1830][0].title" type="text"/></p>
+            <p style="font-size: 11px;">
+                {{renderData}} 
+                timeline.dateevents[1820][0].title : <input v-model="timeline.dateevents[1820][0].title" type="text"/>
+                settings.timelineWidth : <input v-model="settings.timelineWidth" type="text"/>
+                settings.backgroundColor : <input v-model="settings.backgroundColor" type="text"/>
+                settings.eventWidth : <input v-model="settings.eventWidth" type="text"/>
+            </p>
 
             <div class="timeline" id="timeline" >
-                <div class="content" v-bind:style="'padding-right: ' + (settings.eventWidth + 20) + 'px; background-color: ' + settings.backgroundColor + ';'">
+                <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.eventWidth, 10)+20) + 'px; background-color: ' + settings.backgroundColor + ';' + getTimelineWidthStyle(settings.timelineWidth) + ''">
                     <div class="events" id="events" v-bind:style="'padding-right: ' + settings.eventWidth + 'px; margin-right: -' + settings.eventWidth + 'px;'">
-                        <app-year v-for="(events, year, index) in sortedTimeline.dateevents" v-if="index == 0 || events.length != 0"
-                                v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index"
-                                v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings">
+                        <app-year v-for="(year, index) in sortedTimeline.dateyears"
+                                v-bind:key="index" v-bind:year="year" v-bind:index="index" v-bind:years="sortedTimeline.dateyears" v-bind:events="sortedTimeline.dateyearsevents[year]"
+                                v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
+                                v-bind:type="0">
                         </app-year>
                     </div>
                     <div class="time">
-                        <app-year v-for="(events, year, index) in sortedTimeline.dateevents" v-if="year % renderData.yearDivideFactor === 0 || index == sortedTimeline.dateevents.length-1"
-                                v-bind:key="year" v-bind:year="year" v-bind:index="index" v-bind:showyear="true"
-                                v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings">
+                        <app-year v-for="(year, index) in sortedTimeline.lineyears"
+                                v-bind:key="index" v-bind:year="year" v-bind:index="index"
+                                v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
+                                v-bind:type="1">
                         </app-year>
                     </div>
-                    <div class="periodes">
-                        <app-year v-for="(events, year, index) in sortedTimeline.periodeevents" v-if="events.length != 0 && index != 0"
-                                v-bind:key="year" v-bind:events="events" v-bind:year="year" v-bind:index="index" v-bind:periode="true"
-                                v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings">
+                    <div class="periods">
+                        <app-year v-for="(year, index) in sortedTimeline.periodyears" 
+                                v-bind:key="index" v-bind:year="year" v-bind:index="index"  v-bind:years="sortedTimeline.periodyears" v-bind:events="sortedTimeline.periodyearsevents[year]"
+                                v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
+                                v-bind:type="2">
                         </app-year>
                     </div>
                 </div>

@@ -33,10 +33,10 @@ var appEventComp = {
         }
     }
 }
-var appPeriodeComp = {
-    name: "appperiode",
+var appPeriodComp = {
+    name: "appperiod",
     template: `
-        <div class="periode">
+        <div class="period">
             <h4 class="title">{{event.title}}</h4>
             <h4 class="title">{{event.startdate}} - {{event.enddate}}</h4>
             <p class="title">{{event.description}}</p>
@@ -46,54 +46,62 @@ var appPeriodeComp = {
         
     }
 }
-var lastYear;
 var appYearComp = {
     name: "appyear",
     template: `
     <div class="year" v-bind:class="'year-'+year" v-bind:style="
-        'order:' + year + ';' +
-        'width:' + getMinWidth(yearpx, yeardividefactor, showyear) + 'px;' +
-        'margin-left:' + getMargin(year, yearpx, showyear, periode, index) + 'px;' +
-        'z-index: ' + getIndex(index) + ';'">
+        'order: ' + index + ';' +
+        'width:' + getWidth(yearpx, yeardividefactor, type) + 'px;' +
+        'margin-right:' + getMarginRight(year, index, years, type, yearpx) + 'px;' +
+        'margin-bottom:' + getMarginBottom(year, index, years, type, yearpx) + 'px;' +
+        'z-index: ' + index + ';'">
         
-        <h4 class="title" v-if="showyear && year % yeardividefactor === 0">{{year}}</h4>
+        <h4 class="title" v-if="type == 1">{{year}}</h4>
 
-        <app-event v-if="!showyear && !periode" v-for="(event, index) in events"
+        <app-event v-if="type == 0" v-for="(event, index) in events"
             v-bind:key="index" v-bind:event="event" v-bind:yearpx="yearpx" v-bind:settings="settings"></app-event>
 
-        <app-periode v-if="!showyear && periode" v-for="(event, index) in events"
-            v-bind:key="index" v-bind:event="event" v-bind:settings="settings"></app-periode>
-
-        <div class="space" v-bind:style="'height:' +  + 'px;'"></div>
+        <app-period v-if="type == 2" v-for="(event, index) in events"
+            v-bind:key="index" v-bind:event="event" v-bind:settings="settings"></app-period>
     </div>`,
-    props: ["events", "year", "index", "showyear", "periode", "yearpx", "yeardividefactor", "settings"],
+    props: ["year", "index", "years", "events", "type", "yearpx", "yeardividefactor", "settings"],
     components: {
         "app-event": appEventComp,
-        "app-periode": appPeriodeComp
+        "app-period": appPeriodComp
     },
     methods: {
-        getIndex: function(index){
-            return 99999-index;
+        getWidth: function(yearpx, yeardividefactor, type){
+            console.log("yearpx = " + yearpx);
+            return (type == 1) ? yearpx*yeardividefactor : yearpx;
         },
-        getMinWidth: function(yearpx, yeardividefactor, showyear){
-            return showyear ? yearpx*yeardividefactor : yearpx;
-        },
-        getMargin: function(year, yearpx, showyear, periode, index){
-            if(showyear) return 0;
-            if(!periode){
-                console.log(yearpx + " | " + year + " : " + index);
-                //console.log("lastyear = " + lastYear);
-                if(lastYear == undefined){
-                    //console.log("lastYear undefined : return 0");
-                    lastYear = year; return 0;
-                }
-                var margin = (year-lastYear-1) * yearpx;
-                lastYear = year;
-                //if(margin < 0) console.log("margin negative : return 0");
-                //else console.log("return " + margin)
+        getMarginRight: function(year, index, years, type, yearpx){
+            switch(type){
+                case 1: // YEARS LINE //
+                return 0;
+                case 0: // EVENTS (Top) //
+                if(years[index-1] == undefined) return 0;
+                var margin = (years[index-1]-year-1) * yearpx;
                 return (margin >= 0) ? margin : 0;
-            }else{
+                break;  ///////////////////////
+                case 2: // PERIODES (Bottom) //
 
+                break;  ///////////////////////
+            }
+        },
+        getMarginBottom: function(year, index, years, type, yearpx){
+            switch(type){
+                case 1: // YEARS LINE
+                return 0;
+                case 0: // EVENTS (Top) //
+                return 0; // TEMP
+                if(years[index-1] == undefined) return 0;
+                var lastYearHeight = $(".timeline .events .year-" + years[index-1]).height();
+                var margin = lastYearHeight;
+                return (margin >= 0) ? margin : 0;
+                break;  ///////////////////////
+                case 2: // PERIODES (Bottom) //
+
+                break;  ///////////////////////
             }
         }
     }
@@ -106,7 +114,7 @@ var app = new Vue({
     data: {
         user: "Clement",
         timeline: {
-            periodeevents: {
+            periodevents: {
                 1820: [
                     {startdate: "11 Janvier 1815", startday: 11, startmonth: 1,
                         enddate: "20 Septembre 1817", endday: 20, endmonth: 9, title: "Répercusions du congrès de Vienne", description: "La tension monte, certains pays cherchent à se révolter."}
@@ -133,13 +141,19 @@ var app = new Vue({
                 1821: [
                     {date: "1 Janvier 1821", day: 1, month: 1, title: "Révolte Allemande", description: "(Ceci est un faux élènement...)"}
                 ],
-                1849: [
+                1848: [
                     {date: "1848", day: 31, month: 12, title: "2em révolution Française", description: ""}
                 ]
                 
             }
         },
-        sortedTimeline: {dateevents: {}, periodeevents: {}},
+        sortedTimeline: {
+            dateyears: [],
+            periodyears: [],
+            lineyears: [],
+            dateyearsevents: {},
+            periodyearsevents: {}
+        },
         renderData: {
             dateEventsOccuped: [],
             yearPx: 0,
@@ -148,26 +162,36 @@ var app = new Vue({
         settings: {
             timelineName: "untiteled",
             eventWidth: 200,
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            timelineWidth: 0
         }
     },
     computed: {
       orderedDateEvents: function (){
         this.timeline.dateevents = _.orderBy(this.timeline.dateevents, 'year');
       },
-      orderedPeriodeEvents: function (){
-        this.timeline.periodeevents = _.orderBy(this.timeline.periodeevents, 'year');
+      orderedPeriodEvents: function (){
+        this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
       }
     },
     methods: {
         updateYearPx: function(){
+            // Width of a year in px (First year = First event && Last year = Last event)
+            // DivideFactor is calculated by comparing this value to the total timeline width
             var lastAndFirstYears = this.getFirstAndLastYears();
             var yearsLength = lastAndFirstYears.lastYear - lastAndFirstYears.firstYear + 1;
-            var showyearpx = (document.getElementById("timeline").offsetWidth-this.settings.eventWidth-40) / Object.keys(this.sortedTimeline.dateevents).length;
-            var yearpx = (document.getElementById("timeline").offsetWidth-this.settings.eventWidth-40) / yearsLength;
-            
+            var yearpx = (this.getTimelineWidth()-this.settings.eventWidth-40) / yearsLength;
             if(yearpx === 0) yearpx = 0.001;
-            if(showyearpx === 0) showyearpx = 0.001;
+
+            // Width of a year in px (First year = First visible event && Last year = Last visible event)
+            // (First year can do not having an event since the first year is round to the last year who % divideFactor == 0)
+            // This is the final width of a year on the screen
+            var showedLastAndFirstYears = this.getShowedFirstAndLastYears();
+            var showedYearsLength = showedLastAndFirstYears.lastYear - showedLastAndFirstYears.firstYear + 1;
+            var showedyearpx = (this.getTimelineWidth()-this.settings.eventWidth-40) / showedYearsLength;
+            if(showedyearpx === 0) showedyearpx = 0.001;
+            
+            // calculating Year divide Factor with yearPX
             var factor = 1;
             if(yearpx <= 65){
                 factor = 2;
@@ -181,7 +205,7 @@ var app = new Vue({
                     }
                 }
             }
-            this.renderData.yearPx = showyearpx;
+            this.renderData.yearPx = showedyearpx;
             if(this.renderData.yearDivideFactor !== factor){
                 this.renderData.yearDivideFactor = factor;
                 this.sortTimeline();
@@ -190,9 +214,9 @@ var app = new Vue({
         },
         getFirstAndLastYears: function(){
             var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
-            var orderedPeriodeEventsYears = _.sortBy(Object.keys(this.timeline.periodeevents).map(Number));
-            var firstYear = orderedDateEventsYears[0] < orderedPeriodeEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodeEventsYears[0];
-            var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodeEventsYears[orderedPeriodeEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodeEventsYears[orderedPeriodeEventsYears.length-1];
+            var orderedPeriodEventsYears = _.sortBy(Object.keys(this.timeline.periodevents).map(Number));
+            var firstYear = orderedDateEventsYears[0] < orderedPeriodEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodEventsYears[0];
+            var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodEventsYears[orderedPeriodEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
             if(firstYear == undefined) firstYear = lastYear;
             if(lastYear == undefined){
                 if(firstYear == undefined){
@@ -205,6 +229,11 @@ var app = new Vue({
             return {firstYear: firstYear, lastYear: lastYear};
             
         },
+        getShowedFirstAndLastYears: function(){
+            var firstYear = this.sortedTimeline.lineyears[this.sortedTimeline.lineyears.length-1];
+            var lastYear = this.sortedTimeline.lineyears[0] + this.renderData.yearDivideFactor;
+            return {firstYear: firstYear, lastYear: lastYear};  
+        },
         getSortedTimeLine: function (){
 
             // Get first and last years
@@ -213,7 +242,7 @@ var app = new Vue({
             var lastYear = lastAndFirstYears.lastYear;
 
             // Check if some years are skipped, to add the years in order to round down.
-            var yearpx = (document.getElementById("timeline").offsetWidth-this.settings.eventWidth-40) / (lastYear-firstYear);
+            var yearpx = (this.getTimelineWidth()-this.settings.eventWidth-40) / (lastYear-firstYear);
             if(yearpx === 0) yearpx = 0.001;
             var factor = 1;
             if(yearpx <= 65){
@@ -232,32 +261,52 @@ var app = new Vue({
             if((lastYear+1) % this.renderData.yearDivideFactor != 0) lastYear += this.renderData.yearDivideFactor - (lastYear % this.renderData.yearDivideFactor)-1;
 
             // Update arrays
-            var dateevents = {};
-            var periodeevents = {};
+            var dateyears = [];
+            var periodyears = [];
+            var lineyears = [];
+            var dateyearsevents = {};
+            var periodyearsevents = {};
             console.log('Define ends : ' + firstYear + ' < ' + lastYear);
-            for(var year = firstYear; year <= lastYear; year++){
+            for(var year = lastYear; year >= firstYear; year--){
                 
-                dateevents[year] = [];
-                if(this.timeline.dateevents[year] != undefined){
+                if(this.timeline.dateevents[year] != undefined || year == lastYear){
+                    dateyears.push(year);
+                    dateyearsevents[year] = [];
                     var orderedEvents = _.orderBy(this.timeline.dateevents[year], ['month', 'day'], ['desc', 'desc']);
                     for(let i in orderedEvents){
-                        dateevents[year].push(orderedEvents[i]);
+                        dateyearsevents[year].push(orderedEvents[i]);
                     }
                 }
-                periodeevents[year] = [];
-                if(this.timeline.periodeevents[year] != undefined){
-                    var orderedEvents = _.orderBy(this.timeline.periodeevents[year], ['startmonth', 'startday'], ['desc', 'desc']);
+                if(this.timeline.periodevents[year] != undefined || year == lastYear){
+                    periodyears.push(year);
+                    periodyearsevents[year] = [];
+                    var orderedEvents = _.orderBy(this.timeline.periodevents[year], ['startmonth', 'startday'], ['desc', 'desc']);
                     for(let i in orderedEvents){
-                        periodeevents[year].push(orderedEvents[i]);
+                        periodyearsevents[year].push(orderedEvents[i]);
                     }
+                }
+                if(year % this.renderData.yearDivideFactor == 0){
+                    lineyears.push(year);
                 }
             }
-            return {dateevents: dateevents, periodeevents: periodeevents};
+            return {dateyears: dateyears, periodyears: periodyears, lineyears: lineyears, dateyearsevents: dateyearsevents, periodyearsevents: periodyearsevents,};
         },
         sortTimeline: function(){
             var sorted = this.getSortedTimeLine();
-            this.sortedTimeline.dateevents = sorted.dateevents;
-            this.sortedTimeline.periodeevents = sorted.periodeevents;
+            this.sortedTimeline.dateyears = sorted.dateyears;
+            this.sortedTimeline.periodyears = sorted.periodyears;
+            this.sortedTimeline.lineyears = sorted.lineyears;
+            this.sortedTimeline.dateyearsevents = sorted.dateyearsevents;
+            this.sortedTimeline.periodyearsevents = sorted.periodyearsevents;
+        },
+        getTimelineWidthStyle: function(timelineWidth){
+            return "width: " + this.getTimelineWidth() + "px;";
+        },
+        getTimelineWidth: function(){
+            if(this.settings.timelineWidth < 500){
+                return $("#timeline").width();
+            }
+            return parseInt(this.settings.timelineWidth, 10);
         }
     },
     watch: {
@@ -281,12 +330,18 @@ var app = new Vue({
             handler: function (val, oldVal) {
                 
             }
-        }
+        },
+        settings: {
+            deep: true,
+            handler: function (val, oldVal) {
+                this.updateYearPx();
+            }
+        },
     },
     components: {
         "app-year": appYearComp,
         "app-event": appEventComp,
-        "app-periode": appPeriodeComp
+        "app-period": appPeriodComp
     }
 });
 
@@ -297,9 +352,8 @@ window.onresize = function resize() {
 $(document).ready(function() { 
           
     var getCanvas;
-    console.log($("#timeline .content").height());
     $("button#exporttimeline").on('click', function() { 
-        html2canvas($("#timeline .content"), {
+        html2canvas($("#timeline .timelinecontent"), {
             onrendered: function(canvas){
                 $("div#rendercanvas").html(canvas);
                 $(".filter").attr('style', 'display: block;');
