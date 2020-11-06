@@ -12,7 +12,7 @@ Vue.component("app-nav", {
 });
 
 Vue.component("app-footer", {
-	template: `<footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by Clément Grennerat</h5></footer>`,
+	template: `<footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by <a href="https://github.com/clementgre/" target="_blank" style="color: white; cursor: pointer;">Clément Grennerat</a></h5></footer>`,
 	props: [],
 	methods: {
 		

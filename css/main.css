@@ -21,8 +21,8 @@ h4{
 	font-family: Lato;
 	font-weight: 400;
 }
-h5{
-	font-size: 16px;
+h5, footer a{
+	font-size: 14px;
 	font-family: Lato;
 	font-weight: 400;
 }
@@ -61,14 +61,20 @@ header{
 	display: flex;
 	justify-content: space-between;
 	flex-wrap: wrap;
-	padding: 10px 30px;
+	padding: 0px 30px;
 	height: auto;
 	border-bottom: 1px solid #c0392b;
+	line-height: 40px;
+	text-decoration: none;
 }
-header *{
+header > div, header nav ul{
 	display: flex;
-	align-items: center;
+	flex-direction: row;
 	margin: 0 10px;
+}
+header h2{
+	margin-left: 5px;
+	line-height: 32px;
 	color: black;
 	font-family: 'Source Sans Pro';
 	font-weight: 400;
@@ -76,12 +82,17 @@ header *{
 header img{
 	max-height: 32px;
 }
+header nav ul{
+	list-style: none;
+}
 header a{
-	line-height: 40px;
 	text-decoration: none;
+	color: black;
+	padding: 10px 10px;
+	transition: all .3s ease-in-out;
 }
 header a:hover{
-	text-decoration: underline 2px #3498db;
+	background-color: rgba(238,238,238,1);
 	color: black;
 }
 /******************/
@@ -98,6 +109,6 @@ footer{
 	display: flex;
 	justify-content: space-between;
 	background-color: #34495e;
-	padding: 10px 40px;
+	padding: 5px 40px;
 	color: white;
 }

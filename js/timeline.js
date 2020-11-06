@@ -21,11 +21,29 @@ Vue.component("app-footer", {
 var appEventComp = {
     name: "appevent",
     template: `
-        <div v-bind:class="'event event-' + index" v-bind:style="'margin-left:' + getshiftpx() + 'px; margin-bottom:' + (getMarginBottom(yearindex, yearindex-1, yearpx, marginright, settings, years, index, true)+10) + 'px; width: ' + settings.eventWidth + 'px;'">
-            <div style="position: relative; width: 0; height: 0; display: block;"><div class="linker"></div></div>
-            <h4 class="title">{{event.title}}</h4>
-            <h4 class="date">{{event.date}}</h4>
-            <p class="description">{{event.description}}</p>
+        <div v-bind:class="'event event-' + index" v-bind:style="'margin-left:' + getshiftpx() + 'px;' + 
+            'margin-bottom:' + (getMarginBottom(yearindex, yearindex-1, yearpx, marginright, settings, years, index, true)+settings.events.margin) + 'px;' +
+            'width: ' + settings.events.width + 'px;' +
+            'padding: ' + settings.events.padding + 'px;' +
+            'border-radius: ' + settings.events.borderRadius + 'px;' +
+            'backgroundColor: ' + settings.events.backgroundColor + ';' +
+            'width: ' + settings.events.width + 'px;'">
+
+            <div style="position: relative; width: 0; height: 0; display: block;">
+                <div class="linker" v-bind:style="'background-color:' + settings.events.linkerColor + ';' +
+                    'width:' + settings.events.linkerWidth + 'px;' +
+                    'left: -' + (settings.events.padding+(settings.events.linkerWidth/2.0)) + 'px;'"></div>
+            </div>
+
+            <h4 class="title" v-bind:style="'color :' + settings.events.title.color + ';' + 
+                'font-size :' + settings.events.title.fontSize + 'px;' + 
+                'font-weight :' + settings.events.title.fontWeight + ';'">{{event.title}}</h4>
+            <h4 class="date" v-bind:style="'color :' + settings.events.date.color + ';' + 
+                'font-size :' + settings.events.date.fontSize + 'px;' + 
+                'font-weight :' + settings.events.date.fontWeight + ';'">{{event.date}}</h4>
+            <p class="description" v-bind:style="'color :' + settings.events.description.color + ';' + 
+                'font-size :' + settings.events.description.fontSize + 'px;' + 
+                'font-weight :' + settings.events.description.fontWeight + ';'">{{event.description}}</p>
         </div>`,
     props: ["index", "event", "yearindex", "yearpx", "marginright", "settings", "years"],
     methods: {
@@ -34,45 +52,67 @@ var appEventComp = {
             return this.shiftPx;
         },
         getMarginBottom(yearIndex, lastYearIndex, yearpx, marginRight, settings, years, index, canSkip){
-            console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
-            if(years[lastYearIndex] == undefined) return 0;
-            var finalMarginRight = marginRight - settings.eventWidth - this.shiftPx + yearpx; // space between end of this event and start of the last year (next in the order)
+            //console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
 
-            var eventStartHeight = 0;
-            var eventHeight = 10;
-            $(".timeline .events .year-" + years[yearIndex] + " .event").each((i, item) => {
-                if(this.getEventIndex($(item)) < index){
-                    eventStartHeight += this.getEventFullHeight($(item));
-                }else if(this.getEventIndex($(item)) == index){
-                    eventHeight += $(item).height();
+            if(years[lastYearIndex] == undefined) return 0; // If this is the last year, we dont have any constraint
+            var finalMarginRight = marginRight - settings.events.width - this.shiftPx + yearpx; // space between end of this event and start of the next
+
+            // If the space between the end of this event and the start of the next year is > min event margin : we can ignore this process : no margin bottom
+            if(finalMarginRight > settings.events.minMargin) return 0;
+
+            // Calculate the height of this event
+            var eventStartHeight = 0; // length between the bottom of this event and the top of the timeline
+            var eventHeight = settings.events.margin; // height of the event Box With margin bottom
+            $(".timeline .events .year-" + years[yearIndex] + " .event").each((i, item) => { // Foreach bottom events, increment the eventStartHeight
+                if(this.getEventIndex($(item)) < index){ // Loop event is at the BOTTOM of current event
+                    eventStartHeight += this.getEventFullHeight($(item)); // Increment eventStartHeight
+                }else if(this.getEventIndex($(item)) == index){ // Loop event is SAME as current event
+                    eventHeight += $(item).height()+(2*settings.events.padding); // define eventHeight (we add 10 witch is the padding)
                 }
             });
-            //if(finalMarginRight > 10) return 0;
 
-            // SKIP UNDER THE LAST YEAR OR ADD MARGIN BOTTOM TO BE ABOVE THE LAST YEAR
+            // SKIP UNDER THE LAST YEAR SECTION (next year)
+            // OR
+            // ADD MARGIN BOTTOM TO BE ABOVE LAST YEAR EVENTS
 
-            var marginBottom = 0;
-            var lastYearHeight = 0;
-            var skip = false;
-            $(".timeline .events .year-" + years[lastYearIndex] + " .event").each((i, item) => {
-                if(skip) return;
-                if(i == 0 && eventHeight > 10 && canSkip){
-                    if(this.getMargin($(item), "Bottom") > eventHeight+eventStartHeight){
-                        console.log("skiping " + i + " of " + years[lastYearIndex]);
-                        skip = true; return;
+            // canSkip : 
+            var marginBottom = 0; // Future marginBottom
+            var lastYearHeight = 0; // Height increamented bit by bit when the foreach occurs
+            var skip = false; // Skip = move under the lastYear events. When skip == true, 
+            $(".timeline .events .year-" + years[lastYearIndex] + " .event").each((i, item) => { // Foreach last year event
+                ///// SKIP UNDER SYSTEM ///// (Only occurs at the first iteration)
+                if(skip) return; // When skip == true, we return definitively so we leave the each loop.
+                // i == 0 : We can decide to skip only with the bottom event : with his margin bottom.
+                // eventHeight > 10 : The event height needs to don't have the default value to measure if the free height is enough.
+                // canSkip : can be false when a skip is canceled (by re-call) when the width is too small (not enough space)
+                if(i == 0 && eventHeight > 0 && canSkip){ // This event can skip under
+                    // The margin bottom of the last bottom event is bigger than the event height + others same year events that has maybe already skipped.
+                    // (If others same year event has already skipped, we need to take them in account).
+                    // We have to take in account the top margin of the event
+                    if(this.getMargin($(item), "Bottom") >= eventHeight+eventStartHeight+10){ // This event can skip -> process skiping under
+                        skip = true; return; // Set skip to true : cancel all process of the each loop since a skip will occurs
                     }
                 }
-                lastYearHeight += this.getEventFullHeight($(item));
-                if(lastYearHeight >= eventStartHeight){ // item is at the same height than this event
-                    //var newFinalMarginRight = finalMarginRight + this.getMargin($(item), "Left");
-                    if(finalMarginRight < 0){
-                        console.log("margin " + i + " of " + years[lastYearIndex] + " <=> " + this.getEventFullHeight($(item)));
-                        marginBottom += this.getEventFullHeight($(item));
+
+                ///// ADD MARGIN TO BE ABOVE SYSTEM /////
+                lastYearHeight += this.getEventFullHeight($(item)); // Increment lastYearHeight with the event height (measure the lsstYear events height)
+                // When the height of the lastYear is higher than the event start height, this mind there is not enought space for the current event
+                // When this condition is true, all the nexts of the loop will be logicaly true too.
+                if(lastYearHeight >= eventStartHeight){
+                    if(finalMarginRight < settings.events.minMargin){ // There is not enought place only if the space between the end of this event and the start of the next year is < minMargin
+                        marginBottom += this.getEventFullHeight($(item)); // Increment marginBottom with the height of the loop event.
                     }
                 }
             });
+            // if this is not the bottom event and marginBootom != 0, this means the last event has skipped but no this one (Only the bottom event can has margin bottom)
+            // So we remove the eventStartHeight (= height of all under events) to the marginBottom
             if(index != 0 && marginBottom != 0) marginBottom -= eventStartHeight;
+            // If we have skipped under, we repeat the action to check if there is enough place :
+            // YES : Try to skip one more year
+            // NO : cancel the skipping (next line)
             if(skip) return this.getMarginBottom(yearIndex, lastYearIndex-1, yearpx, marginRight+this.getYearFreeWidth(years[lastYearIndex]), settings, years, index, true);
+            // case of NO : when a skip has occured and the marginBottom != 0
+            // if marginBottom != 0, this means the function has added a margin bottom so there is not enough space to enter 
             if(marginBottom != 0 && yearIndex-1 != lastYearIndex) return this.getMarginBottom(yearIndex, yearIndex-1, yearpx, marginRight, settings, years, index, false);
             return marginBottom;
         },
@@ -118,9 +158,12 @@ var appYearComp = {
         'order: ' + index + ';' +
         'width:' + getWidth(yearpx, yeardividefactor, type) + 'px;' +
         'margin-right:' + getMarginRight(year, index, years, type, yearpx) + 'px;' +
+        ((type == 1) ? 'backgroundColor: ' + settings.years.backgroundColor + '; border-right: ' + settings.years.borderWidth + 'px solid ' + settings.years.borderColor + ';' + 'height: ' + settings.years.height + 'px;' : '') + ';' +
         'z-index: ' + index + ';'">
         
-        <h4 class="title" v-if="type == 1">{{year}}</h4>
+        <h4 class="title" v-if="type == 1" v-bind:style="'color: ' + settings.years.textColor + ';' +
+            'line-height: ' + settings.years.height + 'px;' +
+            'font-weight: ' + settings.years.fontWeight + ';'">{{year}}</h4>
 
         <app-event v-if="type == 0" v-for="(event, eventIndex) in events"
             v-bind:key="eventIndex" v-bind:index="eventIndex" v-bind:event="event" v-bind:yearindex="index" v-bind:yearpx="yearpx" v-bind:marginright="marginRight" v-bind:settings="settings" v-bind:years="years"></app-event>
@@ -147,7 +190,7 @@ var appYearComp = {
                 case 1: // YEARS LINE //
                 return 0;
                 case 0: // EVENTS (Top) //
-                console.log("////////// PROCESSING YEAR " + year + " //////////");
+                //console.log("////////// PROCESSING YEAR " + year + " //////////");
                 if(years[index-1] == undefined) return 0;
                 var margin = (years[index-1]-year-1) * yearpx;
                 this.marginRight = (margin >= 0) ? margin : 0;
@@ -186,14 +229,21 @@ var app = new Vue({
             },
             dateevents: {
                 1830: [
+                    {date: "3 Juin 1830", day: 3, month: 6, title: "test test test test test test test test test test test", description: "Des journalistes se révoltent dans Paris car Charles X a supprimé la liberté d'expression -> révolution, Louis Phillipe au pouvoir. De plus, Louis 16 est"},
+                ],
+                1834: [
                     {date: "3 Juin 1830", day: 3, month: 6, title: "Les trois glorieuses", description: "Des journalistes se révoltent dans Paris car Charles X a supprimé la liberté d'expression -> révolution, Louis Phillipe au pouvoir."},
                 ],
+                1838: [
+                    {date: "3 Juin 1830", day: 3, month: 6, title: "Les trois glorieuses"},
+                ],
                 1820: [
+                    {date: "1820", day: 1, month: 1, title: "Révolte Espagnole", description: "Petite desctription qui permet de décrire l'évènement, comme son nom l'indique... de plus, il se passa des choses"},
                     {date: "1820", day: 1, month: 1, title: "Révolte Espagnole", description: "Petite desctription qui permet de décrire l'évènement, comme son nom l'indique..."},
                     {date: "3 Aout 1820", day: 16, month: 8, title: "Commencement de la révolte Grecque", description: "Le massacre de Chaos commence cette année, massacre des grecques sur l'île de Chaos"},
                 ],
                 1826: [
-                    {date: "1 Janvier 1821", day: 1, month: 1, title: "Révolte Allemande", description: "(Ceci est un faux élènement...)"},
+                    {date: "1 Janvier 1821", day: 1, month: 1, title: "Révolte Allemande", description: "(Ceci est un faux élènement...) mais cet evenement est auqnd meme"},
                     {date: "1 Janvier 1821", day: 1, month: 6, title: "Révolte Allemande", description: "(Ceci est un faux élènement...)"}
                 ],
                 1848: [
@@ -215,19 +265,228 @@ var app = new Vue({
             yearDivideFactor: 1,
         },
         settings: {
-            timelineName: "untiteled",
-            eventWidth: 200,
-            backgroundColor: "#ffffff",
-            timelineWidth: 0
+            global: {
+                backgroundColor: "rgba(255, 255, 255, 1)",
+                timelineWidth: 0
+            },
+            years: {
+                height: 50,
+                borderWidth: 1,
+                borderColor: "rgba(0, 0, 0, 1)",
+                backgroundColor: "#e74c3c",
+                textColor: "rgba(0, 0, 0, 1)",
+                fontWeight: 400,
+                fontSize: 14
+            },
+            events: {
+                width: 200,
+                padding: 5,
+                margin: 10,
+                minMargin: 5,
+                backgroundColor: "rgba(170, 170, 170, 0.6)",
+                linkerColor: "rgba(170, 170, 170, 0.6)",
+                linkerWidth: 1,
+                borderRadius: 5,
+                title: {
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: 16,
+                    fontWeight: 700
+                },
+                date: {
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: 14,
+                    fontWeight: 300
+                },
+                description: {
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: 14,
+                    fontWeight: 400
+                }
+            },
+            periods: {
+
+            }
+        },
+        defaultSettings: {
+            global: {
+                backgroundColor: "rgba(255, 255, 255, 1)",
+                timelineWidth: 0
+            },
+            years: {
+                height: 50,
+                borderWidth: 1,
+                borderColor: "rgba(0, 0, 0, 1)",
+                backgroundColor: "#e74c3c",
+                textColor: "rgba(0, 0, 0, 1)",
+                fontWeight: 400,
+                fontSize: 14
+            },
+            events: {
+                width: 200,
+                padding: 5,
+                margin: 10,
+                minMargin: 5,
+                backgroundColor: "rgba(170, 170, 170, 0.6)",
+                linkerColor: "rgba(170, 170, 170, 0.6)",
+                linkerWidth: 1,
+                borderRadius: 5,
+                title: {
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: 16,
+                    fontWeight: 700
+                },
+                date: {
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: 14,
+                    fontWeight: 300
+                },
+                description: {
+                    color: "rgba(0, 0, 0, 1)",
+                    fontSize: 14,
+                    fontWeight: 400
+                }
+            },
+            periods: {
+
+            }
+        },
+        project: {
+            name: "unnamed timeline"
+        },
+        ui: {
+            currentTab: "settings"
         }
     },
     computed: {
-      orderedDateEvents: function (){
-        this.timeline.dateevents = _.orderBy(this.timeline.dateevents, 'year');
-      },
-      orderedPeriodEvents: function (){
-        this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
-      }
+        orderedDateEvents: function (){
+            this.timeline.dateevents = _.orderBy(this.timeline.dateevents, 'year');
+        },
+        orderedPeriodEvents: function (){
+            this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
+        },
+        timelineWidthString: {
+            get: function(){
+                if(parseInt(this.settings.global.timelineWidth, 10) < 500){
+                    return "Auto";
+                }
+                return this.settings.global.timelineWidth;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 500 || parseInt(value, 10) > 10000){
+                    this.settings.global.timelineWidth = 499;
+                }else{
+                    this.settings.global.timelineWidth = parseInt(value, 10);
+                }
+            }
+        },
+        eventsWidthString: {
+            get: function(){
+                return this.settings.events.width;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 50 || parseInt(value, 10) > 1000){
+                    this.settings.events.width = 200;
+                }else{
+                    this.settings.events.width = parseInt(value, 10);
+                }
+            }
+        },
+        yearsBorderWidthString: {
+            get: function(){
+                return this.settings.years.borderWidth;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 5){
+                    this.settings.years.borderWidth = 1;
+                }else{
+                    this.settings.years.borderWidth = parseInt(value, 10);
+                }
+            }
+        },
+        yearsFontWeightString: {
+            get: function(){
+                return this.settings.years.fontWeight;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 100 || parseInt(value, 10) > 900){
+                    this.settings.years.fontWeight = 400;
+                }else{
+                    this.settings.years.fontWeight = parseInt(value, 10);
+                }
+            }
+        },
+        yearsHeightString: {
+            get: function(){
+                return this.settings.years.height;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 20 || parseInt(value, 10) > 100){
+                    this.settings.years.height = 40;
+                }else{
+                    this.settings.years.height = parseInt(value, 10);
+                }
+            }
+        },
+        eventsBorderRadiusString: {
+            get: function(){
+                return this.settings.events.borderRadius;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
+                    this.settings.events.borderRadius = 5;
+                }else{
+                    this.settings.events.borderRadius = parseInt(value, 10);
+                }
+            }
+        },
+        eventsPaddingString: {
+            get: function(){
+                return this.settings.events.padding;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
+                    this.settings.events.padding = 10;
+                }else{
+                    this.settings.events.padding = parseInt(value, 10);
+                }
+            }
+        },
+        eventsMarginString: {
+            get: function(){
+                return this.settings.events.margin;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
+                    this.settings.events.margin = 10;
+                }else{
+                    this.settings.events.margin = parseInt(value, 10);
+                }
+            }
+        },
+        eventsMinMarginString: {
+            get: function(){
+                return this.settings.events.minMargin;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
+                    this.settings.events.minMargin = 10;
+                }else{
+                    this.settings.events.minMargin = parseInt(value, 10);
+                }
+            }
+        },
+        eventsLinkerWidthString: {
+            get: function(){
+                return this.settings.events.linkerWidth;
+            },
+            set: function(value){
+                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 1 || parseInt(value, 10) > 10){
+                    this.settings.events.linkerWidth = 1;
+                }else{
+                    this.settings.events.linkerWidth = parseInt(value, 10);
+                }
+            }
+        }
     },
     methods: {
         updateYearPx: function(){
@@ -235,7 +494,7 @@ var app = new Vue({
             // DivideFactor is calculated by comparing this value to the total timeline width
             var lastAndFirstYears = this.getFirstAndLastYears();
             var yearsLength = lastAndFirstYears.lastYear - lastAndFirstYears.firstYear;
-            var yearpx = (this.getTimelineWidth()-this.settings.eventWidth-40) / yearsLength;
+            var yearpx = (this.getTimelineWidth()-this.settings.events.width-40) / yearsLength;
             if(yearpx === 0) yearpx = 0.001;
 
             // Width of a year in px (First year = First visible event && Last year = Last visible event)
@@ -243,7 +502,7 @@ var app = new Vue({
             // This is the final width of a year on the screen
             var showedLastAndFirstYears = this.getShowedFirstAndLastYears();
             var showedYearsLength = showedLastAndFirstYears.lastYear - showedLastAndFirstYears.firstYear;
-            var showedyearpx = (this.getTimelineWidth()-this.settings.eventWidth-40) / showedYearsLength;
+            var showedyearpx = (this.getTimelineWidth()-this.settings.events.width-40) / showedYearsLength;
             if(showedyearpx === 0) showedyearpx = 0.001;
             
             // calculating Year divide Factor with yearPX
@@ -297,7 +556,7 @@ var app = new Vue({
             var lastYear = lastAndFirstYears.lastYear;
 
             // Check if some years are skipped, to add the years in order to round down.
-            var yearpx = (this.getTimelineWidth()-this.settings.eventWidth-40) / (lastYear-firstYear);
+            var yearpx = (this.getTimelineWidth()-this.settings.events.width-40) / (lastYear-firstYear);
             if(yearpx === 0) yearpx = 0.001;
             var factor = 1;
             if(yearpx <= 65){
@@ -321,7 +580,7 @@ var app = new Vue({
             var lineyears = [];
             var dateyearsevents = {};
             var periodyearsevents = {};
-            console.log('Define ends : ' + firstYear + ' < ' + lastYear);
+            //console.log('Define ends : ' + firstYear + ' < ' + lastYear);
             for(var year = lastYear; year >= firstYear; year--){
                 
                 if(this.timeline.dateevents[year] != undefined || year == lastYear){
@@ -358,10 +617,10 @@ var app = new Vue({
             return "width: " + this.getTimelineWidth() + "px;";
         },
         getTimelineWidth: function(){
-            if(this.settings.timelineWidth < 500){
+            if(parseInt(this.settings.global.timelineWidth, 10) < 500){
                 return $("#timeline").width() < 500 ? 500 : $("#timeline").width();
             }
-            return parseInt(this.settings.timelineWidth, 10);
+            return parseInt(this.settings.global.timelineWidth, 10);
             
         }
     },
@@ -377,7 +636,7 @@ var app = new Vue({
             deep: true,
             immediate: true,
             handler: function (val, oldVal) {
-                console.log('sorted timeline data changed');
+                //console.log('sorted timeline data changed');
                 this.updateYearPx();
             }
         },
@@ -392,7 +651,7 @@ var app = new Vue({
             handler: function (val, oldVal) {
                 this.updateYearPx();
             }
-        },
+        }
     },
     components: {
         "app-year": appYearComp,
@@ -422,7 +681,7 @@ $(document).ready(function() {
     $("a#downloadpreview").on('click', function() { 
         var imgageData = getCanvas.toDataURL("image/png"); 
         var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
-        $("a#downloadpreview").attr("download", app.settings.timelineName + ".png").attr("href", newData);
+        $("a#downloadpreview").attr("download", app.project.name + ".png").attr("href", newData);
         $(".filter").attr('style', 'display: none;');
         $(".filter .export").attr('style', 'display: none;');
     }); 

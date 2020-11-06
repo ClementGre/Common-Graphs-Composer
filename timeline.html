@@ -20,6 +20,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
     <script src= "https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script> 
     <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script> 
+    <script src="js/jscolor.js"></script>
+    <script>
+        jscolor.presets.default = {
+            format:'rgba', alphaChannel:true, borderRadius:5, padding:5, 
+            buttonColor:'rgba(255,101,213,1)', controlBorderWidth:0
+        };
+    </script>
+
 </head>
 <body id="body">
 
@@ -37,17 +45,9 @@
         </app-nav>
 
         <main>
-            <p style="font-size: 11px;">
-                {{renderData}} 
-                timeline.dateevents[1820][0].title : <input v-model="timeline.dateevents[1820][0].title" type="text"/>
-                settings.timelineWidth : <input v-model="settings.timelineWidth" type="text"/>
-                settings.backgroundColor : <input v-model="settings.backgroundColor" type="text"/>
-                settings.eventWidth : <input v-model="settings.eventWidth" type="text"/>
-            </p>
-
             <div class="timeline" id="timeline" >
-                <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.eventWidth, 10)+20) + 'px; background-color: ' + settings.backgroundColor + ';' + getTimelineWidthStyle(settings.timelineWidth) + ''">
-                    <div class="events" id="events" v-bind:style="'padding-right: ' + settings.eventWidth + 'px; margin-right: -' + settings.eventWidth + 'px;'">
+                <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
+                    <div class="events" id="events" v-bind:style="'padding-right: ' + settings.events.width + 'px; margin-right: -' + settings.events.width + 'px;'">
                         <app-year v-for="(year, index) in sortedTimeline.dateyears"
                                 v-bind:key="index" v-bind:year="year" v-bind:index="index" v-bind:years="sortedTimeline.dateyears" v-bind:events="sortedTimeline.dateyearsevents[year]"
                                 v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
@@ -72,8 +72,172 @@
             </div>
 
             <div class="panel">
-                <button id="exporttimeline">Export</button>
-               <p style="font-size: 9px;"> </p>
+                <div class="nav">
+                    <p v-bind:class="ui.currentTab == 'event' ? 'selected' : ''" v-on:click="ui.currentTab = 'event'">Event</p>
+                    <p v-bind:class="ui.currentTab == 'settings' ? 'selected' : ''" v-on:click="ui.currentTab = 'settings'">Settings</p>
+                </div>
+                <div class="pane event-pane" v-show="ui.currentTab == 'event'">
+                    <div class="global">
+                        <div class="content">
+                            timeline.dateevents[1820][0].title : <input v-model="timeline.dateevents[1820][0].title" type="text"/>
+                        </div>
+                    </div>
+                    
+                    
+                    <button id="exporttimeline">Export</button>
+                </div>
+                <div class="pane settings-pane" v-show="ui.currentTab == 'settings'">
+                    <div class="global">
+                        <div class="content">
+                            <h3>Global settings</h3>
+                            <table>
+                                <tr>
+                                    <td>Background Color</td>
+                                    <td><input v-model="settings.global.backgroundColor" data-jscolor="" placeholder="rgba(r, g, b, a)"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Timeline Width</td>
+                                    <td class="double"><input v-model="settings.global.timelineWidth" type="range" min="499" max="10000"/><input type="text" v-model="timelineWidthString" placeholder="500 - 10000"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="years">
+                        <div class="content">
+                            <h3>Years Boxes settings</h3>
+                            <table>
+                                <tr>
+                                    <td>Height</td>
+                                    <td><td class="double"><input v-model.number="settings.years.height" type="range" min="20" max="100"/><input v-model="yearsHeightString" type="text" placeholder="20 - 100"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Background Color</td>
+                                    <td><input v-model="settings.years.backgroundColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr><td><hr></td></tr>
+                                <tr>
+                                    <td>Font Color</td>
+                                    <td><input v-model="settings.years.textColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Font Weight</td>
+                                    <td><td class="double"><input v-model.number="settings.years.fontWeight" type="range" min="100" max="900" step="100" /><input v-model="yearsFontWeightString" type="text" placeholder="100 - 900"/></td>
+                                </tr>
+                                <tr><td><hr></td></tr>
+                                <tr>
+                                    <td>Border Color</td>
+                                    <td><input v-model="settings.years.borderColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Border Width</td>
+                                    <td class="double"><input v-model.number="settings.years.borderWidth" type="range" min="0" max="5"/><input v-model="yearsBorderWidthString" type="text" placeholder="0 - 5"/></td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                    <div class="events">
+                        <div class="content">
+                            <h3>Events settings</h3>
+                            <table>
+                                <tr>
+                                    <td>Background Color</td>
+                                    <td><input v-model="settings.events.backgroundColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Round Corners Radius</td>
+                                    <td class="double"><input v-model.number="settings.events.borderRadius" type="range" min="0" max="30"/><input v-model="eventsBorderRadiusString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Width</td>
+                                    <td class="double"><input v-model.number="settings.events.width" type="range" min="50" max="1000"/><input v-model="eventsWidthString" type="text" placeholder="50 - 1000"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Inner Margin</td>
+                                    <td class="double"><input v-model.number="settings.events.padding" type="range" min="0" max="30"/><input v-model="eventsPaddingString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Margin</td>
+                                    <td class="double"><input v-model.number="settings.events.margin" type="range" min="0" max="30"/><input v-model="eventsMarginString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Minimun Margin</td>
+                                    <td class="double"><input v-model.number="settings.events.minMargin" type="range" min="0" max="30"/><input v-model="eventsMinMarginString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                                <tr><td><hr></td></tr>
+                                <tr>
+                                    <td>Linker Color</td>
+                                    <td><input v-model="settings.events.linkerColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Linker Width</td>
+                                    <td class="double"><input v-model.number="settings.events.linkerWidth" type="range" min="1" max="10"/><input v-model="eventsLinkerWidthString" type="text" placeholder="1 - 10"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="eventstext">
+                        <div class="content">
+                            <!-- 
+                                title: {
+                                    color: "rgba(0, 0, 0, 1)",
+                                    fontSize: 16,
+                                    fontWeight: 700
+                                },
+                                date: {
+                                    color: "rgba(0, 0, 0, 1)",
+                                    fontSize: 14,
+                                    fontWeight: 300
+                                },
+                                description: {
+                                    color: "rgba(0, 0, 0, 1)",
+                                    fontSize: 14,
+                                    fontWeight: 400
+                                }
+                            -->
+                            <h3>Events Titles settings</h3>
+                            <table>
+                                <tr>
+                                    <td>Background Color</td>
+                                    <td><input v-model="settings.events.backgroundColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Round Corners Radius</td>
+                                    <td class="double"><input v-model.number="settings.events.borderRadius" type="range" min="0" max="30"/><input v-model="eventsBorderRadiusString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                                <tr><td><hr></td></tr>
+                            </table>
+                            <h3 style="margin-top: 8px;">Events Dates settings</h3>
+                            <table>
+                                <tr>
+                                    <td>Background Color</td>
+                                    <td><input v-model="settings.events.backgroundColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Round Corners Radius</td>
+                                    <td class="double"><input v-model.number="settings.events.borderRadius" type="range" min="0" max="30"/><input v-model="eventsBorderRadiusString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                                <tr><td><hr></td></tr>
+                            </table>
+                            <h3 style="margin-top: 8px;">Events Descriptions settings</h3>
+                            <table>
+                                <tr>
+                                    <td>Background Color</td>
+                                    <td><input v-model="settings.events.backgroundColor" data-jscolor="" placeholder="rgba(r, g, b, a)"></td>
+                                </tr>
+                                <tr>
+                                    <td>Round Corners Radius</td>
+                                    <td class="double"><input v-model.number="settings.events.borderRadius" type="range" min="0" max="30"/><input v-model="eventsBorderRadiusString" type="text" placeholder="0 - 30"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="periods">
+                        <div class="content">
+                            <h3>Periods settings</h3>
+                        </div>
+                    </div>
+                </div>  
             </div>
         </main>
 
