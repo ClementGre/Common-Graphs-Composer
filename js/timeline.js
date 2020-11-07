@@ -203,7 +203,94 @@ var appYearComp = {
         }
     }
 }
+var appSettingComp = {
+    name: "appsetting",
+    template: `
+        <tr style="width:100%">
+            <td>{{title}}</td>
+            <td v-if="type == 0">
+                <input v-bind:value="setting" ref="value" @input="updateRgbValue()" data-jscolor="" placeholder="rgba(r, g, b, a)">
+            </td>
+            <td v-if="type == 1" class="double">
+                <input v-bind:value="setting" ref="value" @input="updateValue()" type="range" v-bind:min="min" v-bind:max="max" v-bind:step="step"><input v-bind:value="stringValue" ref="stringvalue" @input="updateStringValue()" type="text" v-bind:placeholder="min + ' - ' + max">
+            </td>
+        </tr>`,
+    props: ["setting", "title", "section", "name", "type", "min", "max", "step", "auto"],
+    computed: {
+        stringValue: {
+            get: function(){
+                if(this.auto){
+                    if(this.setting == this.min){
+                        return "Auto";
+                    }
+                }
+                return this.setting;
+            }
+        }
+    },
+    methods: {
+        editSetting(value){
+            this.$emit('edit-setting', {value: value, section: this.section, name: this.name});
+        },
+        updateValue(){
+            this.editSetting(parseInt(this.$refs.value.value, 10));
+        },
+        updateRgbValue(){
+            this.editSetting(this.$refs.value.value);
+        },
+        updateStringValue(){
+            value = this.$refs.stringvalue.value
+            if(!isNaN(parseInt(value, 10)) && parseInt(value, 10) != undefined && !(parseInt(value, 10) < this.min || parseInt(value, 10) > this.max)){
+                this.editSetting(parseInt(value, 10));
+            }else if(this.auto && isNaN(parseInt(value, 10))){
+                this.editSetting(parseInt(this.min, 10));
+            }
+        }
+    }
+}
+var appSettingsComp = {
+    name: "appsetting",
+    template: `
+        <div class="pane settings-pane" >
+            <div v-for="(section) in Object.keys(settingsdetails)">
+                <div class="content">
+                    <h3>{{settingsdetails[section].name}}</h3>
+                    <table>
+                        <template v-for="(name, index) in getSectionKeys(section)" v-bind:key="index"
+                            v-if="typeof settingsdetails[section][name] == 'object' && settingsdetails[section][name].type != undefined">
+                            
+                            <tr is="app-setting" v-if="settingsdetails[section][name].type == 0"
+                                v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
+                                v-bind:section="section" v-bind:name="name" v-bind:type="0"
+                                v-bind:title="settingsdetails[section][name].name"/>
+                            
+                            <tr is="app-setting" v-if="settingsdetails[section][name].type == 1"
+                                v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
+                                v-bind:section="section" v-bind:name="name" v-bind:type="1"
+                                v-bind:title="settingsdetails[section][name].name"
+                                v-bind:min="settingsdetails[section][name].min" v-bind:max="settingsdetails[section][name].max"
+                                v-bind:step="settingsdetails[section][name].step" v-bind:auto="settingsdetails[section][name].auto"/>
 
+                            <tr v-if="settingsdetails[section][name].separator"><td><hr></td><td></td></tr>
+
+                        </template>
+                    </table>
+                </div>
+            </div>
+        </div>`,
+    props: ["settings", "settingsdetails"],
+    components: {
+        "app-setting": appSettingComp,
+    },
+    methods: {
+        editSetting(data){
+            this.$emit('edit-setting', data);
+        },
+        getSectionKeys(section){
+            return Object.keys(this.settingsdetails[section]);
+        }
+    }
+}
 
 var app = new Vue({
     el: "#app",
@@ -265,89 +352,153 @@ var app = new Vue({
             yearDivideFactor: 1,
         },
         settings: {
-            global: {
-                backgroundColor: "rgba(255, 255, 255, 1)",
-                timelineWidth: 0
-            },
-            years: {
-                height: 50,
-                borderWidth: 1,
-                borderColor: "rgba(0, 0, 0, 1)",
-                backgroundColor: "#e74c3c",
-                textColor: "rgba(0, 0, 0, 1)",
-                fontWeight: 400,
-                fontSize: 14
-            },
-            events: {
-                width: 200,
-                padding: 5,
-                margin: 10,
-                minMargin: 5,
-                backgroundColor: "rgba(170, 170, 170, 0.6)",
-                linkerColor: "rgba(170, 170, 170, 0.6)",
-                linkerWidth: 1,
-                borderRadius: 5,
-                title: {
-                    color: "rgba(0, 0, 0, 1)",
-                    fontSize: 16,
-                    fontWeight: 700
-                },
-                date: {
-                    color: "rgba(0, 0, 0, 1)",
-                    fontSize: 14,
-                    fontWeight: 300
-                },
-                description: {
-                    color: "rgba(0, 0, 0, 1)",
-                    fontSize: 14,
-                    fontWeight: 400
-                }
-            },
-            periods: {
 
-            }
         },
-        defaultSettings: {
+        settingsDetails: {
             global: {
-                backgroundColor: "rgba(255, 255, 255, 1)",
-                timelineWidth: 0
+                name: "Global Settings",
+                backgroundColor: {
+                    name: "Background Color",
+                    type: 0, value: "rgba(255, 255, 255, 0)",
+                },
+                timelineWidth: {
+                    name: "Timeline Width",
+                    type: 1, value: 499,
+                    min: 499, max: 10000, auto: true
+                }
             },
             years: {
-                height: 50,
-                borderWidth: 1,
-                borderColor: "rgba(0, 0, 0, 1)",
-                backgroundColor: "#e74c3c",
-                textColor: "rgba(0, 0, 0, 1)",
-                fontWeight: 400,
-                fontSize: 14
+                name: "Years Settings",
+                height: {
+                    name: "Height",
+                    type: 1, value: 50,
+                    min: 20, max: 100, step: 5
+                },
+                backgroundColor: {
+                    name: "Background Color",
+                    type: 0, value: "#e74c3c",
+                    separator: true
+                },
+
+                textColor: {
+                    name: "Text Color",
+                    type: 0, value: "rgba(0, 0, 0, 1)"
+                },
+                fontWeight: {
+                    name: "Font Weight",
+                    type: 1, value: 400,
+                    min: 100, max: 900, step: 100,
+                    separator: true
+                },
+
+                borderColor: {
+                    name: "Border Color",
+                    type: 0, value: "rgba(0, 0, 0, 1)"
+                },
+                borderWidth: {
+                    name: "Border Width",
+                    type: 1, value: 1,
+                    min: 0, max: 5
+                }
             },
             events: {
-                width: 200,
-                padding: 5,
-                margin: 10,
-                minMargin: 5,
-                backgroundColor: "rgba(170, 170, 170, 0.6)",
-                linkerColor: "rgba(170, 170, 170, 0.6)",
-                linkerWidth: 1,
-                borderRadius: 5,
+                name: "Events Settings",
+                width: {
+                    name: "Width",
+                    type: 1, value: 200,
+                    min: 50, max: 900, step: 10
+                },
+                backgroundColor: {
+                    name: "Background Color",
+                    type: 0, value: "rgba(170, 170, 170, 0.6)",
+                    separator: true
+                },
+
+                padding: {
+                    name: "Padding",
+                    type: 1, value: 5,
+                    min: 0, max: 30
+                },
+                margin: {
+                    name: "Margin",
+                    type: 1, value: 10,
+                    min: 0, max: 30
+                },
+                minMargin: {
+                    name: "Minimum Margin",
+                    type: 1, value: 5,
+                    min: 0, max: 30,
+                    separator: true
+                },
+                
+                linkerColor: {
+                    name: "Linker Color",
+                    type: 0, value: "rgba(170, 170, 170, 0.6)"
+                },
+                linkerWidth: {
+                    name: "Linker Width",
+                    type: 1, value: 1,
+                    min: 0, max: 10
+                },
+                borderRadius: {
+                    name: "Round Corner Radius",
+                    type: 1, value: 5,
+                    min: 0, max: 30
+                },
                 title: {
-                    color: "rgba(0, 0, 0, 1)",
-                    fontSize: 16,
-                    fontWeight: 700
+                    name: "Title Text",
+                    color: {
+                        name: "Color",
+                        type: 0, value: "rgba(0, 0, 0, 1)"
+                    },
+                    fontSize: {
+                        name: "Font Size",
+                        type: 1, value: 16,
+                        min: 10, max: 30
+                    },
+                    fontWeight: {
+                        name: "Font Weight",
+                        type: 1, value: 700,
+                        min: 100, max: 900, step: 100
+                    }
                 },
                 date: {
-                    color: "rgba(0, 0, 0, 1)",
-                    fontSize: 14,
-                    fontWeight: 300
+                    name: "Date Text",
+                    color: {
+                        name: "Color",
+                        type: 0, value: "rgba(0, 0, 0, 1)"
+                    },
+                    fontSize: {
+                        name: "Font Size",
+                        type: 1, value: 14,
+                        min: 10, max: 30
+                    },
+                    fontWeight: {
+                        name: "Font Weight",
+                        type: 1, value: 300,
+                        min: 100, max: 900, step: 100
+                    }
                 },
                 description: {
-                    color: "rgba(0, 0, 0, 1)",
-                    fontSize: 14,
-                    fontWeight: 400
+                    name: "Description Text",
+                    color: {
+                        name: "Color",
+                        type: 0, value: "rgba(0, 0, 0, 1)"
+                    },
+                    fontSize: {
+                        name: "Font Size",
+                        type: 1, value: 14,
+                        min: 10, max: 30
+                    },
+                    fontWeight: {
+                        name: "Font Weight",
+                        type: 1, value: 400,
+                        min: 100, max: 900, step: 100
+                    }
                 }
             },
             periods: {
-
+                name: "Periods Settings",
             }
         },
         project: {
@@ -363,132 +514,25 @@ var app = new Vue({
         },
         orderedPeriodEvents: function (){
             this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
-        },
-        timelineWidthString: {
-            get: function(){
-                if(parseInt(this.settings.global.timelineWidth, 10) < 500){
-                    return "Auto";
-                }
-                return this.settings.global.timelineWidth;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 500 || parseInt(value, 10) > 10000){
-                    this.settings.global.timelineWidth = 499;
-                }else{
-                    this.settings.global.timelineWidth = parseInt(value, 10);
-                }
-            }
-        },
-        eventsWidthString: {
-            get: function(){
-                return this.settings.events.width;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 50 || parseInt(value, 10) > 1000){
-                    this.settings.events.width = 200;
-                }else{
-                    this.settings.events.width = parseInt(value, 10);
-                }
-            }
-        },
-        yearsBorderWidthString: {
-            get: function(){
-                return this.settings.years.borderWidth;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 5){
-                    this.settings.years.borderWidth = 1;
-                }else{
-                    this.settings.years.borderWidth = parseInt(value, 10);
-                }
-            }
-        },
-        yearsFontWeightString: {
-            get: function(){
-                return this.settings.years.fontWeight;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 100 || parseInt(value, 10) > 900){
-                    this.settings.years.fontWeight = 400;
-                }else{
-                    this.settings.years.fontWeight = parseInt(value, 10);
-                }
-            }
-        },
-        yearsHeightString: {
-            get: function(){
-                return this.settings.years.height;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 20 || parseInt(value, 10) > 100){
-                    this.settings.years.height = 40;
-                }else{
-                    this.settings.years.height = parseInt(value, 10);
-                }
-            }
-        },
-        eventsBorderRadiusString: {
-            get: function(){
-                return this.settings.events.borderRadius;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
-                    this.settings.events.borderRadius = 5;
-                }else{
-                    this.settings.events.borderRadius = parseInt(value, 10);
-                }
-            }
-        },
-        eventsPaddingString: {
-            get: function(){
-                return this.settings.events.padding;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
-                    this.settings.events.padding = 10;
-                }else{
-                    this.settings.events.padding = parseInt(value, 10);
-                }
-            }
-        },
-        eventsMarginString: {
-            get: function(){
-                return this.settings.events.margin;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
-                    this.settings.events.margin = 10;
-                }else{
-                    this.settings.events.margin = parseInt(value, 10);
-                }
-            }
-        },
-        eventsMinMarginString: {
-            get: function(){
-                return this.settings.events.minMargin;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 0 || parseInt(value, 10) > 30){
-                    this.settings.events.minMargin = 10;
-                }else{
-                    this.settings.events.minMargin = parseInt(value, 10);
-                }
-            }
-        },
-        eventsLinkerWidthString: {
-            get: function(){
-                return this.settings.events.linkerWidth;
-            },
-            set: function(value){
-                if(isNaN(parseInt(value, 10)) || parseInt(value, 10) == undefined || parseInt(value, 10) < 1 || parseInt(value, 10) > 10){
-                    this.settings.events.linkerWidth = 1;
-                }else{
-                    this.settings.events.linkerWidth = parseInt(value, 10);
-                }
-            }
         }
     },
     methods: {
+        editSetting: function(data){
+            this.$set(this.settings[data.section], data.name, data.value);
+        },
+        generateSettings: function(source){
+            var result = {}
+            Object.keys(source).forEach(name => {
+                if(typeof source[name] == 'object'){
+                    if(source[name].type != undefined){
+                        result[name] = source[name].value;
+                    }else{
+                        result[name] = this.generateSettings(source[name]);
+                    }
+                }
+            });
+            return result;
+        },
         updateYearPx: function(){
             // Width of a year in px (First year = First event && Last year = Last event)
             // DivideFactor is calculated by comparing this value to the total timeline width
@@ -629,6 +673,7 @@ var app = new Vue({
             deep: true,
             immediate: true,
             handler: function (val, oldVal) {
+                if(this.settings.global == undefined) this.settings = this.generateSettings(this.settingsDetails); 
                 this.sortTimeline();
             }
         },
@@ -656,7 +701,9 @@ var app = new Vue({
     components: {
         "app-year": appYearComp,
         "app-event": appEventComp,
-        "app-period": appPeriodComp
+        "app-period": appPeriodComp,
+        "app-settings": appSettingsComp,
+        "app-setting": appSettingComp
     }
 });
 
@@ -699,7 +746,7 @@ $(document).ready(function() {
         $(".filter").attr('style', 'display: none;');
         $(".filter .export").attr('style', 'display: none;');
     }); 
-}); 
+});
 
 setTimeout(() => {
     //app.timeline.dateevents[1820] = app.timeline.dateevents[1820].splice(0, 1);

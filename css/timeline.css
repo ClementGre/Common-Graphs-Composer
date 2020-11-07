@@ -147,6 +147,9 @@ main .panel{
 }
 .filter .export #rendercanvas canvas{
 	max-width: 100%;
+	max-height: 70vh;
+	margin: auto;
+	display: block;
 }
 .filter .export #downloadpreview, .filter .export #showpreview{
 	cursor: pointer;
@@ -180,6 +183,7 @@ main .panel{
 
 /* NAV */
 main .panel .nav{
+	min-width: 40px;
 	width: 40px;
 	overflow: scroll;
 }
