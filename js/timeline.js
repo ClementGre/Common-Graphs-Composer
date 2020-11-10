@@ -1,23 +1,3 @@
-Vue.component("app-nav", {
-    template: `<header>
-        <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
-        <nav><ul><li><a href="index.html">Home</a></li><li><a href="timeline.html">Timeline</a></li></ul></nav>
-    </header>`,
-
-    props: [],
-    methods: {
-        
-    }
-});
-
-Vue.component("app-footer", {
-    template: `<footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by Clément Grennerat</h5></footer>`,
-    props: [],
-    methods: {
-        
-    }
-});
-
 var appEventComp = {
     name: "appevent",
     template: `
@@ -156,7 +136,7 @@ var appYearComp = {
     template: `
     <div class="year" v-bind:class="'year-'+year" v-bind:style="
         'order: ' + index + ';' +
-        'width:' + getWidth(yearpx, yeardividefactor, type) + 'px;' +
+        'width:' + getWidth(yearpx, yeardividefactor, type) + 'px !important;' +
         'margin-right:' + getMarginRight(year, index, years, type, yearpx) + 'px;' +
         ((type == 1) ? 'backgroundColor: ' + settings.years.backgroundColor + '; border-right: ' + settings.years.borderWidth + 'px solid ' + settings.years.borderColor + ';' + 'height: ' + settings.years.height + 'px;' : '') + ';' +
         'z-index: ' + index + ';'">
@@ -215,7 +195,7 @@ var appSettingComp = {
                 <input v-bind:value="setting" ref="value" @input="updateValue()" type="range" v-bind:min="min" v-bind:max="max" v-bind:step="step"><input v-bind:value="stringValue" ref="stringvalue" @input="updateStringValue()" type="text" v-bind:placeholder="min + ' - ' + max">
             </td>
         </tr>`,
-    props: ["setting", "title", "section", "name", "type", "min", "max", "step", "auto"],
+    props: ["setting", "title", "section", "name", "subname", "type", "min", "max", "step", "auto"],
     computed: {
         stringValue: {
             get: function(){
@@ -230,7 +210,8 @@ var appSettingComp = {
     },
     methods: {
         editSetting(value){
-            this.$emit('edit-setting', {value: value, section: this.section, name: this.name});
+            if(this.subname != undefined) this.$emit('edit-setting', {value: value, section: this.section, name: this.name, subname: this.subname});
+            else this.$emit('edit-setting', {value: value, section: this.section, name: this.name});
         },
         updateValue(){
             this.editSetting(parseInt(this.$refs.value.value, 10));
@@ -254,26 +235,52 @@ var appSettingsComp = {
         <div class="pane settings-pane" >
             <div v-for="(section) in Object.keys(settingsdetails)">
                 <div class="content">
-                    <h3>{{settingsdetails[section].name}}</h3>
+                    <h3>{{settingsdetails[section].name}} <button @click="resetSection(section)">Reset</button></h3>
                     <table>
-                        <template v-for="(name, index) in getSectionKeys(section)" v-bind:key="index"
-                            v-if="typeof settingsdetails[section][name] == 'object' && settingsdetails[section][name].type != undefined">
+                        <template v-for="(name, index) in Object.keys(settingsdetails[section])"
+                            v-if="typeof settingsdetails[section][name] == 'object'">
                             
-                            <tr is="app-setting" v-if="settingsdetails[section][name].type == 0"
-                                v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
-                                v-bind:section="section" v-bind:name="name" v-bind:type="0"
-                                v-bind:title="settingsdetails[section][name].name"/>
+                            <template v-if="settingsdetails[section][name].type != undefined">
                             
-                            <tr is="app-setting" v-if="settingsdetails[section][name].type == 1"
-                                v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
-                                v-bind:section="section" v-bind:name="name" v-bind:type="1"
-                                v-bind:title="settingsdetails[section][name].name"
-                                v-bind:min="settingsdetails[section][name].min" v-bind:max="settingsdetails[section][name].max"
-                                v-bind:step="settingsdetails[section][name].step" v-bind:auto="settingsdetails[section][name].auto"/>
+                                <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name].type == 0"
+                                    v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
+                                    v-bind:section="section" v-bind:name="name" v-bind:type="0"
+                                    v-bind:title="settingsdetails[section][name].name"/>
+                                
+                                <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name].type == 1"
+                                    v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
+                                    v-bind:section="section" v-bind:name="name" v-bind:type="1"
+                                    v-bind:title="settingsdetails[section][name].name"
+                                    v-bind:min="settingsdetails[section][name].min" v-bind:max="settingsdetails[section][name].max"
+                                    v-bind:step="settingsdetails[section][name].step" v-bind:auto="settingsdetails[section][name].auto"/>
 
-                            <tr v-if="settingsdetails[section][name].separator"><td><hr></td><td></td></tr>
+                                <tr v-if="settingsdetails[section][name].separator"><td><hr></td><td></td></tr>
+
+                            </template>
+                            <template v-else>
+                                <tr><td><h4>{{settingsdetails[section][name].name}}</h4></td><td></td></tr>
+                                <template v-for="(subname, subindex) in Object.keys(settingsdetails[section][name])"
+                                        v-if="typeof settingsdetails[section][name][subname] == 'object' && settingsdetails[section][name][subname].type != undefined">
+                                
+                                    <tr v-bind:key="index + '.' + subindex" is="app-setting" v-if="settingsdetails[section][name][subname].type == 0"
+                                        v-bind:setting="settings[section][name][subname]" v-on:edit-setting="editSetting"
+                                        v-bind:section="section" v-bind:name="name" v-bind:subname="subname" v-bind:type="0"
+                                        v-bind:title="settingsdetails[section][name][subname].name"/>
+                                    
+                                    <tr v-bind:key="index + '.' + subindex" is="app-setting" v-if="settingsdetails[section][name][subname].type == 1"
+                                        v-bind:setting="settings[section][name][subname]" v-on:edit-setting="editSetting"
+                                        v-bind:section="section" v-bind:name="name" v-bind:subname="subname" v-bind:type="1"
+                                        v-bind:title="settingsdetails[section][name][subname].name"
+                                        v-bind:min="settingsdetails[section][name][subname].min" v-bind:max="settingsdetails[section][name][subname].max"
+                                        v-bind:step="settingsdetails[section][name][subname].step" v-bind:auto="settingsdetails[section][name][subname].auto"/>
+
+                                    <tr v-if="settingsdetails[section][name][subname].separator"><td><hr></td><td></td></tr>
+
+                                </template>
+                            </template>
 
                         </template>
+
                     </table>
                 </div>
             </div>
@@ -286,9 +293,10 @@ var appSettingsComp = {
         editSetting(data){
             this.$emit('edit-setting', data);
         },
-        getSectionKeys(section){
-            return Object.keys(this.settingsdetails[section]);
+        resetSection(section){
+            this.$emit('reset-section', section);
         }
+
     }
 }
 
@@ -350,6 +358,7 @@ var app = new Vue({
             dateEventsOccuped: [],
             yearPx: 0,
             yearDivideFactor: 1,
+            fullscreen: false
         },
         settings: {
 
@@ -443,7 +452,8 @@ var app = new Vue({
                 borderRadius: {
                     name: "Round Corner Radius",
                     type: 1, value: 5,
-                    min: 0, max: 30
+                    min: 0, max: 30,
+                    separator: true
                 },
                 title: {
                     name: "Title Text",
@@ -459,7 +469,8 @@ var app = new Vue({
                     fontWeight: {
                         name: "Font Weight",
                         type: 1, value: 700,
-                        min: 100, max: 900, step: 100
+                        min: 100, max: 900, step: 100,
+                        separator: true
                     }
                 },
                 date: {
@@ -476,7 +487,8 @@ var app = new Vue({
                     fontWeight: {
                         name: "Font Weight",
                         type: 1, value: 300,
-                        min: 100, max: 900, step: 100
+                        min: 100, max: 900, step: 100,
+                        separator: true
                     }
                 },
                 description: {
@@ -518,7 +530,16 @@ var app = new Vue({
     },
     methods: {
         editSetting: function(data){
-            this.$set(this.settings[data.section], data.name, data.value);
+            if(data.subname != undefined) this.$set(this.settings[data.section][data.name], data.subname, data.value);
+            else this.$set(this.settings[data.section], data.name, data.value);
+        },
+        resetSection: function(section){
+            this.settings[section] = this.generateSettings(this.settingsDetails[section]);
+            setTimeout(() => {
+                $.each($("main .panel .pane input[data-jscolor]"), function(index, element){
+                    element.jscolor.fromString($(element).val()); // Update for JSColor
+                });
+            }, 0);
         },
         generateSettings: function(source){
             var result = {}
@@ -714,15 +735,17 @@ window.onresize = function resize() {
 $(document).ready(function() { 
           
     var getCanvas;
-    $("button#exporttimeline").on('click', function() { 
+    $("i#export-timeline").on('click', function() {
+        $("#timeline").css("overflow", "visible");
         html2canvas($("#timeline .timelinecontent"), {
-            onrendered: function(canvas){
-                $("div#rendercanvas").html(canvas);
-                $(".filter").attr('style', 'display: block;');
-                $(".filter .export").attr('style', 'display: block;');
-                getCanvas = canvas;
-            }
-        }); 
+            
+        }).then( function(canvas){
+            $("div#rendercanvas").html(canvas);
+            $(".filter").attr('style', 'display: block;');
+            $(".filter .export").attr('style', 'display: block;');
+            getCanvas = canvas;
+            $("#timeline").css("overflow", "scroll");
+        });
     }); 
 
     $("a#downloadpreview").on('click', function() { 

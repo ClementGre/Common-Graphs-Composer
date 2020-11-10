@@ -112,3 +112,28 @@ footer{
 	padding: 5px 40px;
 	color: white;
 }
+
+/******************/
+/****** MAIN ******/
+/******************/
+
+@keyframes from-left{
+  0%{ transform: translateX(100%) skewY(20deg);}
+  100%{ transform: initial; }
+}
+@keyframes from-right{
+  0%{ transform: translateX(-100%) skewY(20deg); }
+  100%{ transform: initial; }
+}
+@keyframes from-right-linear{
+  0%{ transform: translateX(-100%) }
+  100%{ transform: initial; }
+}
+@keyframes from-left-linear{
+  0%{ transform: translateX(100%) }
+  100%{ transform: initial; }
+}
+@keyframes alpha{
+  0%{ opacity: 0; }
+  100%{ opacity: initial; }
+}
