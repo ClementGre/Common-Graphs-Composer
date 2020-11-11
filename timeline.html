@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="100% free graphics Composer. Create now a wonderful timeline !" />
     <meta name="keywords" content="timeline free graphs graphs graphique frise chronologique" />
 
@@ -18,8 +17,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
-    <script src= "https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script> 
-    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script> 
+    <script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
     <script src="js/jscolor.js"></script>
     <script>
         jscolor.presets.default = {
@@ -37,35 +36,54 @@
             <center><a id="downloadpreview">Download PNG</a><a id="showpreview" target="_blank">Show Image</a></center>
             <a id="closepreview"><i class="fas fa-times"></i></a>
         </div>
-        
+    </div>
+
+    <div class="floater disapear" id="disapear-floater">
+        <i class="fas fa-check check"></i>
+    </div>
+    <div class="floater" id="floater">
+        <i class="fas fa-spinner loader"></i>
     </div>
 
     <div id="app">
-        <app-nav>
-        </app-nav>
+        <header>
+            <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
+            <div class="project-actions">
+                <input type="text" v-model="project.name">
+                <i class="fas fa-expand" @click="renderData.fullscreen = true;"></i>
+                <i class="fas fa-download" id="export-timeline"></i>
+                <i class="fas fa-trash-alt"></i>
+                <i class="far fa-plus-square"></i>
+                <i class="far fa-folder-open"></i>
+            </div>
+            <nav><ul><li><a href="index.html">Home</a></li><li><a href="timeline.html">Timeline</a></li></ul></nav>
+        </header>
 
         <main>
-            <div class="timeline" id="timeline" >
+            <div v-bind:class="'timeline ' + (renderData.fullscreen ? 'fullscreen' : '')" id="timeline" >
+                <div class="fullscreen-bar" v-bind:style="'display:' + (renderData.fullscreen ? 'block' : 'none') + ';'">
+                    <i class="fas fa-arrow-left" @click="renderData.fullscreen = false;"></i><h3>{{project.name}}</h3>
+                </div>
                 <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
                     <div class="events" id="events" v-bind:style="'padding-right: ' + settings.events.width + 'px; margin-right: -' + settings.events.width + 'px;'">
                         <app-year v-for="(year, index) in sortedTimeline.dateyears"
-                                v-bind:key="index" v-bind:year="year" v-bind:index="index" v-bind:years="sortedTimeline.dateyears" v-bind:events="sortedTimeline.dateyearsevents[year]"
+                                v-bind:key="year" v-bind:year="year" v-bind:index="index" v-bind:years="sortedTimeline.dateyears" v-bind:events="sortedTimeline.dateyearsevents[year]"
                                 v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
-                                v-bind:type="0">
+                                v-bind:type="0" v-bind:ui="ui" v-on:select-event="selectEvent">
                         </app-year>
                     </div>
                     <div class="time">
                         <app-year v-for="(year, index) in sortedTimeline.lineyears"
-                                v-bind:key="index" v-bind:year="year" v-bind:index="index"
+                                v-bind:key="year" v-bind:year="year" v-bind:index="index"
                                 v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
                                 v-bind:type="1">
                         </app-year>
                     </div>
                     <div class="periods">
                         <app-year v-for="(year, index) in sortedTimeline.periodyears" 
-                                v-bind:key="index" v-bind:year="year" v-bind:index="index"  v-bind:years="sortedTimeline.periodyears" v-bind:events="sortedTimeline.periodyearsevents[year]"
+                                v-bind:key="year" v-bind:year="year" v-bind:index="index"  v-bind:years="sortedTimeline.periodyears" v-bind:events="sortedTimeline.periodyearsevents[year]"
                                 v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
-                                v-bind:type="2">
+                                v-bind:type="2" v-bind:ui="ui" v-on:select-period="selectPeriod">
                         </app-year>
                     </div>
                 </div>
@@ -79,23 +97,49 @@
                 <div class="pane event-pane" v-show="ui.currentTab == 'event'">
                     <div class="global">
                         <div class="content">
-                            timeline.dateevents[1820][0].title : <input v-model="timeline.dateevents[1820][0].title" type="text"/>
+                            <template v-if="ui.selectedType != undefined && ui.selectedYear != undefined && ui.selectedIndex != undefined">
+                                <h3>Title</h3><br>
+                                <input v-model="timeline.dateevents[ui.selectedYear][ui.selectedIndex].title" type="text" placeholder="Event Title" />
+                                <h3>Date</h3><br>
+                                <input v-model="selectedEventDate" type="text" placeholder="Write the date in any format" />
+                                <h3>{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}</h3>
+                                <br>
+                                <input v-model="selectedEventEndDate" type="text" placeholder="Write the end date in any format" />
+                                <h3 v-if="ui.selectedType == 1">
+                                    {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
+                                </h3>
+                                <h3 v-else>
+                                    --/--/----
+                                </h3>
+                                
+                            </template>
+                            <template v-else>
+                                <h3>Select an event to edit it</h3>
+                            </template>
                         </div>
                     </div>
-                    
-                    
-                    <button id="exporttimeline">Export</button>
+                    <div class="debug">
+                        <div class="content">
+                            {{ui}}
+                        </div>
+                    </div>
                 </div>
 
-                <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails" v-show="ui.currentTab == 'settings'" v-on:edit-setting="editSetting"></app-settings>
+                <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails" v-show="ui.currentTab == 'settings'" 
+                    v-on:edit-setting="editSetting"
+                    v-on:reset-section="resetSection"
+                    v-on:load-default-section="loadDefaultSection"
+                    v-on:set-default-section="setDefaultSection"></app-settings>
 
             </div>
         </main>
 
-        <app-footer>
-        </app-footer>
+        <footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by Clément Grennerat</h5></footer>
     </div>
 </body>
-
-<script src="js/timeline.js"></script>
+<script src="js/timeline/constants.js"></script>
+<script src="js/timeline/utils.js"></script>
+<script src="js/timeline/uiComponents.js"></script>
+<script src="js/timeline/timelineComponents.js"></script>
+<script src="js/timeline/timeline.js"></script>
 </html>
