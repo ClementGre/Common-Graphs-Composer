@@ -121,8 +121,8 @@ main .timeline .events .year{
 	overflow: visible;
 }
 main .timeline .events .year .event{
-	margin 0;
 	display: block;
+	box-sizing: border-box;
 }
 main .timeline .events .year .space{
 	
@@ -305,12 +305,14 @@ main .panel .pane table td ~ td{
 	float: right;
 	margin-left: 10px;
 }
-main .panel .pane table td ~ td input{
-	width: 210px;
+main .panel .pane input{
 	height: 25px;
 	border: none;
 	border-radius: 3px;
 	background-color: white;
+}
+main .panel .pane table td ~ td input{
+	width: 210px;
 	vertical-align: middle;
 	margin: 2px;
 }
@@ -331,9 +333,10 @@ main .panel .pane button {
 	background-color: white;
 	margin: 0 auto;
 	font-size: 15px;
-	margin-left: 10px;
-	float: right;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	transition: all .3s ease-in-out;
 }
 main .panel .pane button:hover {
-  border: 1px solid #898989;
+  background-color: #ff8181;
 }

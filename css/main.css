@@ -113,6 +113,39 @@ footer{
 	color: white;
 }
 
+/**********************/
+/****** OVEFLOWS ******/
+/**********************/
+
+.floater{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	background-color: rgba(0,0,0,0.65);
+	left: 50%; top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	border-radius: 5px;
+	display: none;
+	z-index: 99999;
+}
+.floater i{
+	text-align: center;
+	line-height: 50px;
+	width: 100%;
+	color: white;
+	display: none;
+	font-size: 35px;
+}
+
+.floater.disapear{
+	animation: disapear-to-top .5s;
+}
+.floater .loader{
+	animation: rotate 2s;
+	animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
 /******************/
 /****** MAIN ******/
 /******************/
@@ -136,4 +169,17 @@ footer{
 @keyframes alpha{
   0%{ opacity: 0; }
   100%{ opacity: initial; }
+}
+@keyframes disapear-to-top{
+  0%{ transform: translateY(200%)}
+  50%{ opacity: 1;}
+  100%{ transform: translateY(-200%); opacity: 0;}
+}
+@keyframes rotate{
+  0%{ transform: rotate(0deg);}
+  65%{ transform: rotate(290deg);}
+  75%{ transform: rotate(360deg);}
+  85%{ transform: rotate(430deg);}
+  95%{ transform: rotate(650deg);}
+  100%{ transform: rotate(720deg); }
 }
