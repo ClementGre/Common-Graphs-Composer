@@ -40,8 +40,31 @@ var app = new Vue({
         orderedPeriodEvents: function (){
             this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
         },
+        selectedEventTitle: {
+            get: () => {
+                return app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].title;
+            },
+            set: (value) => {
+                app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].title = value;
+            }
+        },
+        selectedEventDescription: {
+            get: () => {
+                setTimeout(() => {
+                    var textarea = document.getElementById("event-description-field");
+                    if(textarea != undefined){ textarea.style.height = ""; textarea.style.height = textarea.scrollHeight + "px";}   
+                }, 0);
+                return app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].description;
+            },
+            set: (value) => {
+                var textarea = document.getElementById("event-description-field");
+                if(textarea != undefined){ textarea.style.height = ""; textarea.style.height = textarea.scrollHeight + "px";}
+                app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].description = value;
+            }
+        },
         selectedEventDate: {
             get: () => {
+                if(app == undefined || !(app.ui.selectedType != undefined && app.ui.selectedYear != undefined && app.ui.selectedIndex != undefined)) return "";
                 if(app.ui.selectedType == 1){
                     return app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].date
                 }else{
@@ -49,6 +72,7 @@ var app = new Vue({
                 }
             },
             set: (value) => {
+                if(app == undefined || !(app.ui.selectedType != undefined && app.ui.selectedYear != undefined && app.ui.selectedIndex != undefined)) return;
                 var dateData = parseDate(value);
 
                 if(app.ui.selectedType == 1){
@@ -73,12 +97,14 @@ var app = new Vue({
         },
         selectedEventEndDate: {
             get: () => {
+                if(app == undefined || !(app.ui.selectedType != undefined && app.ui.selectedYear != undefined && app.ui.selectedIndex != undefined)) return "";
                 if(app.ui.selectedType == 1){
                     return app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].date
                 }
-                return "-";
+                return "";
             },
             set: (value) => {
+                if(app == undefined || !(app.ui.selectedType != undefined && app.ui.selectedYear != undefined && app.ui.selectedIndex != undefined)) return;
                 var dateData = parseDate(value);
                 if(app.ui.selectedType == 1){
 

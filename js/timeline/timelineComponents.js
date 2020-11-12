@@ -25,7 +25,8 @@ window.appEventComp = {
                 'font-weight :' + settings.events.date.fontWeight + ';'">{{event.date}}</h4>
             <p class="description" v-bind:style="'color :' + settings.events.description.color + ';' + 
                 'font-size :' + settings.events.description.fontSize + 'px;' + 
-                'font-weight :' + settings.events.description.fontWeight + ';'">{{event.description}}</p>
+                'font-weight :' + settings.events.description.fontWeight + ';' +
+                'white-space: pre-line;'">{{event.description}}</p>
         </div>`,
     props: ["index", "event", "yearindex", "yearpx", "marginright", "settings", "years", "ui"],
     methods: {

@@ -95,27 +95,55 @@
                     <p v-bind:class="ui.currentTab == 'settings' ? 'selected' : ''" v-on:click="ui.currentTab = 'settings'">Settings</p>
                 </div>
                 <div class="pane event-pane" v-show="ui.currentTab == 'event'">
-                    <div class="global">
+                    <div class="pane-filter" v-if="!(ui.selectedType != undefined && ui.selectedYear != undefined && ui.selectedIndex != undefined)"><h3>Select an event to edit it</h3></div>
+                    <div class="title">
                         <div class="content">
-                            <template v-if="ui.selectedType != undefined && ui.selectedYear != undefined && ui.selectedIndex != undefined">
-                                <h3>Title</h3><br>
-                                <input v-model="timeline.dateevents[ui.selectedYear][ui.selectedIndex].title" type="text" placeholder="Event Title" />
-                                <h3>Date</h3><br>
-                                <input v-model="selectedEventDate" type="text" placeholder="Write the date in any format" />
-                                <h3>{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}</h3>
-                                <br>
-                                <input v-model="selectedEventEndDate" type="text" placeholder="Write the end date in any format" />
-                                <h3 v-if="ui.selectedType == 1">
-                                    {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
-                                </h3>
-                                <h3 v-else>
-                                    --/--/----
-                                </h3>
-                                
-                            </template>
-                            <template v-else>
-                                <h3>Select an event to edit it</h3>
-                            </template>
+                            <table>
+                                <tr>
+                                    <td>Title</td>
+                                    <td>
+                                        <input v-if="ui.selectedIndex != undefined" v-model="selectedEventTitle" type="text" placeholder="Event Title" style="width: 310px;" maxlength="100"/>
+                                        <input v-else style="width: 310px;" placeholder="Event Title">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td text-align="right">
+                                        <input v-if="ui.selectedIndex != undefined" v-model="selectedEventDate" type="text" placeholder="Write the date in any format" maxlength="100"/>
+                                        <input v-else placeholder="Write the date in any format">
+                                    </td>
+                                    <td v-if="ui.selectedIndex != undefined" class="date-summary">
+                                        {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
+                                    </td>
+                                    <td v-else class="date-summary">--/--/----</td>
+                                </tr>
+                                <tr>
+                                    <td>EndDate</td>
+                                    <td>
+                                        <input v-if="ui.selectedIndex != undefined"  v-model="selectedEventEndDate" type="text" placeholder="This turned it into a period"  maxlength="100"/>
+                                        <input v-else placeholder="This turned it into a period">
+                                    </td>
+                                    <td v-if="ui.selectedType == 1 && ui.selectedIndex != undefined" class="date-summary">
+                                        {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
+                                    </td>
+                                    <td v-else class="date-summary">--/--/----</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="debug">
+                        <div class="content">
+                            <table>
+                                <tr>
+                                    <td>Description</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <textarea v-if="ui.selectedIndex != undefined" v-model="selectedEventDescription" type="text" placeholder="Write the date in any format" maxlength="500" id="event-description-field" placeholder="Description of the event (optional)"></textarea>
+                                        <textarea v-else placeholder="Description of the event (optional)"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                     <div class="debug">

@@ -23,7 +23,7 @@ window.constants = {
           {date: "3 Juin 1830", day: 3, month: 6, title: "Les trois glorieuses", description: "Des journalistes se révoltent dans Paris car Charles X a supprimé la liberté d'expression -> révolution, Louis Phillipe au pouvoir."},
       ],
       1838: [
-          {date: "3 Juin 1830", day: 3, month: 6, title: "Les trois glorieuses"},
+          {date: "3 Juin 1830", day: 3, month: 6, title: "Les trois glorieuses", description: ""},
       ],
       1820: [
           {date: "1820", day: 1, month: 1, title: "Révolte Espagnole", description: "Petite desctription qui permet de décrire l'évènement, comme son nom l'indique... de plus, il se passa des choses"},
