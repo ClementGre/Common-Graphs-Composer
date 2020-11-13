@@ -8,7 +8,7 @@ window.appEventComp = {
             'border-radius: ' + settings.events.borderRadius + 'px;' +
             'backgroundColor: ' + settings.events.backgroundColor + ';' +
             'width: ' + settings.events.width + 'px;' + 
-            (isSelected(ui, index, years[yearindex]) ? ('box-shadow:inset 0px 0px 0px 2px #81b3ff;' ): '')"
+            (isSelected(ui, event.index, years[yearindex]) ? ('box-shadow:inset 0px 0px 0px 2px #81b3ff;' ): '')"
             @click="selectEvent(years[yearindex], index)">
 
             <div style="position: relative; width: 0; height: 0; display: block;">
@@ -31,7 +31,7 @@ window.appEventComp = {
     props: ["index", "event", "yearindex", "yearpx", "marginright", "settings", "years", "ui"],
     methods: {
         isSelected: function(ui, index, year) {
-            return ui.selectedType === 0 && ui.selectedYear === year && ui.selectedSortedIndex === index;
+            return ui.fullScreen == false && ui.selectedType === 0 && ui.selectedYear === year && ui.selectedIndex === index;
         },
         getshiftpx: function() {
             this.shiftPx = this.yearpx / 12.0 * (this.event.month-1);

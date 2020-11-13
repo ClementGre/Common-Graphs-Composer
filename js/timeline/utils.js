@@ -53,7 +53,6 @@ window.parseMonth = function parseMonth(month){
     var ch34 = month.substr(2, 2);
     var ch3 = month.charAt(2);
     var ch4 = month.charAt(3);
-
     switch(ch1){
         case 'F': // February
             return 2;
@@ -86,28 +85,30 @@ window.parseMonth = function parseMonth(month){
     return undefined;
 }
 window.parseDate = function parseDate(date){
-    var args = date.split(/[ &@]/);
+    var args = date.split(/[^a-zA-Z0-9]/);
     var month = undefined;
     var day = undefined;
     var year = undefined;
     args.forEach((arg, i) => {
         var intArg = parseInt(arg, 10);
-        console.log(arg + " - " + intArg)
-        console.log(intArg)
-        if(parseInt(arg, 10) == NaN){
-            console.log("UNDEFINED")
-            console.log(parseMonth(arg))
+        console.log(arg)
+        if(isNaN(intArg) && month == undefined){
             month = parseMonth(arg);
-        }else{
-            if(day == undefined && intArg <= 31 && intArg >= 1){
+        }
+    });
+    args.forEach((arg, i) => {
+        var intArg = parseInt(arg, 10);
+        if(!isNaN(intArg)){
+            if(month == undefined && intArg <= 12 && intArg >= 1){
+                month = intArg;
+            }else if(day == undefined && intArg <= 31 && intArg >= 1){
                 day = intArg;
             }else if(year == undefined && intArg <= 9999 && intArg >= 0){
-
                 year = intArg;
-            }else if(month == undefined && intArg <= 12 && intArg >= 1){
-                month = intArg;
             }
         }
     });
+    if(month == undefined) month = 1;
+    if(day == undefined) day = 1;
     return {month: month, day: day, year: year};
 }

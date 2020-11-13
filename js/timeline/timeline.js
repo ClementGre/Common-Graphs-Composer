@@ -19,7 +19,8 @@ var app = new Vue({
             dateEventsOccuped: [],
             yearPx: 0,
             yearDivideFactor: 1,
-            fullscreen: false
+            
+            sectedYearTarget: undefined
         },
         settings: {},
         settingsDetails: constants.settingsDetails,
@@ -27,10 +28,11 @@ var app = new Vue({
             name: "unnamed timeline"
         },
         ui: {
-            currentTab: "event",
+            currentTab: read_cookie('timeline-ui-lasttab') == undefined ? "settings" : read_cookie('timeline-ui-lasttab'),
             selectedType: 0,
             selectedYear: undefined,
-            selectedIndex: undefined
+            selectedIndex: undefined,
+            fullScreen: false
         }
     },
     computed: {
@@ -46,13 +48,16 @@ var app = new Vue({
             },
             set: (value) => {
                 app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].title = value;
+                setTimeout(() => {
+                    app.sortTimeline();
+                }, 0);
             }
         },
         selectedEventDescription: {
             get: () => {
                 setTimeout(() => {
                     var textarea = document.getElementById("event-description-field");
-                    if(textarea != undefined){ textarea.style.height = ""; textarea.style.height = textarea.scrollHeight + "px";}   
+                    if(textarea != undefined){ textarea.style.height = ""; textarea.style.height = textarea.scrollHeight + "px";} 
                 }, 0);
                 return app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].description;
             },
@@ -60,6 +65,9 @@ var app = new Vue({
                 var textarea = document.getElementById("event-description-field");
                 if(textarea != undefined){ textarea.style.height = ""; textarea.style.height = textarea.scrollHeight + "px";}
                 app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].description = value;
+                setTimeout(() => {
+                    app.sortTimeline();
+                }, 0);
             }
         },
         selectedEventDate: {
@@ -76,7 +84,7 @@ var app = new Vue({
                 var dateData = parseDate(value);
 
                 if(app.ui.selectedType == 1){
-                    //if(dateData.day != undefined) this.timeline.periodevents[ui.selectedYear][ui.selectedIndex].date
+                    // if(dateData.day != undefined) this.timeline.periodevents[ui.selectedYear][ui.selectedIndex].date
                 }else{
                     app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].date = value;
                     console.log(dateData)
@@ -84,11 +92,10 @@ var app = new Vue({
                     if(dateData.day != undefined) app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].day = dateData.day;
                     if(dateData.year != undefined){
                         if(dateData.year != app.ui.selectedYear){
-                            app.switchSelectedEventYear(dateData.year);
+                            app.updateEventYear(dateData.year);
                         }
                     }
                     app.sortTimeline();
-                    app.ui.selectedSortedIndex = app.findSortedIndexByIndex();
                     setTimeout(() => {
                         app.sortTimeline();
                     }, 0);
@@ -115,6 +122,18 @@ var app = new Vue({
         },
     },
     methods: {
+        updateEventYear(target){
+            this.renderData.sectedYearTarget = target;
+            setTimeout(() => {
+                if(this.renderData.sectedYearTarget == target){
+                    this.switchSelectedEventYear(target);
+                    app.sortTimeline();
+                    setTimeout(() => {
+                        app.sortTimeline();
+                    }, 0);
+                }
+            }, 1000);
+        },
         switchSelectedEventYear(target){
             if(this.ui.selectedType == 1){
 
@@ -134,34 +153,22 @@ var app = new Vue({
                 this.sortTimeline();
                 this.ui.selectedYear = target;
                 this.ui.selectedIndex = this.timeline.dateevents[target].length -1;
-                this.ui.selectedSortedIndex = this.findSortedIndexByIndex();
 
                 // updateVueJs
                 Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
                 Vue.set(this.timeline.dateevents, target, this.timeline.dateevents[target]);
                 
+                setTimeout(() => {
+                    this.sortTimeline();
+                }, 0);
             }
         },
         selectEvent(year, index){
             var eventData = this.sortedTimeline.dateyearsevents[year][index];
-            this.timeline.dateevents[year].forEach((event, i) => {
-                if(eventData.name === event.name && eventData.date === event.date && eventData.description === event.description){
-                    this.$set(this.ui, "selectedType", 0);
-                    this.$set(this.ui, "selectedYear", year);
-                    this.$set(this.ui, "selectedIndex", i);
-                    this.$set(this.ui, "selectedSortedIndex", index);
-                }
-            });
-        },
-        findSortedIndexByIndex(){
-            var eventData = this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex];
-            var response = 0;
-            this.sortedTimeline.dateyearsevents[this.ui.selectedYear].forEach((event, i) => {
-                if(eventData.name === event.name && eventData.date === event.date && eventData.description === event.description){
-                    response = i; return;
-                }
-            });
-            return response
+            this.$set(this.ui, "selectedType", 0);
+            this.$set(this.ui, "selectedYear", year);
+            this.$set(this.ui, "selectedIndex", eventData.index);
+            this.$set(this.ui, "currentTab", "event");
         },
         selectPeriod(year, index){
             this.ui.selectedType = 1;
@@ -304,7 +311,14 @@ var app = new Vue({
                 if(this.timeline.dateevents[year] != undefined || year == lastYear){
                     dateyears.push(year);
                     dateyearsevents[year] = [];
-                    var orderedEvents = _.orderBy(this.timeline.dateevents[year], ['month', 'day'], ['desc', 'desc']);
+                    if(this.timeline.dateevents[year] != undefined){
+                        var orderedEvents = _.orderBy(this.timeline.dateevents[year].map((event, index) => {
+                            event.index = index; return event;
+                        }), ['month', 'day'], ['desc', 'desc']);
+                    }else{
+                        var orderedEvents = _.orderBy(this.timeline.dateevents[year], ['month', 'day'], ['desc', 'desc']);
+                    }
+                    
                     for(let i in orderedEvents){
                         dateyearsevents[year].push(orderedEvents[i]);
                     }
@@ -312,7 +326,14 @@ var app = new Vue({
                 if(this.timeline.periodevents[year] != undefined || year == lastYear){
                     periodyears.push(year);
                     periodyearsevents[year] = [];
-                    var orderedEvents = _.orderBy(this.timeline.periodevents[year], ['startmonth', 'startday'], ['desc', 'desc']);
+                    if(this.timeline.periodevents[year]){
+                        var orderedEvents = _.orderBy(this.timeline.periodevents[year].map((event, index) => {
+                            event.index = index; return event;
+                        }), ['startmonth', 'startday'], ['desc', 'desc']);
+                    }else{
+                        var orderedEvents = _.orderBy(this.timeline.periodevents[year], ['startmonth', 'startday'], ['desc', 'desc']);
+                    }
+                    
                     for(let i in orderedEvents){
                         periodyearsevents[year].push(orderedEvents[i]);
                     }
@@ -373,6 +394,11 @@ var app = new Vue({
                     this.sortTimeline();
                 }, 0);
             }
+        },
+        'ui.currentTab': {
+            handler: function (val, oldVal) {
+                bake_cookie('timeline-ui-lasttab', val);
+            }
         }
     },
     components: {
@@ -392,6 +418,9 @@ $(document).ready(function() {
           
     var getCanvas;
     $("i#export-timeline").on('click', function() {
+        app.ui.selectedYear = undefined;
+        app.ui.selectedIndex = undefined;
+        app.ui.selectedIndex = undefined;
         $("#timeline").css("overflow", "visible");
         displayLoader();
         html2canvas($("#timeline .timelinecontent"), {
@@ -431,6 +460,9 @@ $(document).ready(function() {
 setTimeout(() => {
     app.sortTimeline();
 }, 0);
+setTimeout(() => {
+    app.sortTimeline();
+}, 1000);
 setTimeout(() => {
     //app.timeline.dateevents[1820] = app.timeline.dateevents[1820].splice(0, 1);
     //Vue.set(app.timeline.dateevents, 1814, []);

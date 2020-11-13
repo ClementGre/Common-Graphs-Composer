@@ -29,6 +29,7 @@ header .project-actions i{
 	font-size: 18px;
 	transition: all .3s ease-in-out;
 	display: inline-block;
+	cursor: pointer;
 }
 header .project-actions i:hover{
 	color: #ff4545;
@@ -46,6 +47,7 @@ main .timeline{
 	padding: 0;
 	box-sizing: content-box;
 }
+/* FULL SCREEN MODE */
 main .timeline.fullscreen{
 	position: absolute;
 	top: 0;
@@ -62,6 +64,10 @@ main .timeline .fullscreen-bar{
 	background-color: rgba(0, 0, 0, 0.8);
 	position: fixed;
 	z-index: 99999;
+	justify-content: space-between;
+}
+main .timeline .fullscreen-bar > div{
+	margin: 0 20px;
 }
 main .timeline .fullscreen-bar i{
 	line-height: 42px;
@@ -79,7 +85,7 @@ main .timeline .fullscreen-bar h3{
 	color: white;
 	display: inline-block;
 }
-
+/* GLOBAL TIMELINE */
 main .timelinecontent{
 	display: block;
 	margin: 0;
@@ -251,7 +257,6 @@ main .panel{
 main .panel .nav{
 	min-width: 40px;
 	width: 40px;
-	overflow-y: scroll;
 }
 main .panel .nav p{
 	box-sizing: border-box;
@@ -280,7 +285,7 @@ main .panel .pane{
 	height: 100%;
 	width: 100%;
 	white-space: nowrap;
-	overflow-x: scroll;
+	overflow-x: auto;
 	position: relative;
 }
 main .panel .pane h3{
@@ -289,9 +294,9 @@ main .panel .pane h3{
 main .panel .pane > div{
 	display: inline-block;
 	vertical-align: top;
-	padding-right: 10px;
 	height: 100%;
-	overflow-y: scroll;
+	margin-right: 10px;
+	overflow-y: auto;
 }
 main .panel .pane .content{
 	box-sizing: border-box;
@@ -321,6 +326,15 @@ main .panel .pane textarea{
 	width: 386px;
 	height: 100%;
 	resize: none;
+}
+main .panel .pane i{
+	color: #3b3b3b;
+	font-size: 20px;
+	cursor: pointer;
+	transition: all .3s ease-in-out;
+}
+main .panel .pane i:hover{
+	color: #ff4545;
 }
 main .panel .pane table td ~ td input{
 	width: 210px;
@@ -371,4 +385,23 @@ main .panel .pane .pane-filter h3{
 	padding: 10px;
 	background-color: rgba(0,0,0,0.6);
 	color: white;
+}
+main .panel .pane .action-buttons td{
+	width: 0px;
+}
+main .panel .pane .action-buttons td ~ td{
+	text-align: center;
+	width: 210px;
+}
+main .panel .pane .action-buttons i{
+	font-size: 22px;
+	padding: 10px;
+}
+main .panel .pane .pane-filter i{
+	color: white;
+	padding-top: 10px;
+	font-size: 20px;
+}
+main .panel .pane .pane-filter i:hover{
+	color: #ff4545;
 }

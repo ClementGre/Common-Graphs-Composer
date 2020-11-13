@@ -21,6 +21,10 @@ h4{
 	font-family: Lato;
 	font-weight: 400;
 }
+i{
+	font-size: 18px;
+	font-family: Lato;
+}
 h5, footer a{
 	font-size: 14px;
 	font-family: Lato;
@@ -30,6 +34,11 @@ p, a{
 	font-size: 18px;
 	font-family: Lato;
 	font-weight: 300;
+}
+span{
+	font-size: 18px;
+	font-family: Lato;
+	font-weight: 400;
 }
 header{
 	height: 50px;
@@ -112,7 +121,14 @@ footer{
 	padding: 5px 40px;
 	color: white;
 }
-
+footer a{
+	color: #81b3ff;
+	text-decoration: none;
+}
+footer a:hover{
+	color: #81b3ff;
+	text-decoration: underline;
+}
 /**********************/
 /****** OVEFLOWS ******/
 /**********************/

@@ -10,7 +10,7 @@
     <link rel="icon" href="" />
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;200;300;400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/timeline.css" />
@@ -50,7 +50,7 @@
             <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
             <div class="project-actions">
                 <input type="text" v-model="project.name">
-                <i class="fas fa-expand" @click="renderData.fullscreen = true;"></i>
+                <i class="fas fa-expand" @click="sortTimeline(); ui.fullScreen = true;"></i>
                 <i class="fas fa-download" id="export-timeline"></i>
                 <i class="fas fa-trash-alt"></i>
                 <i class="far fa-plus-square"></i>
@@ -60,9 +60,10 @@
         </header>
 
         <main>
-            <div v-bind:class="'timeline ' + (renderData.fullscreen ? 'fullscreen' : '')" id="timeline" >
-                <div class="fullscreen-bar" v-bind:style="'display:' + (renderData.fullscreen ? 'block' : 'none') + ';'">
-                    <i class="fas fa-arrow-left" @click="renderData.fullscreen = false;"></i><h3>{{project.name}}</h3>
+            <div v-bind:class="'timeline ' + (ui.fullScreen ? 'fullscreen' : '')" id="timeline" >
+                <div class="fullscreen-bar" v-bind:style="'display:' + (ui.fullScreen ? 'flex' : 'none') + ';'">
+                    <div><i class="fas fa-arrow-left" @click="ui.fullScreen = false;"></i><h3>{{project.name}}</h3></div>
+                    <div><i class="fas fa-download" id="export-timeline"></i></div>
                 </div>
                 <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
                     <div class="events" id="events" v-bind:style="'padding-right: ' + settings.events.width + 'px; margin-right: -' + settings.events.width + 'px;'">
@@ -95,7 +96,15 @@
                     <p v-bind:class="ui.currentTab == 'settings' ? 'selected' : ''" v-on:click="ui.currentTab = 'settings'">Settings</p>
                 </div>
                 <div class="pane event-pane" v-show="ui.currentTab == 'event'">
-                    <div class="pane-filter" v-if="!(ui.selectedType != undefined && ui.selectedYear != undefined && ui.selectedIndex != undefined)"><h3>Select an event to edit it</h3></div>
+                    <div class="pane-filter" v-if="!(ui.selectedType != undefined && ui.selectedYear != undefined && ui.selectedIndex != undefined)">
+                        <div>
+                            <h3>
+                                Select an event to edit it
+                                <br>
+                                <i class="far fa-plus-square"><span> Create one</span></i>
+                            </h3>
+                        </div>
+                    </div>
                     <div class="title">
                         <div class="content">
                             <table>
@@ -113,7 +122,7 @@
                                         <input v-else placeholder="Write the date in any format">
                                     </td>
                                     <td v-if="ui.selectedIndex != undefined" class="date-summary">
-                                        {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
+                                        {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{ui.selectedYear}}
                                     </td>
                                     <td v-else class="date-summary">--/--/----</td>
                                 </tr>
@@ -127,6 +136,14 @@
                                         {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
                                     </td>
                                     <td v-else class="date-summary">--/--/----</td>
+                                </tr>
+                                <tr class="action-buttons">
+                                    <td></td>
+                                    <td style="float: center;">
+                                        <i class="far fa-plus-square"></i>
+                                        <i class="far fa-clone"></i>
+                                        <i class="fas fa-trash-alt"></i>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -146,11 +163,6 @@
                             </table>
                         </div>
                     </div>
-                    <div class="debug">
-                        <div class="content">
-                            {{ui}}
-                        </div>
-                    </div>
                 </div>
 
                 <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails" v-show="ui.currentTab == 'settings'" 
@@ -162,7 +174,7 @@
             </div>
         </main>
 
-        <footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by Clément Grennerat</h5></footer>
+        <footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by <a href="https://github.com/ClementGre" target="_blank">Clément Grennerat</a></h5></footer>
     </div>
 </body>
 <script src="js/timeline/constants.js"></script>
