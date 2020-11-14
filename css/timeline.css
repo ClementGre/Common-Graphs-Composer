@@ -40,7 +40,7 @@ header .project-actions i:hover{
 /*****************************/
 
 main .timeline{
-	overflow: scroll;
+	overflow: auto;
 	display: block;
 	background-color: white;
 	margin: 0;
@@ -297,12 +297,14 @@ main .panel .pane > div{
 	height: 100%;
 	margin-right: 10px;
 	overflow-y: auto;
+	overflow-x: hidden;
 }
 main .panel .pane .content{
 	box-sizing: border-box;
 	background-color: #e5e5e5;
 	border-radius: 1px;
 	padding: 10px;
+	padding-right: 20px;
 	min-height: 100%;
 }
 main .panel .pane table td{
@@ -347,7 +349,7 @@ main .panel .pane table td ~ td.double input{
 }
 main .panel .pane table td ~ td.double input ~ input{
 	margin-left: 5px;
-	width: 60px;
+	width: 58px;
 }
 main .panel .pane table hr {
     margin: 4px 0;
