@@ -1,4 +1,9 @@
 // from https://stackoverflow.com/questions/11344531/pure-javascript-store-object-in-cookie
+// timeline-ui-lasttab               : "event"/"settings"
+// timeline-settings-[SECTION]       : { Section JSON }
+// timeline-timelines                : [timelines names list]
+// timeline-timeline-[TIMELINE NAME] : { Timeline JSON}
+// timeline-lasttimeline             : last opened timeline name
 window.bake_cookie = function bake_cookie(name, value) {
   var cookie = [name, '=', JSON.stringify(value), '; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 31 Dec 9999 23:59:59 GMT; '].join('');
   document.cookie = cookie;

@@ -101,7 +101,7 @@
                             <h3>
                                 Select an event to edit it
                                 <br>
-                                <i class="far fa-plus-square"><span> Create one</span></i>
+                                <i class="far fa-plus-square" v-on:click="createEvent"><span> Create one</span></i>
                             </h3>
                         </div>
                     </div>
@@ -140,9 +140,9 @@
                                 <tr class="action-buttons">
                                     <td></td>
                                     <td style="float: center;">
-                                        <i class="far fa-plus-square"></i>
-                                        <i class="far fa-clone"></i>
-                                        <i class="fas fa-trash-alt"></i>
+                                        <i class="far fa-plus-square" v-on:click="createEvent"></i>
+                                        <i class="far fa-clone" v-on:click="duplicateSelectedEvent"></i>
+                                        <i class="fas fa-trash-alt" v-on:click="deleteSelectedEvent"></i>
                                     </td>
                                 </tr>
                             </table>
@@ -156,7 +156,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <textarea v-if="ui.selectedIndex != undefined" v-model="selectedEventDescription" type="text" placeholder="Write the date in any format" maxlength="500" id="event-description-field" placeholder="Description of the event (optional)"></textarea>
+                                        <textarea v-if="ui.selectedIndex != undefined" v-model="selectedEventDescription" type="text" placeholder="Description of the event (optional)" maxlength="500" id="event-description-field" placeholder="Description of the event (optional)"></textarea>
                                         <textarea v-else placeholder="Description of the event (optional)"></textarea>
                                     </td>
                                 </tr>

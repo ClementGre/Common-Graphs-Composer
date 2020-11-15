@@ -50,6 +50,9 @@ var app = new Vue({
                 app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].title = value;
                 setTimeout(() => {
                     app.sortTimeline();
+                    setTimeout(() => {
+                        app.sortTimeline();
+                    }, 0);
                 }, 0);
             }
         },
@@ -67,6 +70,9 @@ var app = new Vue({
                 app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex].description = value;
                 setTimeout(() => {
                     app.sortTimeline();
+                    setTimeout(() => {
+                        app.sortTimeline();
+                    }, 0);
                 }, 0);
             }
         },
@@ -98,6 +104,9 @@ var app = new Vue({
                     app.sortTimeline();
                     setTimeout(() => {
                         app.sortTimeline();
+                        setTimeout(() => {
+                            app.sortTimeline();
+                        }, 0);
                     }, 0);
                 }
             }
@@ -122,6 +131,49 @@ var app = new Vue({
         },
     },
     methods: {
+        createEvent(){
+            if(this.ui.selectedYear != undefined && this.ui.selectedIndex != undefined){
+                console.log(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex])
+                var selectedData = JSON.parse(JSON.stringify(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex]));
+                selectedData.title = ""; selectedData.description = "";
+                this.timeline.dateevents[this.ui.selectedYear].push(selectedData);
+                this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
+            }else{
+                var year = this.sortedTimeline.lineyears[Math.round(this.sortedTimeline.lineyears.length/2)];
+                if(this.timeline.dateevents[year] == undefined) Vue.set(this.timeline.dateevents, year, []);
+                this.timeline.dateevents[year].push({date: "" + year, day: 1, month: 1, title: "", description: ""});
+                this.ui.selectedIndex = this.timeline.dateevents[year].length -1;
+                this.ui.selectedYear = year; this.ui.selectedType == 0;
+            }
+            
+            this.sortTimeline();
+            Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
+            setTimeout(() => {
+                this.sortTimeline();
+            }, 0);
+        },
+        deleteSelectedEvent(){
+            this.timeline.dateevents[this.ui.selectedYear].splice(this.ui.selectedIndex, 1);
+            if(this.timeline.dateevents[this.ui.selectedYear].length == 0){
+                delete this.timeline.dateevents[this.ui.selectedYear]
+            }
+            Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
+            this.ui.selectedYear = undefined;
+            this.ui.selectedIndex = undefined;
+            this.ui.selectedType = undefined;
+            setTimeout(() => {
+                this.sortTimeline();
+            }, 0);
+        },
+        duplicateSelectedEvent(){
+            this.timeline.dateevents[this.ui.selectedYear].push(JSON.parse(JSON.stringify(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex])));
+            this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
+            this.sortTimeline();
+            Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
+            setTimeout(() => {
+                this.sortTimeline();
+            }, 0);
+        },
         updateEventYear(target){
             this.renderData.sectedYearTarget = target;
             setTimeout(() => {
@@ -155,11 +207,13 @@ var app = new Vue({
                 this.ui.selectedIndex = this.timeline.dateevents[target].length -1;
 
                 // updateVueJs
-                Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
                 Vue.set(this.timeline.dateevents, target, this.timeline.dateevents[target]);
                 
                 setTimeout(() => {
-                    this.sortTimeline();
+                    app.sortTimeline();
+                    setTimeout(() => {
+                        app.sortTimeline();
+                    }, 0);
                 }, 0);
             }
         },
@@ -252,18 +306,20 @@ var app = new Vue({
             
         },
         getFirstAndLastYears: function(){
+            console.log(Object.keys(this.timeline.dateevents).map(Number));
             var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
             var orderedPeriodEventsYears = _.sortBy(Object.keys(this.timeline.periodevents).map(Number));
-            var firstYear = orderedDateEventsYears[0] < orderedPeriodEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodEventsYears[0];
-            var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodEventsYears[orderedPeriodEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
-            if(firstYear == undefined) firstYear = lastYear;
-            if(lastYear == undefined){
-                if(firstYear == undefined){
-                    lastYear = 0;
-                    firstYear = 0;
-                }else{
-                    lastYear = firstYear;
-                }
+            if(orderedDateEventsYears.length == 0 && orderedPeriodEventsYears.length == 0){
+                return {firstYear: 1900, lastYear: 1930}
+            }else if(orderedDateEventsYears.length == 0){
+                var firstYear = orderedPeriodEventsYears[0];
+                var lastYear = orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
+            }else if(orderedPeriodEventsYears.length == 0){
+                var firstYear = orderedDateEventsYears[0];
+                var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1];
+            }else{
+                var firstYear = orderedDateEventsYears[0] < orderedPeriodEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodEventsYears[0];
+                var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodEventsYears[orderedPeriodEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
             }
             return {firstYear: firstYear, lastYear: lastYear};
             

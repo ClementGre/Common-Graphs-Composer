@@ -120,6 +120,8 @@ main .timeline .time .year .title{
 
 main .timeline .events{
 	overflow: hidden;
+	padding-left: 10px;
+	margin-left: -10px;
 }
 main .timeline .events .year{
 	flex-direction: column-reverse;
@@ -387,6 +389,7 @@ main .panel .pane .pane-filter h3{
 	padding: 10px;
 	background-color: rgba(0,0,0,0.6);
 	color: white;
+	text-align: center;
 }
 main .panel .pane .action-buttons td{
 	width: 0px;
