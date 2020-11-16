@@ -6,7 +6,7 @@ var app = new Vue({
         user: "Clement",
         timeline: {
             periodevents: constants.defaultPeriodEvents,
-            dateevents: constants.defaultDateEvents
+            dateevents: constants.defaultDateEvents,
         },
         sortedTimeline: {
             dateyears: [],
@@ -24,15 +24,16 @@ var app = new Vue({
         },
         settings: {},
         settingsDetails: constants.settingsDetails,
-        project: {
-            name: "unnamed timeline"
-        },
         ui: {
+            timelineName: "unknown",
             currentTab: read_cookie('timeline-ui-lasttab') == undefined ? "settings" : read_cookie('timeline-ui-lasttab'),
             selectedType: 0,
             selectedYear: undefined,
             selectedIndex: undefined,
-            fullScreen: false
+            fullScreen: false,
+            timelinesMenu: false,
+            timelinesMenuX: 0,
+            timelines: read_cookie('timeline-timelines') == undefined ? [] : read_cookie('timeline-timelines')
         }
     },
     computed: {
@@ -41,6 +42,14 @@ var app = new Vue({
         },
         orderedPeriodEvents: function (){
             this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
+        },
+        timelineName: {
+            get: () => {
+                return this.ui.timelineName;
+            },
+            set: (value) => {
+                app.renameTimeline(value);
+            }
         },
         selectedEventTitle: {
             get: () => {
@@ -133,7 +142,6 @@ var app = new Vue({
     methods: {
         createEvent(){
             if(this.ui.selectedYear != undefined && this.ui.selectedIndex != undefined){
-                console.log(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex])
                 var selectedData = JSON.parse(JSON.stringify(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex]));
                 selectedData.title = ""; selectedData.description = "";
                 this.timeline.dateevents[this.ui.selectedYear].push(selectedData);
@@ -143,7 +151,7 @@ var app = new Vue({
                 if(this.timeline.dateevents[year] == undefined) Vue.set(this.timeline.dateevents, year, []);
                 this.timeline.dateevents[year].push({date: "" + year, day: 1, month: 1, title: "", description: ""});
                 this.ui.selectedIndex = this.timeline.dateevents[year].length -1;
-                this.ui.selectedYear = year; this.ui.selectedType == 0;
+                this.ui.selectedYear = year; this.ui.selectedType = 0;
             }
             
             this.sortTimeline();
@@ -155,9 +163,8 @@ var app = new Vue({
         deleteSelectedEvent(){
             this.timeline.dateevents[this.ui.selectedYear].splice(this.ui.selectedIndex, 1);
             if(this.timeline.dateevents[this.ui.selectedYear].length == 0){
-                delete this.timeline.dateevents[this.ui.selectedYear]
+                delete this.timeline.dateevents[this.ui.selectedYear+""];
             }
-            Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
             this.ui.selectedYear = undefined;
             this.ui.selectedIndex = undefined;
             this.ui.selectedType = undefined;
@@ -306,7 +313,6 @@ var app = new Vue({
             
         },
         getFirstAndLastYears: function(){
-            console.log(Object.keys(this.timeline.dateevents).map(Number));
             var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
             var orderedPeriodEventsYears = _.sortBy(Object.keys(this.timeline.periodevents).map(Number));
             if(orderedDateEventsYears.length == 0 && orderedPeriodEventsYears.length == 0){
@@ -417,6 +423,66 @@ var app = new Vue({
             }
             return parseInt(this.settings.global.timelineWidth, 10);
             
+        },
+
+        clickToShowTimelinesMenu(event){
+            var x = event.pageX < window.innerWidth-200 ? event.pageX : window.innerWidth-300;
+            this.showTimelinesMenu(x);
+        },
+        showTimelinesMenu(x){
+            this.updateTimelines();
+            this.ui.timelinesMenu = true;
+            this.ui.timelinesMenuX = x;
+        },
+        updateTimelines(){
+            this.ui.timelines = read_cookie('timeline-timelines') == undefined ? [] : read_cookie('timeline-timelines');
+        },
+        loadTimeline(name){
+            this.saveTimeline();
+            var data = read_cookie('timeline-timeline-' + name);
+            this.ui.timelineName = name;
+            this.timeline = data.timeline;
+            this.settings = data.settings;
+        },
+        deleteTimeline(name){
+            if(name == undefined){
+                name = this.ui.timelineName;
+                this.timeline.dateevents = {};
+                this.timeline.periodevents = {};
+            }
+            this.updateTimelines();
+            delete this.ui.timelines[name];
+            delete_cookie('timeline-timeline-' + name);
+            this.saveTimelines();
+        },
+        createTimeline(){
+            this.updateTimelines();
+            var count = 1;
+            var name = "unnamed timeline";
+            while(this.ui.timelines[name] != undefined){
+                name = "unnamed timeline (" + count + ")";
+            }
+            this.ui.timelines.push(name);
+            this.saveTimelines();
+        },
+        saveTimelines(){
+            bake_cookie('timeline-timelines', this.ui.timelines);
+        },
+        saveTimeline(){
+            var data = {
+                timeline: this.timeline,
+                settings: this.settings
+            };
+            bake_cookie('timeline-timeline-' + this.ui.timelineName, data);
+            if(findElementIndex(this.ui.timelines, this.ui.timelineName) == undefined){
+                this.ui.timelines.push(this.ui.timelineName);
+                this.saveTimelines();
+            }
+        },
+        renameTimeline(oldName, newName){
+            this.deleteTimeline(oldName)
+            this.ui.timelineName = newName;
+            this.saveTimeline();
         }
     },
     watch: {
@@ -426,6 +492,7 @@ var app = new Vue({
             handler: function (val, oldVal) {
                 if(this.settings.global == undefined) this.settings = this.generateSettings(this.settingsDetails); 
                 this.sortTimeline();
+                this.saveTimeline();
             }
         },
         sortedTimeline: {
@@ -446,6 +513,7 @@ var app = new Vue({
             deep: true,
             handler: function (val, oldVal) {
                 this.updateYearPx();
+                this.saveTimeline();
                 setTimeout(() => {
                     this.sortTimeline();
                 }, 0);
@@ -454,6 +522,11 @@ var app = new Vue({
         'ui.currentTab': {
             handler: function (val, oldVal) {
                 bake_cookie('timeline-ui-lasttab', val);
+            }
+        },
+        'ui.timelineName': {
+            handler: function (val, oldVal) {
+                this.renameTimeline(oldVal, val);
             }
         }
     },
@@ -494,7 +567,7 @@ $(document).ready(function() {
     $("a#downloadpreview").on('click', function() { 
         var imgageData = getCanvas.toDataURL("image/png"); 
         var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
-        $("a#downloadpreview").attr("download", app.project.name + ".png").attr("href", newData);
+        $("a#downloadpreview").attr("download", app.ui.timelineName + ".png").attr("href", newData);
         $(".filter").attr('style', 'display: none;');
         $(".filter .export").attr('style', 'display: none;');
     }); 

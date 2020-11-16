@@ -117,3 +117,11 @@ window.parseDate = function parseDate(date){
     if(day == undefined) day = 1;
     return {month: month, day: day, year: year};
 }
+
+// ARRAY/OBJ UTILS
+window.findElementIndex = function findElementIndex(arr, name){
+  for (var i = 0 ; i < arr.length ; i++)
+    if(arr[i] == name)
+      return i;
+  return undefined;
+}

@@ -46,15 +46,26 @@
     </div>
 
     <div id="app">
+        <div id="js-overlay" class="overlay" v-if="ui.timelinesMenu" @click="ui.timelinesMenu = false;">
+            <div id="js-contextmenu" class="contextmenu" v-bind:style="'left: ' + ui.timelinesMenuX + 'px;'">
+                <p v-for="name in ui.timelines" @click="loadTimeline(name)">
+                    <i class="fas fa-trash-alt" @click="deleteTimeline(name)"></i> {{name}}
+                </p>
+                <h4 v-if="ui.timelines.length == 0">
+                    You have no timeline
+                </h4>
+            </div>
+        </div>
+        
         <header>
             <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
             <div class="project-actions">
-                <input type="text" v-model="project.name">
+                <input type="text" v-model="ui.timelineName">
                 <i class="fas fa-expand" @click="sortTimeline(); ui.fullScreen = true;"></i>
                 <i class="fas fa-download" id="export-timeline"></i>
-                <i class="fas fa-trash-alt"></i>
-                <i class="far fa-plus-square"></i>
-                <i class="far fa-folder-open"></i>
+                <i class="fas fa-trash-alt" @click="deleteTimeline()"></i>
+                <i class="far fa-plus-square" @click="createTimeline()"></i>
+                <i class="far fa-folder-open" @click="clickToShowTimelinesMenu"></i>
             </div>
             <nav><ul><li><a href="index.html">Home</a></li><li><a href="timeline.html">Timeline</a></li></ul></nav>
         </header>
@@ -62,7 +73,7 @@
         <main>
             <div v-bind:class="'timeline ' + (ui.fullScreen ? 'fullscreen' : '')" id="timeline" >
                 <div class="fullscreen-bar" v-bind:style="'display:' + (ui.fullScreen ? 'flex' : 'none') + ';'">
-                    <div><i class="fas fa-arrow-left" @click="ui.fullScreen = false;"></i><h3>{{project.name}}</h3></div>
+                    <div><i class="fas fa-arrow-left" @click="ui.fullScreen = false;"></i><h3>{{ui.timelineName}}</h3></div>
                     <div><i class="fas fa-download" id="export-timeline"></i></div>
                 </div>
                 <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
