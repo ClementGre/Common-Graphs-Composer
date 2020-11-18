@@ -49,7 +49,7 @@
         <div id="js-overlay" class="overlay" v-if="ui.timelinesMenu" @click="ui.timelinesMenu = false;">
             <div id="js-contextmenu" class="contextmenu" v-bind:style="'left: ' + ui.timelinesMenuX + 'px;'">
                 <p v-for="name in ui.timelines" @click="loadTimeline(name)">
-                    <i class="fas fa-trash-alt" @click="deleteTimeline(name)"></i> {{name}}
+                    <i class="fas fa-trash-alt" @click.stop="deleteTimeline(name)"></i> {{name}}
                 </p>
                 <h4 v-if="ui.timelines.length == 0">
                     You have no timeline
@@ -60,8 +60,10 @@
         <header>
             <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
             <div class="project-actions">
-                <input type="text" v-model="ui.timelineName">
+                <input type="text" v-model="timelineName" id="timeline-name" pattern="[^()/><\][\\\x22,;|]+">
                 <i class="fas fa-expand" @click="sortTimeline(); ui.fullScreen = true;"></i>
+                <i class="fas fa-expand-arrows-alt" @click="fireFullScreen()"
+                    :style="this.browserFullScreen ? '{color: #ff4545;}:hover{color: white;}' : ''"></i>
                 <i class="fas fa-download" id="export-timeline"></i>
                 <i class="fas fa-trash-alt" @click="deleteTimeline()"></i>
                 <i class="far fa-plus-square" @click="createTimeline()"></i>
@@ -73,8 +75,15 @@
         <main>
             <div v-bind:class="'timeline ' + (ui.fullScreen ? 'fullscreen' : '')" id="timeline" >
                 <div class="fullscreen-bar" v-bind:style="'display:' + (ui.fullScreen ? 'flex' : 'none') + ';'">
-                    <div><i class="fas fa-arrow-left" @click="ui.fullScreen = false;"></i><h3>{{ui.timelineName}}</h3></div>
-                    <div><i class="fas fa-download" id="export-timeline"></i></div>
+                    <div>
+                        <i class="fas fa-arrow-left" @click="ui.fullScreen = false;"></i>
+                        <h3>{{ui.timelineName}}</h3>
+                    </div>
+                    <div>
+                        <i class="fas fa-expand-arrows-alt" @click="fireFullScreen()"
+                            :style="this.browserFullScreen ? '{color: #ff4545;} :hover{color: white;}' : ''"></i>
+                        <i class="fas fa-download" id="export-timeline"></i>
+                    </div>
                 </div>
                 <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
                     <div class="events" id="events" v-bind:style="'padding-right: ' + settings.events.width + 'px; margin-right: -' + settings.events.width + 'px;'">

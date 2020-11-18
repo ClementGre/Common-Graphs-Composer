@@ -1,3 +1,13 @@
+// Cookies clearer
+var cookies = document.cookie.split(";");
+if(false){
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 1 Jan 1970 23:59:59 GMT; ";
+    }
+}
 
 var app = new Vue({
     el: "#app",
@@ -25,12 +35,13 @@ var app = new Vue({
         settings: {},
         settingsDetails: constants.settingsDetails,
         ui: {
-            timelineName: "unknown",
+            timelineName: "unnamed timeline",
             currentTab: read_cookie('timeline-ui-lasttab') == undefined ? "settings" : read_cookie('timeline-ui-lasttab'),
             selectedType: 0,
             selectedYear: undefined,
             selectedIndex: undefined,
             fullScreen: false,
+            browserFullScreen: false,
             timelinesMenu: false,
             timelinesMenuX: 0,
             timelines: read_cookie('timeline-timelines') == undefined ? [] : read_cookie('timeline-timelines')
@@ -44,11 +55,26 @@ var app = new Vue({
             this.timeline.periodevents = _.orderBy(this.timeline.periodevents, 'year');
         },
         timelineName: {
-            get: () => {
+            get: function(){
                 return this.ui.timelineName;
             },
-            set: (value) => {
-                app.renameTimeline(value);
+            set: function(originValue){
+                var value = originValue.replace(/[^A-Za-z0-9à-ü ._^%$#!~@-]/g, "");
+                if(originValue !== value){
+                    $('#timeline-name').val(value);
+                }
+                value = $.trim(value);
+                if(value === "" || findElementIndex(this.ui.timelines, value) != undefined){
+                    setTimeout(() => {
+                        if($.trim($('#timeline-name').val()) === value){
+                            $('#timeline-name').val(this.ui.timelineName);
+                        }
+                    }, 1000);    
+                    return;
+                }
+                var oldValue = this.ui.timelineName;
+                this.ui.timelineName = value;
+                this.renameTimeline(oldValue, value);
             }
         },
         selectedEventTitle: {
@@ -258,6 +284,12 @@ var app = new Vue({
                 });
             }, 0);
         },
+        loadDefaultSettings: function(){
+            this.loadDefaultSection('global');
+            this.loadDefaultSection('years');
+            this.loadDefaultSection('events');
+            this.loadDefaultSection('periods');
+        },
         setDefaultSection: function(section){
             bake_cookie('timeline-settings-' + section, this.settings[section]);
             displayCheckFloater();
@@ -424,7 +456,7 @@ var app = new Vue({
             return parseInt(this.settings.global.timelineWidth, 10);
             
         },
-
+        // TIMELINES SAVE / DELETE / RENAME
         clickToShowTimelinesMenu(event){
             var x = event.pageX < window.innerWidth-200 ? event.pageX : window.innerWidth-300;
             this.showTimelinesMenu(x);
@@ -438,32 +470,55 @@ var app = new Vue({
             this.ui.timelines = read_cookie('timeline-timelines') == undefined ? [] : read_cookie('timeline-timelines');
         },
         loadTimeline(name){
+            this.$set(this.ui, "selectedType", undefined);
+            this.$set(this.ui, "selectedYear", undefined);
+            this.$set(this.ui, "selectedIndex", undefined);
             this.saveTimeline();
-            var data = read_cookie('timeline-timeline-' + name);
+            var data = read_cookie('timeline-timeline-' +  btoa(name));
             this.ui.timelineName = name;
-            this.timeline = data.timeline;
-            this.settings = data.settings;
-        },
-        deleteTimeline(name){
-            if(name == undefined){
-                name = this.ui.timelineName;
+            if(data == null){
                 this.timeline.dateevents = {};
                 this.timeline.periodevents = {};
+                this.loadDefaultSettings();
+            }else{
+                this.timeline = data.timeline;
+                this.settings = data.settings;
             }
+            bake_cookie('timeline-lastopened', name);
+        },
+        deleteTimeline(baseName){
+            var name = baseName;
             this.updateTimelines();
-            delete this.ui.timelines[name];
-            delete_cookie('timeline-timeline-' + name);
+            var index = findElementIndex(this.ui.timelines, name);
+            if(baseName == undefined || name === this.ui.timelineName){
+                baseName = undefined;
+                var name = this.ui.timelineName;
+                this.timeline.dateevents = {};
+                this.timeline.periodevents = {};
+
+                // Load another timeline
+                var index = findElementIndex(this.ui.timelines, name);
+                if(this.ui.timelines.length == 1){
+                    this.createTimeline();
+                }else{
+                    if(index-1 < 0) this.loadTimeline(this.ui.timelines[index+1]);
+                    else this.loadTimeline(this.ui.timelines[index-1]);
+                }
+            }
+            this.ui.timelines.splice(index, 1);
+            delete_cookie('timeline-timeline-' + btoa(name));
             this.saveTimelines();
         },
         createTimeline(){
             this.updateTimelines();
             var count = 1;
             var name = "unnamed timeline";
-            while(this.ui.timelines[name] != undefined){
-                name = "unnamed timeline (" + count + ")";
+            while(findElementIndex(this.ui.timelines, name) != undefined){
+                name = "unnamed timeline (" + count + ")"; count++;
             }
             this.ui.timelines.push(name);
             this.saveTimelines();
+            this.loadTimeline(name);
         },
         saveTimelines(){
             bake_cookie('timeline-timelines', this.ui.timelines);
@@ -473,33 +528,39 @@ var app = new Vue({
                 timeline: this.timeline,
                 settings: this.settings
             };
-            bake_cookie('timeline-timeline-' + this.ui.timelineName, data);
+            bake_cookie('timeline-timeline-' + btoa(this.ui.timelineName), data);
             if(findElementIndex(this.ui.timelines, this.ui.timelineName) == undefined){
                 this.ui.timelines.push(this.ui.timelineName);
                 this.saveTimelines();
             }
         },
         renameTimeline(oldName, newName){
-            this.deleteTimeline(oldName)
+            this.deleteTimeline(oldName);
             this.ui.timelineName = newName;
             this.saveTimeline();
+            bake_cookie('timeline-lastopened', newName);
+        },
+        fireFullScreen(){
+            if(!this.browserFullScreen || !isFullScreen()){
+                openFullscreen(document.getElementById('body'));
+            }else{
+                exitFullscreen();
+            }
+            this.browserFullScreen = !this.browserFullScreen;
+            
         }
     },
     watch: {
         timeline: {
             deep: true,
-            immediate: true,
             handler: function (val, oldVal) {
-                if(this.settings.global == undefined) this.settings = this.generateSettings(this.settingsDetails); 
                 this.sortTimeline();
                 this.saveTimeline();
             }
         },
         sortedTimeline: {
             deep: true,
-            immediate: true,
             handler: function (val, oldVal) {
-                //console.log('sorted timeline data changed');
                 this.updateYearPx();
             }
         },
@@ -519,14 +580,18 @@ var app = new Vue({
                 }, 0);
             }
         },
+        // START WATCHER (immediate)
         'ui.currentTab': {
+            immediate: true,
             handler: function (val, oldVal) {
+                if(this.settings.global == undefined) this.settings = this.generateSettings(this.settingsDetails);
+
                 bake_cookie('timeline-ui-lasttab', val);
             }
         },
-        'ui.timelineName': {
-            handler: function (val, oldVal) {
-                this.renameTimeline(oldVal, val);
+        'ui.fullScreen': {
+            handler: function(val, oldVal){
+                //if(val) openFullscreen(document.getElementById("body"));
             }
         }
     },
@@ -586,6 +651,22 @@ $(document).ready(function() {
         $(".filter .export").attr('style', 'display: none;');
     }); 
 });
+
+// RESTORE LAST
+if(read_cookie('timeline-lastopened') != undefined){
+    app.ui.timelineName = read_cookie('timeline-lastopened');
+    var data = read_cookie('timeline-timeline-' + btoa(app.ui.timelineName));
+    if(data != undefined){
+        app.timeline = data.timeline;
+        app.settings = data.settings;
+    }else{
+        app.loadDefaultSettings();
+    }
+}else{
+    app.createTimeline();
+}
+// SORT
+app.sortTimeline();
 setTimeout(() => {
     app.sortTimeline();
 }, 0);
@@ -603,4 +684,7 @@ setTimeout(() => {
 setTimeout(() => {
     //app.timeline.dateevents[1820].push({date: "12 Avril 1820", day: 12, month: 4, title: "test", description: ":aucune:"});
 }, 5000);
+
+
+
 

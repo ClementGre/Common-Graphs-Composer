@@ -5,16 +5,17 @@
 // timeline-timeline-[TIMELINE NAME] : { Timeline JSON}
 // timeline-lasttimeline             : last opened timeline name
 window.bake_cookie = function bake_cookie(name, value) {
-  var cookie = [name, '=', JSON.stringify(value), '; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 31 Dec 9999 23:59:59 GMT; '].join('');
-  document.cookie = cookie;
+    var cookie = [name, '=', JSON.stringify(value), '; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 31 Dec 9999 23:59:59 GMT; '].join('');
+    document.cookie = cookie;
 }
 window.read_cookie = function read_cookie(name) {
- var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
- result && (result = JSON.parse(result[1]));
- return result;
+    var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
+    result && (result = JSON.parse(result[1]));
+    return result;
 }
 window.delete_cookie = function delete_cookie(name) {
-  document.cookie = [name, '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; domain=.', window.location.host.toString()].join('');
+    var cookie = [name, '=deleted; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 1 Jan 1970 23:59:59 GMT; '].join('');
+    document.cookie = cookie;
 }
 //
 
@@ -120,8 +121,53 @@ window.parseDate = function parseDate(date){
 
 // ARRAY/OBJ UTILS
 window.findElementIndex = function findElementIndex(arr, name){
-  for (var i = 0 ; i < arr.length ; i++)
+    for(var i = 0 ; i < arr.length ; i++){
     if(arr[i] == name)
-      return i;
-  return undefined;
+        return i;
+    }
+    return undefined;
 }
+// VISUAL
+window.openFullscreen = function openFullscreen(elem){
+    if(elem.requestFullscreen){
+        elem.requestFullscreen();
+    }else if(elem.webkitRequestFullscreen){ /* Safari */
+        elem.webkitRequestFullscreen();
+    }else if(elem.msRequestFullscreen){ /* IE11 */
+        elem.msRequestFullscreen();
+    }
+}
+window.exitFullscreen = function exitFullscreen(){
+    if(document.exitFullscreen){
+        document.exitFullscreen();
+    }else if(document.webkitExitFullscreen){ /* Safari */
+        document.webkitExitFullscreen();
+    }else if(document.msExitFullscreen){ /* IE11 */
+        document.msExitFullscreen();
+    }
+}
+// from https://stackoverflow.com/questions/2863351/checking-if-browser-is-in-fullscreen
+window.isFullScreen = function isFullScreen(){
+    return false;
+  if($.browser.opera){
+
+    var fs=$('<div class="fullscreen"></div>');
+    $('body').append(fs);
+
+    var check=fs.css('display')=='block';
+    fs.remove();
+
+    return check;
+  }
+
+  var st=screen.top || screen.availTop || window.screenTop;
+
+  if(st!=window.screenY){
+
+    return false;
+  }
+
+  return window.fullScreen==true || screen.height-document.documentElement.clientHeight<=30;
+}
+
+

@@ -20,6 +20,7 @@ header .project-actions input{
 	border: none;
 	border-radius: 3px;
 	display: inline-block;
+	line-height: normal !important;
 	animation: from-left-linear .5s;
 }
 header .project-actions i{
@@ -290,6 +291,9 @@ main .panel .pane{
 	white-space: nowrap;
 	overflow-x: auto;
 	position: relative;
+}
+_::-webkit-full-page-media, _:future, :root main .panel{
+  	height: 200px;
 }
 main .panel .pane h3{
   margin-bottom: 8px;

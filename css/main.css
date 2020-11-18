@@ -162,9 +162,9 @@ footer a:hover{
   animation-timing-function: linear;
 }
 
-/******************/
-/****** MAIN ******/
-/******************/
+/************************/
+/****** ANIMATIONS ******/
+/************************/
 
 @keyframes from-left{
   0%{ transform: translateX(100%) skewY(20deg);}
