@@ -60,7 +60,7 @@
         <header>
             <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
             <div class="project-actions">
-                <input type="text" v-model="timelineName" id="timeline-name" pattern="[^()/><\][\\\x22,;|]+">
+                <input type="text" v-model="timelineName" id="timeline-name">
                 <i class="fas fa-expand" @click="sortTimeline(); ui.fullScreen = true;"></i>
                 <i class="fas fa-expand-arrows-alt" @click="fireFullScreen()"
                     :style="this.browserFullScreen ? '{color: #ff4545;}:hover{color: white;}' : ''"></i>

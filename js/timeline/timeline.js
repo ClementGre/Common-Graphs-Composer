@@ -59,7 +59,7 @@ var app = new Vue({
                 return this.ui.timelineName;
             },
             set: function(originValue){
-                var value = originValue.replace(/[^A-Za-z0-9à-ü ._^%$#!~@-]/g, "");
+                var value = originValue.replace(/[^ -ÿ]/g, "");
                 if(originValue !== value){
                     $('#timeline-name').val(value);
                 }
@@ -474,7 +474,7 @@ var app = new Vue({
             this.$set(this.ui, "selectedYear", undefined);
             this.$set(this.ui, "selectedIndex", undefined);
             this.saveTimeline();
-            var data = read_cookie('timeline-timeline-' +  btoa(name));
+            var data = read_cookie('timeline-timeline-' + encode64(name));
             this.ui.timelineName = name;
             if(data == null){
                 this.timeline.dateevents = {};
@@ -506,7 +506,7 @@ var app = new Vue({
                 }
             }
             this.ui.timelines.splice(index, 1);
-            delete_cookie('timeline-timeline-' + btoa(name));
+            delete_cookie('timeline-timeline-' + encode64(name));
             this.saveTimelines();
         },
         createTimeline(){
@@ -528,7 +528,7 @@ var app = new Vue({
                 timeline: this.timeline,
                 settings: this.settings
             };
-            bake_cookie('timeline-timeline-' + btoa(this.ui.timelineName), data);
+            bake_cookie('timeline-timeline-' + encode64(this.ui.timelineName), data);
             if(findElementIndex(this.ui.timelines, this.ui.timelineName) == undefined){
                 this.ui.timelines.push(this.ui.timelineName);
                 this.saveTimelines();
@@ -655,7 +655,7 @@ $(document).ready(function() {
 // RESTORE LAST
 if(read_cookie('timeline-lastopened') != undefined){
     app.ui.timelineName = read_cookie('timeline-lastopened');
-    var data = read_cookie('timeline-timeline-' + btoa(app.ui.timelineName));
+    var data = read_cookie('timeline-timeline-' + encode64(app.ui.timelineName));
     if(data != undefined){
         app.timeline = data.timeline;
         app.settings = data.settings;

@@ -118,6 +118,19 @@ window.parseDate = function parseDate(date){
     if(day == undefined) day = 1;
     return {month: month, day: day, year: year};
 }
+window.replaceAll = function replaceAll(text, pattern, replacement){
+  var newText = text.replace(pattern, replacement);
+  if(newText !== text){
+    return replaceAll(newText, pattern, replacement);
+  }
+  return newText;
+}
+window.encode64 = function encode64(string){
+    return replaceAll(btoa(string), "=", "-");
+}
+window.decode64 = function decode64(string){
+    return atob(replaceAll(string, "-", "="));
+}
 
 // ARRAY/OBJ UTILS
 window.findElementIndex = function findElementIndex(arr, name){
