@@ -29,7 +29,7 @@ var app = new Vue({
             dateEventsOccuped: [],
             yearPx: 0,
             yearDivideFactor: 1,
-            
+            timelineNameTarget: undefined,
             sectedYearTarget: undefined
         },
         settings: {},
@@ -59,6 +59,9 @@ var app = new Vue({
                 return this.ui.timelineName;
             },
             set: function(originValue){
+                setTimeout(() => {
+                    updateTimelineNameInputWidth()
+                }, 0);
                 var value = originValue.replace(/[^ -ÿ]/g, "");
                 if(originValue !== value){
                     $('#timeline-name').val(value);
@@ -68,12 +71,12 @@ var app = new Vue({
                     setTimeout(() => {
                         if($.trim($('#timeline-name').val()) === value){
                             $('#timeline-name').val(this.ui.timelineName);
+                            updateTimelineNameInputWidth()
                         }
                     }, 1000);    
                     return;
                 }
                 var oldValue = this.ui.timelineName;
-                this.ui.timelineName = value;
                 this.renameTimeline(oldValue, value);
             }
         },
@@ -172,8 +175,9 @@ var app = new Vue({
                 selectedData.title = ""; selectedData.description = "";
                 this.timeline.dateevents[this.ui.selectedYear].push(selectedData);
                 this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
+                this.ui.selectedType = 0;
             }else{
-                var year = this.sortedTimeline.lineyears[Math.round(this.sortedTimeline.lineyears.length/2)];
+                var year = this.sortedTimeline.lineyears[Math.round(this.sortedTimeline.lineyears.length/2)-1];
                 if(this.timeline.dateevents[year] == undefined) Vue.set(this.timeline.dateevents, year, []);
                 this.timeline.dateevents[year].push({date: "" + year, day: 1, month: 1, title: "", description: ""});
                 this.ui.selectedIndex = this.timeline.dateevents[year].length -1;
@@ -348,7 +352,7 @@ var app = new Vue({
             var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
             var orderedPeriodEventsYears = _.sortBy(Object.keys(this.timeline.periodevents).map(Number));
             if(orderedDateEventsYears.length == 0 && orderedPeriodEventsYears.length == 0){
-                return {firstYear: 1900, lastYear: 1930}
+                return {firstYear: 1900, lastYear: 1928}
             }else if(orderedDateEventsYears.length == 0){
                 var firstYear = orderedPeriodEventsYears[0];
                 var lastYear = orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
@@ -486,39 +490,52 @@ var app = new Vue({
             }
             bake_cookie('timeline-lastopened', name);
         },
-        deleteTimeline(baseName){
-            var name = baseName;
-            this.updateTimelines();
-            var index = findElementIndex(this.ui.timelines, name);
-            if(baseName == undefined || name === this.ui.timelineName){
-                baseName = undefined;
-                var name = this.ui.timelineName;
-                this.timeline.dateevents = {};
-                this.timeline.periodevents = {};
-
-                // Load another timeline
+        deleteTimeline(baseName, cancelConfirm){
+            var r = true;
+            if(cancelConfirm !== true) r = confirm("This action will delete \"" + (baseName ? baseName : this.ui.timelineName) + "\" for ever.");
+            if(r == true){
+                var name = baseName;
+                this.updateTimelines();
                 var index = findElementIndex(this.ui.timelines, name);
-                if(this.ui.timelines.length == 1){
-                    this.createTimeline();
-                }else{
-                    if(index-1 < 0) this.loadTimeline(this.ui.timelines[index+1]);
-                    else this.loadTimeline(this.ui.timelines[index-1]);
+                if(baseName == undefined || name === this.ui.timelineName){
+                    baseName = undefined;
+                    var name = this.ui.timelineName;
+                    this.timeline.dateevents = {};
+                    this.timeline.periodevents = {};
+
+                    // Load another timeline
+                    var index = findElementIndex(this.ui.timelines, name);
+                    if(this.ui.timelines.length == 1){
+                        this.createTimeline();
+                    }else{
+                        if(index-1 < 0) this.loadTimeline(this.ui.timelines[index+1]);
+                        else this.loadTimeline(this.ui.timelines[index-1]);
+                    }
                 }
+                this.ui.timelines.splice(index, 1);
+                delete_cookie('timeline-timeline-' + encode64(name));
+                this.saveTimelines();
             }
-            this.ui.timelines.splice(index, 1);
-            delete_cookie('timeline-timeline-' + encode64(name));
-            this.saveTimelines();
         },
-        createTimeline(){
+        createTimeline(baseName){
+            if(baseName == undefined) baseName = "unnamed timeline";
             this.updateTimelines();
             var count = 1;
-            var name = "unnamed timeline";
+            var name = baseName;
             while(findElementIndex(this.ui.timelines, name) != undefined){
-                name = "unnamed timeline (" + count + ")"; count++;
+                name = baseName + " (" + count + ")"; count++;
             }
             this.ui.timelines.push(name);
             this.saveTimelines();
             this.loadTimeline(name);
+        },
+        cloneTimeline(){
+            var data = read_cookie('timeline-timeline-' + encode64(this.ui.timelineName));
+            this.createTimeline(this.ui.timelineName + ' (copy)');
+            if(data != null){
+                this.timeline = data.timeline;
+                this.settings = data.settings;
+            }
         },
         saveTimelines(){
             bake_cookie('timeline-timelines', this.ui.timelines);
@@ -535,10 +552,15 @@ var app = new Vue({
             }
         },
         renameTimeline(oldName, newName){
-            this.deleteTimeline(oldName);
-            this.ui.timelineName = newName;
-            this.saveTimeline();
-            bake_cookie('timeline-lastopened', newName);
+            this.renderData.timelineNameTarget = newName;
+            setTimeout(() => {
+                if(newName === this.renderData.timelineNameTarget){
+                    this.ui.timelineName = newName;
+                    this.deleteTimeline(oldName, true);
+                    this.saveTimeline();
+                    bake_cookie('timeline-lastopened', newName);
+                }
+            }, 1000);
         },
         fireFullScreen(){
             if(!this.browserFullScreen || !isFullScreen()){
@@ -592,6 +614,13 @@ var app = new Vue({
         'ui.fullScreen': {
             handler: function(val, oldVal){
                 //if(val) openFullscreen(document.getElementById("body"));
+            }
+        },
+        'ui.timelineName': {
+            handler: function(){
+                setTimeout(() => {
+                    updateTimelineNameInputWidth()
+                }, 0)
             }
         }
     },

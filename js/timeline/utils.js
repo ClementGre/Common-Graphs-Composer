@@ -159,6 +159,13 @@ window.exitFullscreen = function exitFullscreen(){
         document.msExitFullscreen();
     }
 }
+window.updateTimelineNameInputWidth = function updateTimelineNameInputWidth(){
+    var textfield = document.getElementById("timeline-name");
+    if(textfield != undefined){
+        textfield.style.width = "";
+        textfield.style.width = ((textfield.scrollWidth+10) > 380 ? 380 : (textfield.scrollWidth+10)) + "px";
+    }
+}
 // from https://stackoverflow.com/questions/2863351/checking-if-browser-is-in-fullscreen
 window.isFullScreen = function isFullScreen(){
     return false;

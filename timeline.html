@@ -30,6 +30,7 @@
 </head>
 <body id="body">
 
+    <!-- EXPORT OVERFLOW -->
     <div class="filter">
         <div class="export">
             <div id="rendercanvas"></div><br>
@@ -37,7 +38,7 @@
             <a id="closepreview"><i class="fas fa-times"></i></a>
         </div>
     </div>
-
+    <!-- FLOATERS -->
     <div class="floater disapear" id="disapear-floater">
         <i class="fas fa-check check"></i>
     </div>
@@ -47,6 +48,7 @@
 
     <div id="app">
         <div id="js-overlay" class="overlay" v-if="ui.timelinesMenu" @click="ui.timelinesMenu = false;">
+            <!-- TIMELINES DROP MENU -->
             <div id="js-contextmenu" class="contextmenu" v-bind:style="'left: ' + ui.timelinesMenuX + 'px;'">
                 <p v-for="name in ui.timelines" @click="loadTimeline(name)">
                     <i class="fas fa-trash-alt" @click.stop="deleteTimeline(name)"></i> {{name}}
@@ -59,30 +61,33 @@
         
         <header>
             <div><img src="img/icon.png"></img><h2>Common Graphs Composer [BETA]</h2></div>
+            <!-- HEADER PROJECT ACTIONS -->
             <div class="project-actions">
-                <input type="text" v-model="timelineName" id="timeline-name">
-                <i class="fas fa-expand" @click="sortTimeline(); ui.fullScreen = true;"></i>
-                <i class="fas fa-expand-arrows-alt" @click="fireFullScreen()"
+                <input type="text" v-model="timelineName" id="timeline-name" placeholder="Timeline Name">
+                <i class="fas fa-expand-arrows-alt" title="Hide edit tools (full screen)" @click="sortTimeline(); ui.fullScreen = true;"></i>
+                <i class="fas fa-expand" title="Enter into the browser fullscreen mode" @click="fireFullScreen()"
                     :style="this.browserFullScreen ? '{color: #ff4545;}:hover{color: white;}' : ''"></i>
-                <i class="fas fa-download" id="export-timeline"></i>
-                <i class="fas fa-trash-alt" @click="deleteTimeline()"></i>
-                <i class="far fa-plus-square" @click="createTimeline()"></i>
-                <i class="far fa-folder-open" @click="clickToShowTimelinesMenu"></i>
+                <i class="fas fa-download" title="Download this timeline image or the timeline data file" id="export-timeline"></i>
+                <i class="fas fa-trash-alt" title="Delete current timeline" @click="deleteTimeline()"></i>
+                <i class="far fa-plus-square" title="Create new timeline" @click="createTimeline()"></i>
+                <i class="far fa-clone" title="Make a copy of the curent timeline" @click="cloneTimeline()"></i>
+                <i class="far fa-folder-open" title="Show saved timelines" @click="clickToShowTimelinesMenu"></i>
             </div>
             <nav><ul><li><a href="index.html">Home</a></li><li><a href="timeline.html">Timeline</a></li></ul></nav>
         </header>
 
         <main>
             <div v-bind:class="'timeline ' + (ui.fullScreen ? 'fullscreen' : '')" id="timeline" >
+                <!-- FULL SCREEN BAR -->
                 <div class="fullscreen-bar" v-bind:style="'display:' + (ui.fullScreen ? 'flex' : 'none') + ';'">
                     <div>
-                        <i class="fas fa-arrow-left" @click="ui.fullScreen = false;"></i>
+                        <i class="fas fa-arrow-left" title="Show edit tools (exit fullscreen)" @click="ui.fullScreen = false;"></i>
                         <h3>{{ui.timelineName}}</h3>
                     </div>
                     <div>
-                        <i class="fas fa-expand-arrows-alt" @click="fireFullScreen()"
+                        <i class="fas fa-expand-arrows-alt" title="Enter into the browser fullscreen mode" @click="fireFullScreen()"
                             :style="this.browserFullScreen ? '{color: #ff4545;} :hover{color: white;}' : ''"></i>
-                        <i class="fas fa-download" id="export-timeline"></i>
+                        <i class="fas fa-download" title="Download this timeline image or the timeline data file" id="export-timeline"></i>
                     </div>
                 </div>
                 <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
@@ -116,15 +121,14 @@
                     <p v-bind:class="ui.currentTab == 'settings' ? 'selected' : ''" v-on:click="ui.currentTab = 'settings'">Settings</p>
                 </div>
                 <div class="pane event-pane" v-show="ui.currentTab == 'event'">
+                    <!-- NO SELECTED OVERFLOW -->
                     <div class="pane-filter" v-if="!(ui.selectedType != undefined && ui.selectedYear != undefined && ui.selectedIndex != undefined)">
-                        <div>
-                            <h3>
-                                Select an event to edit it
-                                <br>
-                                <i class="far fa-plus-square" v-on:click="createEvent"><span> Create one</span></i>
-                            </h3>
-                        </div>
+                        <div><h3>
+                            Select an event to edit it<br>
+                            <i class="far fa-plus-square" v-on:click="createEvent"><span> Create one</span></i>
+                        </h3></div>
                     </div>
+                    <!-- PANES -->
                     <div class="title">
                         <div class="content">
                             <table>
@@ -160,9 +164,9 @@
                                 <tr class="action-buttons">
                                     <td></td>
                                     <td style="float: center;">
-                                        <i class="far fa-plus-square" v-on:click="createEvent"></i>
-                                        <i class="far fa-clone" v-on:click="duplicateSelectedEvent"></i>
-                                        <i class="fas fa-trash-alt" v-on:click="deleteSelectedEvent"></i>
+                                        <i class="far fa-plus-square" title="Create a new event (same date of this one)" v-on:click="createEvent"></i>
+                                        <i class="far fa-clone" title="Clone this event" v-on:click="duplicateSelectedEvent"></i>
+                                        <i class="fas fa-trash-alt" title="Delete this event" v-on:click="deleteSelectedEvent"></i>
                                     </td>
                                 </tr>
                             </table>
