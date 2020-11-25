@@ -1,22 +1,28 @@
 window.constants = {
 	defaultPeriodEvents: {
-      /*1820: [
-          {startdate: "11 Janvier 1815", startday: 11, startmonth: 1,
-              enddate: "20 Septembre 1817", endday: 20, endmonth: 9, title: "Répercusions du congrès de Vienne", description: "La tension monte, certains pays cherchent à se révolter."}
+      1812: [
+          {startdate: "11 Janvier 1812", day: 11, month: 1,
+              enddate: "20 Septembre 1819", endday: 20, endmonth: 9, yearsLength: 7,
+              title: "Répercusions du congrès de Vienne", description: ""}
       ],
-      1814: [
-          {startdate: "Septembre 1814", startday: 0, startmonth: 9,
-              enddate: "Juin 1815", endday: 0, endmonth: 6,
-              title: "Congrès de viennes", description: "Remise en état de l'europe, réequilibration des puissances.\nLouis 18 au pouvoir."}
+      1811: [
+          {startdate: "Septembre 1811", day: 0, month: 9,
+              enddate: "Juin 1823", endday: 0, endmonth: 6, yearsLength: 12,
+              title: "Congrès de viennes", description: "Remise en état de l'europe et blabla des familles , réequilibration des puissances."}
       ],
-      1830: [
-          {startdate: "1 Décembre 1821", startday: 1, startmonth: 12,
-              enddate: "3 Février 1830", endday: 3, endmonth: 2, endYear: 1830,
+      1821: [
+          {startdate: "1 Décembre 1821", day: 1, month: 12,
+              enddate: "3 Février 1835", endday: 3, endmonth: 2, yearsLength: 14,
               title: "Révolte Grecque", description: "Les Grecques se révoltent pour obtenir leurs indépendance. La Sainte aliance n'intervient pas et au contraire, des pays viennent rétablir la paix. Elle obtient son indépendance en 1830."}
-      ]*/
+      ],
+      1810: [
+          {startdate: "1810", day: 1, month: 1,
+              enddate: "1812", endday: 1, endmonth: 1, yearsLength: 2,
+              title: "Petite pèriode courte pour tester", description: "Les Grecques se révoltent pour obtenir leurs indépendance."}
+      ]
   },
   defaultDateEvents: {
-      /*1830: [
+      1830: [
           {date: "3 Juin 1830", day: 3, month: 6, title: "test test test test test test test test test test test", description: "Des journalistes se révoltent dans Paris car Charles X a supprimé la liberté d'expression -> révolution, Louis Phillipe au pouvoir. De plus, Louis 16 est"},
       ],
       1834: [
@@ -36,7 +42,7 @@ window.constants = {
       ],
       1848: [
           {date: "1848", day: 31, month: 12, title: "2em révolution Française", description: ""}
-      ]*/
+      ]
       
   },
   settingsDetails: {

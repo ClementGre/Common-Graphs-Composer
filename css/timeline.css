@@ -156,26 +156,36 @@ main .timeline .events .year .event .linker{
 	display: block;
 	z-index: 100;
 }
-
 /*********************/
 /****** PERIODS ******/
 /*********************/
 
-main .timeline .periods *{
-	flex-direction: column;
-	background-color: #ecf0f1;
+main .timeline .periods{
+	overflow: hidden;
+	/*padding-left: 10px;
+	margin-left: -10px;*/
+}
+main .timeline .periods .year{
+	flex-direction: column-reverse;
+	justify-content: flex-end;
+	overflow: visible;
 }
 main .timeline .periods .year .period{
-	background-color: #e74c3c;
-	margin: 10px 0 0 0;
-	border: 1px solid black;
-}
-main .timeline .periods .year .space{
-	
+	display: block;
+	box-sizing: border-box;
 }
 main .timeline .periods .year .period *{
 	word-wrap: break-word;
 	margin: 0;
+}
+main .timeline .periods .year .period .title{
+	font-family: 'Lato'
+}
+main .timeline .periods .year .period .date{
+	font-family: 'Lato'
+}
+main .timeline .periods .year .period .description{
+	font-family: 'Source Sans Pro'
 }
 
 /*******************/

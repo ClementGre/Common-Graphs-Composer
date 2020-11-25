@@ -15,8 +15,8 @@ var app = new Vue({
     data: {
         user: "Clement",
         timeline: {
-            periodevents: constants.defaultPeriodEvents,
-            dateevents: constants.defaultDateEvents,
+            periodevents: {},
+            dateevents: {},
         },
         sortedTimeline: {
             dateyears: [],
@@ -188,6 +188,8 @@ var app = new Vue({
             Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
             setTimeout(() => {
                 this.sortTimeline();
+                if(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
+                else $('#event-date-input').focus();
             }, 0);
         },
         deleteSelectedEvent(){
@@ -207,6 +209,8 @@ var app = new Vue({
             this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
             this.sortTimeline();
             Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
+            if(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
+            else $('#event-date-input').focus();
             setTimeout(() => {
                 this.sortTimeline();
             }, 0);
@@ -260,11 +264,21 @@ var app = new Vue({
             this.$set(this.ui, "selectedYear", year);
             this.$set(this.ui, "selectedIndex", eventData.index);
             this.$set(this.ui, "currentTab", "event");
+
+            setTimeout(() => {
+                if(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
+                else $('#event-date-input').focus();
+            }, 0);
         },
         selectPeriod(year, index){
             this.ui.selectedType = 1;
             this.ui.selectedYear = year;
             this.ui.selectedIndex = index;
+
+            setTimeout(() => {
+                if(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
+                else $('#event-date-input').focus();
+            }, 0);
         },
         editSetting: function(data){
             if(data.subname != undefined) this.$set(this.settings[data.section][data.name], data.subname, data.value);
@@ -350,21 +364,42 @@ var app = new Vue({
         },
         getFirstAndLastYears: function(){
             var orderedDateEventsYears = _.sortBy(Object.keys(this.timeline.dateevents).map(Number));
-            var orderedPeriodEventsYears = _.sortBy(Object.keys(this.timeline.periodevents).map(Number));
+            var orderedPeriodEventsYears = Object.keys(this.timeline.periodevents).map(Number);
             if(orderedDateEventsYears.length == 0 && orderedPeriodEventsYears.length == 0){
                 return {firstYear: 1900, lastYear: 1928}
             }else if(orderedDateEventsYears.length == 0){
                 var firstYear = orderedPeriodEventsYears[0];
-                var lastYear = orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
+                var lastYear = this.getLastPeriodYear();
             }else if(orderedPeriodEventsYears.length == 0){
                 var firstYear = orderedDateEventsYears[0];
                 var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1];
             }else{
+                var lastPeriodYear = this.getLastPeriodYear();
                 var firstYear = orderedDateEventsYears[0] < orderedPeriodEventsYears[0] ? orderedDateEventsYears[0] : orderedPeriodEventsYears[0];
-                var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > orderedPeriodEventsYears[orderedPeriodEventsYears.length-1] ? orderedDateEventsYears[orderedDateEventsYears.length-1] : orderedPeriodEventsYears[orderedPeriodEventsYears.length-1];
+                var lastYear = orderedDateEventsYears[orderedDateEventsYears.length-1] > lastPeriodYear ? orderedDateEventsYears[orderedDateEventsYears.length-1] : lastPeriodYear;
             }
             return {firstYear: firstYear, lastYear: lastYear};
             
+        },
+        getLastPeriodYear(){
+            var higherYear = 0;
+            for(var year of Object.keys(this.timeline.periodevents)){
+                var higherLocalYear = this.getPeriodYearEnd(year);
+                if(higherLocalYear > higherYear){
+                    higherYear = higherLocalYear;
+                }
+            }
+            return higherYear;
+        },
+        getPeriodYearEnd: function(year){
+            var higherLength = 0;
+            if(this.timeline.periodevents[year] == undefined) return year;
+            this.timeline.periodevents[year].forEach((period) => {
+                if(period.yearsLength > higherLength){
+                    higherLength = period.yearsLength;
+                }
+            });
+            return parseInt(year, 10) + higherLength;
         },
         getShowedFirstAndLastYears: function(){
             var firstYear = this.sortedTimeline.lineyears[this.sortedTimeline.lineyears.length-1];
@@ -694,6 +729,7 @@ if(read_cookie('timeline-lastopened') != undefined){
 }else{
     app.createTimeline();
 }
+app.timeline.periodevents = constants.defaultPeriodEvents;
 // SORT
 app.sortTimeline();
 setTimeout(() => {

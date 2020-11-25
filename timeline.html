@@ -135,14 +135,14 @@
                                 <tr>
                                     <td>Title</td>
                                     <td>
-                                        <input v-if="ui.selectedIndex != undefined" v-model="selectedEventTitle" type="text" placeholder="Event Title" style="width: 310px;" maxlength="100"/>
+                                        <input v-if="ui.selectedIndex != undefined" v-model="selectedEventTitle" type="text" placeholder="Event Title" id="event-title-input" style="width: 310px;" maxlength="100"/>
                                         <input v-else style="width: 310px;" placeholder="Event Title">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Date</td>
                                     <td text-align="right">
-                                        <input v-if="ui.selectedIndex != undefined" v-model="selectedEventDate" type="text" placeholder="Write the date in any format" maxlength="100"/>
+                                        <input v-if="ui.selectedIndex != undefined" v-model="selectedEventDate" type="text" placeholder="Write the date in any format" maxlength="100" id="event-date-input"/>
                                         <input v-else placeholder="Write the date in any format">
                                     </td>
                                     <td v-if="ui.selectedIndex != undefined" class="date-summary">
