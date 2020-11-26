@@ -524,6 +524,11 @@ var app = new Vue({
                 this.settings = data.settings;
             }
             bake_cookie('timeline-lastopened', name);
+            setTimeout(() => {
+                $.each($("main .panel .pane input[data-jscolor]"), function(index, element){
+                    element.jscolor.fromString($(element).val()); // Update for JSColor
+                });
+            }, 0);
         },
         deleteTimeline(baseName, cancelConfirm){
             var r = true;

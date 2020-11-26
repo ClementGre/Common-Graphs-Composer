@@ -164,7 +164,7 @@ window.appPeriodComp = {
             return this.event.yearsLength*this.yearpx + this.yearpx/12.0*(this.event.endmonth-1);
         },
         getMarginTop(yearIndex, lastYearIndex, yearpx, marginRight, settings, years, index, canSkip){
-            if(years[yearIndex] == 1812) console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
+            if(years[yearIndex] == 1810) console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
 
             if(years[lastYearIndex] == undefined) return 0; // If this is the last year, we dont have any constraint
             var finalMarginRight = marginRight - this.getWidth() - this.shiftPx + yearpx; // space between end of this event and start of the next
@@ -176,15 +176,13 @@ window.appPeriodComp = {
             var eventStartHeight = 0; // length between the bottom of this event and the top of the timeline
             var eventHeight = settings.events.margin; // height of the event Box With margin bottom
             $(".timeline .periods .year-" + years[yearIndex] + " .period").each((i, item) => { // Foreach bottom events, increment the eventStartHeight
-                if(this.getEventIndex($(item)) < index){ // Loop event is at the BOTTOM of current event
+                if(this.getEventIndex($(item)) > index){ // Loop event is at the BOTTOM of current event
                     eventStartHeight += this.getEventFullHeight($(item)); // Increment eventStartHeight
                 }else if(this.getEventIndex($(item)) == index){ // Loop event is SAME as current event
                     eventHeight += $(item).height()+(2*settings.events.padding); // define eventHeight (we add 10 witch is the padding)
                 }
             });
-            if(years[yearIndex] == 1812) console.log("FINAL_MARGIN_RIGHT " + finalMarginRight);
-            if(years[yearIndex] == 1812) console.log("EVENT_HEIGHT " + eventHeight);
-            if(years[yearIndex] == 1812) console.log("EVENT_START_HEIGHT " + eventStartHeight);
+            //if(years[yearIndex] == 1810) console.log("" +);
 
             // SKIP UNDER THE LAST YEAR SECTION (next year)
             // OR
@@ -192,7 +190,6 @@ window.appPeriodComp = {
 
             // canSkip : 
             var marginBottom = 0; // Future marginBottom
-            var lastYearHeight = 0; // Height increamented bit by bit when the foreach occurs
             var skip = false; // Skip = move under the lastYear events. When skip == true, 
             $(".timeline .periods .year-" + years[lastYearIndex] + " .period").each((i, item) => { // Foreach last year event
                 if(years[yearIndex] == 1812) console.log("LOOP " + years[lastYearIndex]);
@@ -209,18 +206,38 @@ window.appPeriodComp = {
                         skip = true; return; // Set skip to true : cancel all process of the each loop since a skip will occurs
                     }
                 }
-
-                ///// ADD MARGIN TO BE ABOVE SYSTEM /////
-                lastYearHeight += this.getEventFullHeight($(item)); // Increment lastYearHeight with the event height (measure the lsstYear events height)
-                // When the height of the lastYear is higher than the event start height, this mind there is not enought space for the current event
-                // When this condition is true, all the nexts of the loop will be logicaly true too.
-                if(years[yearIndex] == 1812) console.log(lastYearHeight + " >= " + eventStartHeight);
-                if(lastYearHeight >= eventStartHeight){
-                    if(finalMarginRight < settings.events.minMargin){ // There is not enought place only if the space between the end of this event and the start of the next year is < minMargin
-                        marginBottom += this.getEventFullHeight($(item)); // Increment marginBottom with the height of the loop event.
-                    }
-                }
             });
+
+
+            if(skip == false){
+
+                var pxToCheck = this.getWidth() + this.shiftPx + settings.events.minMargin;
+
+                $(".timeline .periods .year").each((i, yearItem) => {
+                    var year = $(yearItem).attr('class').replace("year year-", "");
+
+                    if(year <= years[yearIndex] || (pxToCheck - (year-years[yearIndex])*yearpx) <= 0) return;
+                    pxToCheck -= yearpx;
+
+                    var lastYearHeight = 0;
+                    
+                    $(".timeline .periods .year-" + year + " .period").each((i, item) => {
+                        lastYearHeight += this.getEventFullHeight($(item));
+                        if(years[yearIndex] == 1810) console.log("lastYearHeight += " + this.getEventFullHeight($(item)) );
+                        if(lastYearHeight >= eventStartHeight+marginBottom){
+                            if(finalMarginRight < settings.events.minMargin){
+                                if(years[yearIndex] == 1810) console.log("add from " + year + "-" + i + " : " + eventStartHeight);
+                                if(years[yearIndex] == 1810) console.log("marginBottom now = " + (lastYearHeight - (eventStartHeight+marginBottom)));
+                                marginBottom = (lastYearHeight);
+                            }
+                        }
+                    });
+                    
+                });
+            }
+
+
+
             if(years[yearIndex] == 1812) console.log("SKIPPED " + skip + " - MARGIN TOP " + marginBottom );
             // if this is not the bottom event and marginBootom != 0, this means the last event has skipped but no this one (Only the bottom event can has margin bottom)
             // So we remove the eventStartHeight (= height of all under events) to the marginBottom
@@ -257,7 +274,7 @@ window.appPeriodComp = {
 window.appYearComp = {
     name: "appyear",
     template: `
-    <div class="year" v-bind:class="'year-'+year" v-bind:style="
+    <div v-bind:class="'year year-'+year" v-bind:style="
         'order: ' + index + ';' +
         'width:' + getWidth(yearpx, yeardividefactor, type) + 'px !important;' +
         'margin-right:' + getMarginRight(year, index, years, type, yearpx) + 'px;' +
