@@ -75,7 +75,7 @@ window.appEventComp = {
                     // The margin bottom of the last bottom event is bigger than the event height + others same year events that has maybe already skipped.
                     // (If others same year event has already skipped, we need to take them in account).
                     // We have to take in account the top margin of the event
-                    if(this.getMargin($(item), "Bottom") >= eventHeight+eventStartHeight+10){ // This event can skip -> process skiping under
+                    if(this.getMargin($(item), "Bottom") >= (eventHeight-settings.events.margin+settings.events.minMargin)+eventStartHeight+settings.events.minMargin){ // This event can skip -> process skiping under
                         skip = true; return; // Set skip to true : cancel all process of the each loop since a skip will occurs
                     }
                 }
@@ -145,7 +145,7 @@ window.appPeriodComp = {
                 'font-weight :' + settings.events.title.fontWeight + ';'">{{event.title}}</h4>
             <h4 class="date" v-bind:style="'color :' + settings.events.date.color + ';' + 
                 'font-size :' + settings.events.date.fontSize + 'px;' + 
-                'font-weight :' + settings.events.date.fontWeight + ';'">{{event.startdate}} - {{event.enddate}}</h4>
+                'font-weight :' + settings.events.date.fontWeight + ';'">{{event.date}} - {{event.enddate}}</h4>
             <p class="description" v-bind:style="'color :' + settings.events.description.color + ';' + 
                 'font-size :' + settings.events.description.fontSize + 'px;' + 
                 'font-weight :' + settings.events.description.fontWeight + ';' +
@@ -161,7 +161,7 @@ window.appPeriodComp = {
             return this.shiftPx;
         },
         getWidth: function(){
-            return this.event.yearsLength*this.yearpx + this.yearpx/12.0*(this.event.endmonth-1);
+            return this.event.yearsLength*this.yearpx - this.yearpx/12.0*(this.event.month-1) + this.yearpx/11.0*(this.event.endmonth-1);
         },
         getMarginTop(yearIndex, lastYearIndex, yearpx, marginRight, settings, years, index, canSkip){
             if(years[yearIndex] == 1810) console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
@@ -198,11 +198,11 @@ window.appPeriodComp = {
                 // i == 0 : We can decide to skip only with the bottom event : with his margin bottom.
                 // eventHeight > settings.events.margin : The event height needs to don't have the default value to measure if the free height is enough.
                 // canSkip : can be false when a skip is canceled (by re-call) when the width is too small (not enough space)
-                if(i == 0 && eventHeight > settings.events.margin && canSkip){ // This event can skip under
+                if(i == 0 && eventHeight >= settings.events.minMargin && canSkip){ // This event can skip under
                     // The margin bottom of the last bottom event is bigger than the event height + others same year events that has maybe already skipped.
                     // (If others same year event has already skipped, we need to take them in account).
                     // We have to take in account the top margin of the event
-                    if(this.getMargin($(item), "Top") >= eventHeight+eventStartHeight+10){ // This event can skip -> process skiping under
+                    if(this.getMargin($(item), "Top") >= (eventHeight-settings.events.margin+settings.events.minMargin)+eventStartHeight+settings.events.minMargin){ // This event can skip -> process skiping under
                         skip = true; return; // Set skip to true : cancel all process of the each loop since a skip will occurs
                     }
                 }
@@ -267,7 +267,7 @@ window.appPeriodComp = {
             return $(".timeline .periods .year-" + year).width() + parseInt(this.getMargin($(".timeline .periods .year-" + year), "Right"));
         },
         selectEvent(year, index){
-            this.$emit('select-event', year, index);
+            this.$emit('select-period', year, index);
         }
     }
 }
@@ -307,7 +307,7 @@ window.appYearComp = {
             v-bind:settings="settings"
             v-bind:years="years"
             v-bind:ui="ui"
-            v-on:select-event="selectEvent"></app-period>
+            v-on:select-period="selectPeriod"></app-period>
 
     </div>`,
     props: ["year", "index", "years", "events", "type", "yearpx", "yeardividefactor", "settings", "ui"],
@@ -345,6 +345,9 @@ window.appYearComp = {
         },
         selectEvent(year, index){
             this.$emit('select-event', year, index);
+        },
+        selectPeriod(year, index){
+            this.$emit('select-period', year, index);
         }
     }
 }

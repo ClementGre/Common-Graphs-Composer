@@ -146,7 +146,12 @@
                                         <input v-else placeholder="Write the date in any format">
                                     </td>
                                     <td v-if="ui.selectedIndex != undefined" class="date-summary">
-                                        {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{ui.selectedYear}}
+                                        <template v-if="ui.selectedType === 0">
+                                            {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{ui.selectedYear}}
+                                        </template>
+                                        <template v-else>
+                                            {{timeline.periodevents[ui.selectedYear][ui.selectedIndex].month}}/{{timeline.periodevents[ui.selectedYear][ui.selectedIndex].day}}/{{ui.selectedYear}}
+                                        </template>
                                     </td>
                                     <td v-else class="date-summary">--/--/----</td>
                                 </tr>
@@ -157,7 +162,7 @@
                                         <input v-else placeholder="This turned it into a period">
                                     </td>
                                     <td v-if="ui.selectedType == 1 && ui.selectedIndex != undefined" class="date-summary">
-                                        {{timeline.dateevents[ui.selectedYear][ui.selectedIndex].day}}/{{timeline.dateevents[ui.selectedYear][ui.selectedIndex].month}}/{{ui.selectedYear}}
+                                        {{timeline.periodevents[ui.selectedYear][ui.selectedIndex].endday}}/{{timeline.periodevents[ui.selectedYear][ui.selectedIndex].endmonth}}/{{ui.selectedYear+timeline.periodevents[ui.selectedYear][ui.selectedIndex].yearsLength}}
                                     </td>
                                     <td v-else class="date-summary">--/--/----</td>
                                 </tr>
@@ -165,6 +170,7 @@
                                     <td></td>
                                     <td style="float: center;">
                                         <i class="far fa-plus-square" title="Create a new event (same date of this one)" v-on:click="createEvent"></i>
+                                        <i class="far fa-calendar-plus" title="Create a new period (same date of this one)" v-on:click="createPeriod"></i>
                                         <i class="far fa-clone" title="Clone this event" v-on:click="duplicateSelectedEvent"></i>
                                         <i class="fas fa-trash-alt" title="Delete this event" v-on:click="deleteSelectedEvent"></i>
                                     </td>

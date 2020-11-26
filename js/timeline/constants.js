@@ -1,30 +1,30 @@
 window.constants = {
 	defaultPeriodEvents: {
-      // 1812: [
-      //     {startdate: "11 Janvier 1812", day: 11, month: 1,
-      //         enddate: "20 Septembre 1819", endday: 20, endmonth: 9, yearsLength: 7,
-      //         title: "Répercusions du congrès de Vienne", description: ""}
-      // ],
-      // 1811: [
-      //     {startdate: "Septembre 1811", day: 0, month: 9,
-      //         enddate: "Juin 1823", endday: 0, endmonth: 6, yearsLength: 12,
-      //         title: "Congrès de viennes", description: "Remise en état de l'europe et blabla des familles , réequilibration des puissances."}
-      // ],
-      // 1821: [
-      //     {startdate: "1 Décembre 1821", day: 1, month: 12,
-      //         enddate: "3 Février 1835", endday: 3, endmonth: 2, yearsLength: 14,
-      //         title: "Révolte Grecque", description: "Les Grecques se révoltent pour obtenir leurs indépendance. La Sainte aliance n'intervient pas et au contraire, des pays viennent rétablir la paix. Elle obtient son indépendance en 1830."}
-      // ],
-      // 1810: [
-      //     {startdate: "1810", day: 1, month: 1,
-      //         enddate: "1812", endday: 1, endmonth: 1, yearsLength: 2,
-      //         title: "Petite pèriode courte pour tester", description: "Les Grecques se révoltent pour obtenir leurs indépendance."}
-      // ],
-      // 1830: [
-      //     {startdate: "1830", day: 1, month: 1,
-      //         enddate: "1835", endday: 1, endmonth: 1, yearsLength: 5,
-      //         title: "TEST", description: ""}
-      // ]
+      1812: [
+          {date: "11 Janvier 1812", day: 11, month: 1,
+              enddate: "20 Septembre 1819", endday: 20, endmonth: 9, yearsLength: 7,
+              title: "Répercusions du congrès de Vienne", description: ""}
+      ],
+      1811: [
+          {date: "Septembre 1811", day: 0, month: 9,
+              enddate: "Juin 1823", endday: 0, endmonth: 6, yearsLength: 12,
+              title: "Congrès de viennes", description: "Remise en état de l'europe et blabla des familles , réequilibration des puissances."}
+      ],
+      1821: [
+          {date: "1 Décembre 1821", day: 1, month: 12,
+              enddate: "3 Février 1835", endday: 3, endmonth: 2, yearsLength: 14,
+              title: "Révolte Grecque", description: "Les Grecques se révoltent pour obtenir leurs indépendance. La Sainte aliance n'intervient pas et au contraire, des pays viennent rétablir la paix. Elle obtient son indépendance en 1830."}
+      ],
+      1810: [
+          {date: "1810", day: 1, month: 1,
+              enddate: "1812", endday: 1, endmonth: 1, yearsLength: 2,
+              title: "Petite pèriode courte pour tester", description: "Les Grecques se révoltent pour obtenir leurs indépendance."}
+      ],
+      1830: [
+          {date: "1830", day: 1, month: 1,
+              enddate: "1835", endday: 1, endmonth: 1, yearsLength: 5,
+              title: "TEST", description: ""}
+      ]
   },
   defaultDateEvents: {
       1830: [
