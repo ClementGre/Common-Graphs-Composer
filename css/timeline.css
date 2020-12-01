@@ -57,7 +57,7 @@ main .timeline.fullscreen{
 	width: 100%;
 	z-index: 999;
 	padding-top: 42px;
-	animation: alpha .5s;
+	animation: appear-middle-to-bottom .5s;
 }
 main .timeline .fullscreen-bar{
 	height: 42px;
@@ -108,6 +108,7 @@ main .timeline .year{
 
 main .timeline .time .year{
 	display: block;
+	animation: appear-middle-to-bottom .3s;
 }
 main .timeline .time .year .title{
 	margin: 0 0 0 10px;
@@ -123,6 +124,7 @@ main .timeline .events{
 	overflow: hidden;
 	padding-left: 10px;
 	margin-left: -10px;
+	animation: from-left-linear .3s;
 }
 main .timeline .events .year{
 	flex-direction: column-reverse;
@@ -164,6 +166,7 @@ main .timeline .periods{
 	overflow: hidden;
 	/*padding-left: 10px;
 	margin-left: -10px;*/
+	animation: from-right-linear .3s;
 }
 main .timeline .periods .year{
 	flex-direction: column-reverse;
@@ -232,7 +235,7 @@ main .panel{
 }
 .filter .export #rendercanvas canvas{
 	max-width: 100%;
-	max-height: calc(100vh - 40px - 100px);
+	max-height: calc(document.getElementById("#rendercanvas").width / document.getElementById("#rendercanvas").height * 100vh - 40px - 100px);
 	margin: auto;
 	display: block;
 }

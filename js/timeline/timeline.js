@@ -273,6 +273,9 @@ var app = new Vue({
             Vue.set(this.timeline.periodevents, this.ui.selectedYear, this.timeline.periodevents[this.ui.selectedYear]);
             setTimeout(() => {
                 this.sortTimeline();
+                setTimeout(() => {
+                    this.sortTimeline();
+                }, 0);
                 if(this.timeline.periodevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
                 else $('#event-date-input').focus();
             }, 0);
@@ -318,6 +321,7 @@ var app = new Vue({
                     Vue.set(this.timeline.periodevents, target, []);
                 }
                 // Push new element
+                this.timeline.periodevents[this.ui.selectedYear][this.ui.selectedIndex].yearsLength -= target - this.ui.selectedYear;
                 this.timeline.periodevents[target].push(this.timeline.periodevents[this.ui.selectedYear][this.ui.selectedIndex]);
                 // Remove last element
                 this.timeline.periodevents[this.ui.selectedYear].splice(this.ui.selectedIndex, 1);
@@ -443,7 +447,8 @@ var app = new Vue({
             // DivideFactor is calculated by comparing this value to the total timeline width
             var lastAndFirstYears = this.getFirstAndLastYears();
             var yearsLength = lastAndFirstYears.lastYear - lastAndFirstYears.firstYear;
-            var yearpx = (this.getTimelineWidth()-this.settings.events.width-40) / yearsLength;
+            var marginRight = parseInt(this.settings.events.width, 10) > parseInt(this.settings.periods.minWidth, 10) ? parseInt(this.settings.events.width, 10) : parseInt(this.settings.periods.minWidth, 10);
+            var yearpx = (this.getTimelineWidth()-marginRight-40) / yearsLength;
             if(yearpx === 0) yearpx = 0.001;
 
             // Width of a year in px (First year = First visible event && Last year = Last visible event)
@@ -451,7 +456,7 @@ var app = new Vue({
             // This is the final width of a year on the screen
             var showedLastAndFirstYears = this.getShowedFirstAndLastYears();
             var showedYearsLength = showedLastAndFirstYears.lastYear - showedLastAndFirstYears.firstYear;
-            var showedyearpx = (this.getTimelineWidth()-this.settings.events.width-40) / showedYearsLength;
+            var showedyearpx = (this.getTimelineWidth()-marginRight-40) / showedYearsLength;
             if(showedyearpx === 0) showedyearpx = 0.001;
             
             // calculating Year divide Factor with yearPX
@@ -799,16 +804,31 @@ $(document).ready(function() {
         app.ui.selectedIndex = undefined;
         $("#timeline").css("overflow", "visible");
         displayLoader();
-        html2canvas($("#timeline .timelinecontent"), {
-            
-        }).then( function(canvas){
-            $("div#rendercanvas").html(canvas);
-            $("#timeline").css("overflow", "scroll");
-            hideLoader();
-            $(".filter").attr('style', 'display: block;');
-            $(".filter .export").attr('style', 'display: block;');
-            getCanvas = canvas;
-        });
+        app.sortTimeline();
+        setTimeout(() => {
+            html2canvas(document.querySelector("#timeline .timelinecontent"), {
+                backgroundColor: null,
+                scale: window.devicePixelRatio*2,
+                logging: false
+            }).then(function(canvas){
+                getCanvas = canvas;
+
+                var extra_canvas = document.createElement("canvas");
+                extra_canvas.setAttribute('width', canvas.width);
+                extra_canvas.setAttribute('height', extra_canvas.width/canvas.width*canvas.height);
+                var ctx = extra_canvas.getContext('2d');
+                ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, extra_canvas.width, extra_canvas.height);
+                var img = $(document.createElement('img'));
+                img.attr('src', getCanvas.toDataURL("image/png"));
+
+                $("div#rendercanvas").html(extra_canvas);
+                $("#timeline").css("overflow", "scroll");
+                hideLoader();
+                $(".filter").attr('style', 'display: block;');
+                $(".filter .export").attr('style', 'display: block;');
+                
+            });
+        }, 0);
     }); 
 
     $("a#downloadpreview").on('click', function() { 
@@ -847,7 +867,7 @@ if(read_cookie('timeline-lastopened') != undefined){
 }else{
     app.createTimeline();
 }
-//app.timeline.periodevents = constants.defaultPeriodEvents;
+app.timeline.periodevents = constants.defaultPeriodEvents;
 // SORT
 app.sortTimeline();
 setTimeout(() => {

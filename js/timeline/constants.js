@@ -98,106 +98,197 @@ window.constants = {
         }
     },
     events: {
-        name: "Events Settings",
-        width: {
-            name: "Width",
-            type: 1, value: 200,
-            min: 50, max: 900, step: 10
-        },
-        backgroundColor: {
-            name: "Background Color",
-            type: 0, value: "rgba(170, 170, 170, 0.6)",
-            separator: true
-        },
+      name: "Events Settings",
+      width: {
+          name: "Width",
+          type: 1, value: 200,
+          min: 50, max: 900, step: 10
+      },
+      backgroundColor: {
+          name: "Background Color",
+          type: 0, value: "rgba(170, 170, 170, 0.6)",
+          separator: true
+      },
 
-        padding: {
-            name: "Padding",
-            type: 1, value: 5,
-            min: 0, max: 30
+      padding: {
+          name: "Padding",
+          type: 1, value: 5,
+          min: 0, max: 30
+      },
+      margin: {
+          name: "Margin",
+          type: 1, value: 10,
+          min: 0, max: 30
+      },
+      minMargin: {
+          name: "Minimum Margin",
+          type: 1, value: 5,
+          min: 0, max: 30,
+          separator: true
+      },
+      
+      linkerColor: {
+          name: "Linker Color",
+          type: 0, value: "rgba(170, 170, 170, 0.6)"
+      },
+      linkerWidth: {
+          name: "Linker Width",
+          type: 1, value: 1,
+          min: 0, max: 10
+      },
+      borderRadius: {
+          name: "Round Corner Radius",
+          type: 1, value: 5,
+          min: 0, max: 30,
+          separator: true
+      },
+      title: {
+        name: "Title Text",
+        color: {
+            name: "Color",
+            type: 0, value: "rgba(0, 0, 0, 1)"
         },
-        margin: {
-            name: "Margin",
-            type: 1, value: 10,
-            min: 0, max: 30
+        fontSize: {
+            name: "Font Size",
+            type: 1, value: 16,
+            min: 10, max: 30
         },
-        minMargin: {
-            name: "Minimum Margin",
-            type: 1, value: 5,
-            min: 0, max: 30,
+        fontWeight: {
+            name: "Font Weight",
+            type: 1, value: 700,
+            min: 100, max: 900, step: 100,
             separator: true
-        },
-        
-        linkerColor: {
-            name: "Linker Color",
-            type: 0, value: "rgba(170, 170, 170, 0.6)"
-        },
-        linkerWidth: {
-            name: "Linker Width",
-            type: 1, value: 1,
-            min: 0, max: 10
-        },
-        borderRadius: {
-            name: "Round Corner Radius",
-            type: 1, value: 5,
-            min: 0, max: 30,
-            separator: true
-        },
-        title: {
-            name: "Title Text",
-            color: {
-                name: "Color",
-                type: 0, value: "rgba(0, 0, 0, 1)"
-            },
-            fontSize: {
-                name: "Font Size",
-                type: 1, value: 16,
-                min: 10, max: 30
-            },
-            fontWeight: {
-                name: "Font Weight",
-                type: 1, value: 700,
-                min: 100, max: 900, step: 100,
-                separator: true
-            }
-        },
-        date: {
-            name: "Date Text",
-            color: {
-                name: "Color",
-                type: 0, value: "rgba(0, 0, 0, 1)"
-            },
-            fontSize: {
-                name: "Font Size",
-                type: 1, value: 14,
-                min: 10, max: 30
-            },
-            fontWeight: {
-                name: "Font Weight",
-                type: 1, value: 300,
-                min: 100, max: 900, step: 100,
-                separator: true
-            }
-        },
-        description: {
-            name: "Description Text",
-            color: {
-                name: "Color",
-                type: 0, value: "rgba(0, 0, 0, 1)"
-            },
-            fontSize: {
-                name: "Font Size",
-                type: 1, value: 14,
-                min: 10, max: 30
-            },
-            fontWeight: {
-                name: "Font Weight",
-                type: 1, value: 400,
-                min: 100, max: 900, step: 100
-            }
         }
+      },
+      date: {
+        name: "Date Text",
+        color: {
+            name: "Color",
+            type: 0, value: "rgba(0, 0, 0, 1)"
+        },
+        fontSize: {
+            name: "Font Size",
+            type: 1, value: 14,
+            min: 10, max: 30
+        },
+        fontWeight: {
+            name: "Font Weight",
+            type: 1, value: 300,
+            min: 100, max: 900, step: 100,
+            separator: true
+        }
+      },
+      description: {
+        name: "Description Text",
+        color: {
+            name: "Color",
+            type: 0, value: "rgba(0, 0, 0, 1)"
+        },
+        fontSize: {
+            name: "Font Size",
+            type: 1, value: 14,
+            min: 10, max: 30
+        },
+        fontWeight: {
+            name: "Font Weight",
+            type: 1, value: 400,
+            min: 100, max: 900, step: 100
+        }
+      }
     },
     periods: {
-        name: "Periods Settings",
+      name: "Periods Settings",
+      minWidth: {
+          name: "Minimum Width",
+          type: 1, value: 100,
+          min: 0, max: 500, step: 10
+      },
+      backgroundColor: {
+          name: "Background Color",
+          type: 0, value: "rgba(170, 170, 170, 0.6)"
+      },
+      overflowBackgroundColor: {
+          name: "Overflow Background Color",
+          type: 0, value: "rgba(170, 170, 170, 0.3)",
+          separator: true
+      },
+
+      padding: {
+          name: "Padding",
+          type: 1, value: 5,
+          min: 0, max: 30
+      },
+      margin: {
+          name: "Margin",
+          type: 1, value: 10,
+          min: 0, max: 30
+      },
+      minMargin: {
+          name: "Minimum Margin",
+          type: 1, value: 5,
+          min: 0, max: 30,
+          separator: true
+      },
+      
+      borderRadius: {
+          name: "Round Corner Radius",
+          type: 1, value: 5,
+          min: 0, max: 30,
+          separator: true
+      },
+      title: {
+          name: "Title Text",
+          color: {
+              name: "Color",
+              type: 0, value: "rgba(0, 0, 0, 1)"
+          },
+          fontSize: {
+              name: "Font Size",
+              type: 1, value: 16,
+              min: 10, max: 30
+          },
+          fontWeight: {
+              name: "Font Weight",
+              type: 1, value: 700,
+              min: 100, max: 900, step: 100,
+              separator: true
+          }
+      },
+      date: {
+          name: "Date Text",
+          color: {
+              name: "Color",
+              type: 0, value: "rgba(0, 0, 0, 1)"
+          },
+          fontSize: {
+              name: "Font Size",
+              type: 1, value: 14,
+              min: 10, max: 30
+          },
+          fontWeight: {
+              name: "Font Weight",
+              type: 1, value: 300,
+              min: 100, max: 900, step: 100,
+              separator: true
+          }
+      },
+      description: {
+          name: "Description Text",
+          color: {
+              name: "Color",
+              type: 0, value: "rgba(0, 0, 0, 1)"
+          },
+          fontSize: {
+              name: "Font Size",
+              type: 1, value: 14,
+              min: 10, max: 30
+          },
+          fontWeight: {
+              name: "Font Weight",
+              type: 1, value: 400,
+              min: 100, max: 900, step: 100
+          }
+      }
     }
   }
 }

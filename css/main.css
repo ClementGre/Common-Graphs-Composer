@@ -191,6 +191,10 @@ footer a:hover{
   50%{ opacity: 1;}
   100%{ transform: translateY(-200%); opacity: 0;}
 }
+@keyframes appear-middle-to-bottom{
+  0%{ transform: translateY(-25vh);}
+  100%{ transform: translateY(0%);}
+}
 @keyframes rotate{
   0%{ transform: rotate(0deg);}
   65%{ transform: rotate(290deg);}

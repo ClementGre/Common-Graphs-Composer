@@ -17,7 +17,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
-    <script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script> 
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
     <script src="js/jscolor.js"></script>
     <script>
@@ -34,7 +34,11 @@
     <div class="filter">
         <div class="export">
             <div id="rendercanvas"></div><br>
-            <center><a id="downloadpreview">Download PNG</a><a id="showpreview" target="_blank">Show Image</a></center>
+            <center>
+                <a id="downloadpreview">Download PNG</a>
+                <a id="showpreview" target="_blank">Show Image</a>
+                <a id="downloadpreview">Download JSON (Data file)</a>
+            </center>
             <a id="closepreview"><i class="fas fa-times"></i></a>
         </div>
     </div>
@@ -90,7 +94,7 @@
                         <i class="fas fa-download" title="Download this timeline image or the timeline data file" id="export-timeline"></i>
                     </div>
                 </div>
-                <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
+                <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10) > parseInt(settings.periods.minWidth, 10) ? parseInt(settings.events.width, 10)+20 : parseInt(settings.periods.minWidth, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">
                     <div class="events" id="events" v-bind:style="'padding-right: ' + settings.events.width + 'px; margin-right: -' + settings.events.width + 'px;'">
                         <app-year v-for="(year, index) in sortedTimeline.dateyears"
                                 v-bind:key="year" v-bind:year="year" v-bind:index="index" v-bind:years="sortedTimeline.dateyears" v-bind:events="sortedTimeline.dateyearsevents[year]"
@@ -105,7 +109,7 @@
                                 v-bind:type="1">
                         </app-year>
                     </div>
-                    <div class="periods">
+                    <div class="periods" v-bind:style="'padding-right: ' + settings.periods.minWidth + 'px; margin-right: -' + settings.periods.minWidth + 'px;'">
                         <app-year v-for="(year, index) in sortedTimeline.periodyears" 
                                 v-bind:key="year" v-bind:year="year" v-bind:index="index"  v-bind:years="sortedTimeline.periodyears" v-bind:events="sortedTimeline.periodyearsevents[year]"
                                 v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"
