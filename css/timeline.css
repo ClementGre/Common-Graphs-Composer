@@ -204,7 +204,6 @@ main .panel{
 /********************/
 
 .filter .export{
-	display: none;
 	position: absolute;
 	background-color: rgba(0, 0, 0, 0.7);
 	min-width: 70vw;
@@ -215,7 +214,7 @@ main .panel{
   animation: alpha .5s;
   border-radius: 5px;
 }
-.filter .export #closepreview{
+.filter .export .closepreview{
 	position: absolute;
 	top: 5px;
 	right: 5px;
@@ -226,16 +225,16 @@ main .panel{
 	font-size: 25px;
 	transition: all .3s ease-in-out;
 }
-.filter .export #closepreview:hover{
+.filter .export .closepreview:hover{
 	cursor: pointer;
 	color: white;
 }
 .filter .export #rendercanvas{
 	max-width: 100%;
 }
-.filter .export #rendercanvas canvas{
+.filter .export #rendercanvas canvas, .filter .export #rendercanvas img{
 	max-width: 100%;
-	max-height: calc(document.getElementById("#rendercanvas").width / document.getElementById("#rendercanvas").height * 100vh - 40px - 100px);
+	max-height: calc(100vh - 40px - 100px);
 	margin: auto;
 	display: block;
 }

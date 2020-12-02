@@ -19,6 +19,17 @@ window.delete_cookie = function delete_cookie(name) {
 }
 //
 
+// from https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser
+window.downloadObjectAsJson = function downloadObjectAsJson(exportObj, exportName){
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 4));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+
 // FLOATERS
 window.displayCheckFloater = function displayCheckFloater(){
     $('#disapear-floater').css('display', 'block');

@@ -10,38 +10,33 @@
     <link rel="icon" href="" />
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;200;300;400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Source+Sans+Pro:wght@400;600;700&display=swap" crossorigin="anonymous"> 
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/timeline.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> 
+    <!-- <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
     <script src="js/jscolor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js" crossorigin="anonymous"></script>
     <script>
         jscolor.presets.default = {
             format:'rgba', alphaChannel:true, borderRadius:5, padding:5, 
             buttonColor:'rgba(255,101,213,1)', controlBorderWidth:0
         };
-    </script>
+    </script> 
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Source+Sans+Pro:wght@400;600;700&display=swap');
+</style> 
 
 </head>
 <body id="body">
 
     <!-- EXPORT OVERFLOW -->
-    <div class="filter">
-        <div class="export">
-            <div id="rendercanvas"></div><br>
-            <center>
-                <a id="downloadpreview">Download PNG</a>
-                <a id="showpreview" target="_blank">Show Image</a>
-                <a id="downloadpreview">Download JSON (Data file)</a>
-            </center>
-            <a id="closepreview"><i class="fas fa-times"></i></a>
-        </div>
-    </div>
+    
     <!-- FLOATERS -->
     <div class="floater disapear" id="disapear-floater">
         <i class="fas fa-check check"></i>
@@ -49,17 +44,39 @@
     <div class="floater" id="floater">
         <i class="fas fa-spinner loader"></i>
     </div>
-
     <div id="app">
+
+        <div class="filter" :style="ui.downloadImageMenu ? '' : 'display: none;'" @click="ui.downloadImageMenu = false;">
+            <div class="export" :style="ui.downloadImageMenu ? '' : 'display: none;'" @click.stop="">
+                <div id="rendercanvas"><img id="previewrendercanvas"></img></div><br>
+                <center>
+                    <a @click="downloadImagePng();" id="downloadpreview">Download PNG</a>
+                    <a @click="downloadImageShowPng();" id="showpreview" target="_blank">Show Image</a>
+                </center>
+                <a @click="ui.downloadImageMenu = false;" class="closepreview"><i class="fas fa-times"></i></a>
+            </div>
+        </div>
+
         <div id="js-overlay" class="overlay" v-if="ui.timelinesMenu" @click="ui.timelinesMenu = false;">
             <!-- TIMELINES DROP MENU -->
-            <div id="js-contextmenu" class="contextmenu" v-bind:style="'left: ' + ui.timelinesMenuX + 'px;'">
+            <div id="js-contextmenu" class="contextmenu" v-bind:style="'left: ' + ui.dropMenuX + 'px;'">
                 <p v-for="name in ui.timelines" @click="loadTimeline(name)">
                     <i class="fas fa-trash-alt" @click.stop="deleteTimeline(name)"></i> {{name}}
                 </p>
                 <h4 v-if="ui.timelines.length == 0">
                     You have no timeline
                 </h4>
+            </div>
+        </div>
+        <div id="js-overlay" class="overlay" v-if="ui.downloadMenu" @click="ui.downloadMenu = false;">
+
+            <div id="js-contextmenu" class="contextmenu" v-bind:style="'left: ' + ui.dropMenuX + 'px;'">
+                <p @click="downloadImage()">
+                    Download image (PNG)
+                </p>
+                <p @click="downloadJSON()">
+                    Download timeline data (JSON)
+                </p>
             </div>
         </div>
         
@@ -71,7 +88,7 @@
                 <i class="fas fa-expand-arrows-alt" title="Hide edit tools (full screen)" @click="sortTimeline(); ui.fullScreen = true;"></i>
                 <i class="fas fa-expand" title="Enter into the browser fullscreen mode" @click="fireFullScreen()"
                     :style="this.browserFullScreen ? '{color: #ff4545;}:hover{color: white;}' : ''"></i>
-                <i class="fas fa-download" title="Download this timeline image or the timeline data file" id="export-timeline"></i>
+                <i class="fas fa-download" title="Download this timeline image or the timeline data file" @click="clickToShowDownloadMenu"></i>
                 <i class="fas fa-trash-alt" title="Delete current timeline" @click="deleteTimeline()"></i>
                 <i class="far fa-plus-square" title="Create new timeline" @click="createTimeline()"></i>
                 <i class="far fa-clone" title="Make a copy of the curent timeline" @click="cloneTimeline()"></i>

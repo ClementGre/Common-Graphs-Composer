@@ -94,7 +94,7 @@ window.constants = {
         borderWidth: {
             name: "Border Width",
             type: 1, value: 1,
-            min: 0, max: 5
+            min: 0, max: 10
         }
     },
     events: {

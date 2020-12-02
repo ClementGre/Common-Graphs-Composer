@@ -30,7 +30,8 @@ var app = new Vue({
             yearPx: 0,
             yearDivideFactor: 1,
             timelineNameTarget: undefined,
-            sectedYearTarget: undefined
+            sectedYearTarget: undefined,
+            renderedCanvas: undefined
         },
         settings: {},
         settingsDetails: constants.settingsDetails,
@@ -43,7 +44,9 @@ var app = new Vue({
             fullScreen: false,
             browserFullScreen: false,
             timelinesMenu: false,
-            timelinesMenuX: 0,
+            downloadMenu: false,
+            downloadImageMenu: false,
+            dropMenuX: 0,
             timelines: read_cookie('timeline-timelines') == undefined ? [] : read_cookie('timeline-timelines')
         }
     },
@@ -621,7 +624,7 @@ var app = new Vue({
         showTimelinesMenu(x){
             this.updateTimelines();
             this.ui.timelinesMenu = true;
-            this.ui.timelinesMenuX = x;
+            this.ui.dropMenuX = x;
         },
         updateTimelines(){
             this.ui.timelines = read_cookie('timeline-timelines') == undefined ? [] : read_cookie('timeline-timelines');
@@ -728,6 +731,76 @@ var app = new Vue({
             }
             this.browserFullScreen = !this.browserFullScreen;
             
+        },
+
+
+
+        clickToShowDownloadMenu(event){
+            var x = event.pageX < window.innerWidth-200 ? event.pageX : window.innerWidth-300;
+            this.showDownloadMenu(x);
+        },
+        showDownloadMenu(x){
+            this.ui.downloadMenu = true;
+            this.ui.dropMenuX = x;
+        },
+        downloadJSON(){
+            var data = { timeline: this.timeline, settings: this.settings };
+            downloadObjectAsJson(data, this.ui.timelineName);
+        },
+        downloadImage(){
+            this.ui.selectedYear = undefined;
+            this.ui.selectedIndex = undefined;
+            this.ui.selectedIndex = undefined;
+            $("#timeline").css("overflow", "visible");
+            displayLoader();
+            this.sortTimeline();
+            setTimeout(() => {
+                // html2canvas(document.querySelector("#timeline .timelinecontent"), {
+                //     backgroundColor: null,
+                //     scale: window.devicePixelRatio*2,
+                //     logging: false,
+                //     allowTaint : false,
+                //     useCORS: true
+                // }).then(function(canvas){
+                //     app.ui.downloadImageMenu = true;
+                //     app.renderData.renderedCanvas = canvas;
+
+                //     // var extra_canvas = document.getElementById("previewrendercanvas");
+                //     // extra_canvas.setAttribute('width', canvas.width);
+                //     // extra_canvas.setAttribute('height', extra_canvas.width/canvas.width*canvas.height);
+                //     // var ctx = extra_canvas.getContext('2d');
+                //     // ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, extra_canvas.width, extra_canvas.height);
+
+                //     $("#previewrendercanvas").attr('src', canvas.toDataURL());
+                //     $("#timeline").css("overflow", "scroll");
+                //     hideLoader();
+                    
+                // });
+                domtoimage.toPng(document.querySelector("#timeline .timelinecontent"))
+                    .then(function (dataUrl) {
+                        app.ui.downloadImageMenu = true;
+                        app.renderData.renderedCanvas = dataUrl;
+
+                        $("#previewrendercanvas").attr('src', dataUrl);
+                        $("#timeline").css("overflow", "scroll");
+                        hideLoader();
+                    })
+                    .catch(function (error) {
+                        console.error('oops, something went wrong!', error);
+                    });
+            }, 0);
+        },
+        closeDownloadImageMenu(){
+            this.ui.downloadImageMenu = false;
+        },
+        downloadImagePng(){
+            this.downloadImageMenu = false;
+            var imgageData = this.renderData.renderedCanvas//.toDataURL("image/png"); 
+            var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
+            $("a#downloadpreview").attr("download", app.ui.timelineName + ".png").attr("href", newData);
+        },
+        downloadImageShowPng(){
+            $("a#showpreview").attr("href", this.renderData.renderedCanvas);
         }
     },
     watch: {
@@ -794,65 +867,6 @@ var app = new Vue({
 window.onresize = function resize() {
     app.updateYearPx();
 };
-
-$(document).ready(function() { 
-          
-    var getCanvas;
-    $("i#export-timeline").on('click', function() {
-        app.ui.selectedYear = undefined;
-        app.ui.selectedIndex = undefined;
-        app.ui.selectedIndex = undefined;
-        $("#timeline").css("overflow", "visible");
-        displayLoader();
-        app.sortTimeline();
-        setTimeout(() => {
-            html2canvas(document.querySelector("#timeline .timelinecontent"), {
-                backgroundColor: null,
-                scale: window.devicePixelRatio*2,
-                logging: false
-            }).then(function(canvas){
-                getCanvas = canvas;
-
-                var extra_canvas = document.createElement("canvas");
-                extra_canvas.setAttribute('width', canvas.width);
-                extra_canvas.setAttribute('height', extra_canvas.width/canvas.width*canvas.height);
-                var ctx = extra_canvas.getContext('2d');
-                ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, extra_canvas.width, extra_canvas.height);
-                var img = $(document.createElement('img'));
-                img.attr('src', getCanvas.toDataURL("image/png"));
-
-                $("div#rendercanvas").html(extra_canvas);
-                $("#timeline").css("overflow", "scroll");
-                hideLoader();
-                $(".filter").attr('style', 'display: block;');
-                $(".filter .export").attr('style', 'display: block;');
-                
-            });
-        }, 0);
-    }); 
-
-    $("a#downloadpreview").on('click', function() { 
-        var imgageData = getCanvas.toDataURL("image/png"); 
-        var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
-        $("a#downloadpreview").attr("download", app.ui.timelineName + ".png").attr("href", newData);
-        $(".filter").attr('style', 'display: none;');
-        $(".filter .export").attr('style', 'display: none;');
-    }); 
-    $("a#showpreview").on('click', function() { 
-        var imgageData = getCanvas.toDataURL("image/png"); 
-        var newData = imgageData;
-        $("a#showpreview").attr("href", newData);
-    });
-    $(".filter").on('click', function(e) {
-        if(e.target != this) return;
-        $(".filter").attr('style', 'display: none;');
-        $(".filter .export").attr('style', 'display: none;');
-    });
-    $("a#closepreview").on('click', function(e) {
-        $(".filter").attr('style', 'display: none;');
-        $(".filter .export").attr('style', 'display: none;');
-    }); 
-});
 
 // RESTORE LAST
 if(read_cookie('timeline-lastopened') != undefined){

@@ -289,7 +289,7 @@ window.appYearComp = {
         'order: ' + index + ';' +
         'width:' + getWidth(yearpx, yeardividefactor, type) + 'px !important;' +
         'margin-right:' + getMarginRight(year, index, years, type, yearpx) + 'px;' +
-        ((type == 1) ? 'backgroundColor: ' + settings.years.backgroundColor + '; border-right: ' + settings.years.borderWidth + 'px solid ' + settings.years.borderColor + ';' + 'height: ' + settings.years.height + 'px;' : '') + ';' +
+        ((type == 1) ? 'backgroundColor: ' + settings.years.backgroundColor + '; border-right: ' + (settings.years.borderWidth/2) + 'px solid ' + settings.years.borderColor + '; border-left: ' + (settings.years.borderWidth/2) + 'px solid ' + settings.years.borderColor + ';' + 'height: ' + settings.years.height + 'px;' : '') + ';' +
         'z-index: ' + index + ';'">
         
         <h4 class="title" v-if="type == 1" v-bind:style="'color: ' + settings.years.textColor + ';' +
