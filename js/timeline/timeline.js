@@ -31,7 +31,8 @@ var app = new Vue({
             yearDivideFactor: 1,
             timelineNameTarget: undefined,
             sectedYearTarget: undefined,
-            renderedCanvas: undefined
+            renderedCanvas: undefined,
+            lastTimelineDataChanged: undefined
         },
         settings: {},
         settingsDetails: constants.settingsDetails,
@@ -734,7 +735,32 @@ var app = new Vue({
         },
 
 
+        importTimeline(){
+            $('#file-input').trigger('click');
+            document.getElementById('file-input').onchange = e => { 
+                for(var file of document.getElementById('file-input').files){
+                    this.importTimelineFile(file);
+                }
+            }
+        },
+        importTimelineFile(file){
+            if(file != undefined){
+                console.log('Loading ' + file.name);
+                var name = file.name.split('.').slice(0, -1).join('.');
 
+                const reader = new FileReader();
+                displayLoader();
+                reader.onload = function(e) {
+                    hideLoader();
+                    var data = JSON.parse(e.target.result);
+                    app.createTimeline(name);
+                    app.timeline = data.timeline;
+                    app.settings = data.settings;
+                    app.saveTimeline();
+                  };
+                reader.readAsText(file);
+            }
+        },
         clickToShowDownloadMenu(event){
             var x = event.pageX < window.innerWidth-200 ? event.pageX : window.innerWidth-300;
             this.showDownloadMenu(x);
@@ -755,27 +781,6 @@ var app = new Vue({
             displayLoader();
             this.sortTimeline();
             setTimeout(() => {
-                // html2canvas(document.querySelector("#timeline .timelinecontent"), {
-                //     backgroundColor: null,
-                //     scale: window.devicePixelRatio*2,
-                //     logging: false,
-                //     allowTaint : false,
-                //     useCORS: true
-                // }).then(function(canvas){
-                //     app.ui.downloadImageMenu = true;
-                //     app.renderData.renderedCanvas = canvas;
-
-                //     // var extra_canvas = document.getElementById("previewrendercanvas");
-                //     // extra_canvas.setAttribute('width', canvas.width);
-                //     // extra_canvas.setAttribute('height', extra_canvas.width/canvas.width*canvas.height);
-                //     // var ctx = extra_canvas.getContext('2d');
-                //     // ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, extra_canvas.width, extra_canvas.height);
-
-                //     $("#previewrendercanvas").attr('src', canvas.toDataURL());
-                //     $("#timeline").css("overflow", "scroll");
-                //     hideLoader();
-                    
-                // });
                 domtoimage.toPng(document.querySelector("#timeline .timelinecontent"))
                     .then(function (dataUrl) {
                         app.ui.downloadImageMenu = true;
@@ -808,7 +813,13 @@ var app = new Vue({
             deep: true,
             handler: function (val, oldVal) {
                 this.sortTimeline();
-                this.saveTimeline();
+
+                var key = Math.floor(Math.random() * 1020);
+                this.lastTimelineDataChanged = key;
+                setTimeout(() => {
+                    if(this.lastTimelineDataChanged == key) this.saveTimeline();
+                }, 4000);
+                
             }
         },
         sortedTimeline: {
@@ -817,20 +828,19 @@ var app = new Vue({
                 this.updateYearPx();
             }
         },
-        renderData: {
-            deep: true,
-            handler: function (val, oldVal) {
-                
-            }
-        },
         settings: {
             deep: true,
             handler: function (val, oldVal) {
                 this.updateYearPx();
-                this.saveTimeline();
                 setTimeout(() => {
                     this.sortTimeline();
                 }, 0);
+
+                var key = Math.floor(Math.random() * 1020);
+                this.lastTimelineDataChanged = key;
+                setTimeout(() => {
+                    if(this.lastTimelineDataChanged == key) this.saveTimeline();
+                }, 4000);
             }
         },
         // START WATCHER (immediate)
@@ -901,6 +911,66 @@ setTimeout(() => {
 setTimeout(() => {
     //app.timeline.dateevents[1820].push({date: "12 Avril 1820", day: 12, month: 4, title: "test", description: ":aucune:"});
 }, 5000);
+
+let dropbox;
+dropbox = document.getElementById("app");
+dropbox.addEventListener("dragenter", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    for(file of files){
+        if(file.type === "application/json"){
+            e.dataTransfer.effectAllowed = "copy";
+            return;
+        }
+    }
+    e.dataTransfer.effectAllowed = "copyMove";
+    
+}, false);
+dropbox.addEventListener("dragstart", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    for(file of files){
+        if(file.type === "application/json"){
+            e.dataTransfer.effectAllowed = "copy";
+            return;
+        }
+    }
+    e.dataTransfer.effectAllowed = "copyMove";
+    
+}, false);
+dropbox.addEventListener("dragover", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    for(file of files){
+        if(file.type === "application/json"){
+            e.dataTransfer.effectAllowed = "copy";
+            return;
+        }
+    }
+    e.dataTransfer.effectAllowed = "copyMove";
+}, false);
+dropbox.addEventListener("drop", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    for(file of files){
+        if(file.type === "application/json"){
+            app.importTimelineFile(file);
+        }
+    }
+    
+}, false);
 
 
 

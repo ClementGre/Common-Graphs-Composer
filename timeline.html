@@ -29,8 +29,8 @@
         };
     </script> 
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Source+Sans+Pro:wght@400;600;700&display=swap');
-</style> 
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Source+Sans+Pro:wght@400;600;700&display=swap');
+    </style> 
 
 </head>
 <body id="body">
@@ -44,6 +44,9 @@
     <div class="floater" id="floater">
         <i class="fas fa-spinner loader"></i>
     </div>
+
+    <input id="file-input" type="file" name="name" accept="application/json" multiple="true" style="display: none;" />
+
     <div id="app">
 
         <div class="filter" :style="ui.downloadImageMenu ? '' : 'display: none;'" @click="ui.downloadImageMenu = false;">
@@ -88,7 +91,8 @@
                 <i class="fas fa-expand-arrows-alt" title="Hide edit tools (full screen)" @click="sortTimeline(); ui.fullScreen = true;"></i>
                 <i class="fas fa-expand" title="Enter into the browser fullscreen mode" @click="fireFullScreen()"
                     :style="this.browserFullScreen ? '{color: #ff4545;}:hover{color: white;}' : ''"></i>
-                <i class="fas fa-download" title="Download this timeline image or the timeline data file" @click="clickToShowDownloadMenu"></i>
+                <i class="fas fa-upload" title="Download this timeline image or the timeline data file" @click="clickToShowDownloadMenu"></i>
+                <i class="fas fa-download" title="Import a timeline from his data file (JSON)" @click="importTimeline()"></i>
                 <i class="fas fa-trash-alt" title="Delete current timeline" @click="deleteTimeline()"></i>
                 <i class="far fa-plus-square" title="Create new timeline" @click="createTimeline()"></i>
                 <i class="far fa-clone" title="Make a copy of the curent timeline" @click="cloneTimeline()"></i>

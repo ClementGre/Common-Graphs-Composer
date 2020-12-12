@@ -5,15 +5,24 @@
 // timeline-timeline-[TIMELINE NAME] : { Timeline JSON}
 // timeline-lasttimeline             : last opened timeline name
 window.bake_cookie = function bake_cookie(name, value) {
+    localStorage.setItem(name, JSON.stringify(value));
+    return;
+
     var cookie = [name, '=', JSON.stringify(value), '; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 31 Dec 9999 23:59:59 GMT; '].join('');
     document.cookie = cookie;
 }
 window.read_cookie = function read_cookie(name) {
+    return JSON.parse(localStorage.getItem(name));
+    return;
+
     var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
     result && (result = JSON.parse(result[1]));
     return result;
 }
 window.delete_cookie = function delete_cookie(name) {
+    localStorage.removeItem(name);
+    return;
+
     var cookie = [name, '=deleted; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 1 Jan 1970 23:59:59 GMT; '].join('');
     document.cookie = cookie;
 }
