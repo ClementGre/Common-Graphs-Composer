@@ -189,18 +189,49 @@ var app = new Vue({
                 if(app == undefined || !(app.ui.selectedType != undefined && app.ui.selectedYear != undefined && app.ui.selectedIndex != undefined)) return;
                 var dateData = parseDate(value);
                 if(app.ui.selectedType == 1){
-                    app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].enddate = value;
-                    if(dateData.day != undefined) app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].endday = dateData.day;
-                    if(dateData.year != undefined){
-                        if(dateData.year >= app.ui.selectedYear) app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].yearsLength = dateData.year - app.ui.selectedYear;
-                    }if(dateData.month != undefined){
-                        if(app.ui.selectedYear == app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].yearsLength){
-                            if(dateData.month > app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].month)
-                                app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].endmonth = dateData.month;
-                        }else app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].endmonth = dateData.month;
+                    if(value == ""){ // Convert to date
+                        var selectedData = JSON.parse(JSON.stringify(app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex]));
+                        delete selectedData.yearsLength; delete selectedData.endday; delete selectedData.endmonth; delete selectedData.enddate;
+                        // delete
+                        app.timeline.periodevents[app.ui.selectedYear].splice(app.ui.selectedIndex, 1);
+                        if(app.timeline.periodevents[app.ui.selectedYear].length == 0){
+                            delete app.timeline.periodevents[app.ui.selectedYear+""];
+                        }
+                        // create
+                        if(app.timeline.dateevents[app.ui.selectedYear] == undefined) Vue.set(app.timeline.dateevents, app.ui.selectedYear, []);
+                        app.timeline.dateevents[app.ui.selectedYear].push(selectedData);
+                        app.ui.selectedIndex = app.timeline.dateevents[app.ui.selectedYear].length -1;
+                        app.ui.selectedType = 0;
+                    }else{
+                        app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].enddate = value;
+                        if(dateData.day != undefined) app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].endday = dateData.day;
+                        if(dateData.year != undefined){
+                            if(dateData.year >= app.ui.selectedYear) app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].yearsLength = dateData.year - app.ui.selectedYear;
+                        }if(dateData.month != undefined){
+                            app.timeline.periodevents[app.ui.selectedYear][app.ui.selectedIndex].endmonth = dateData.month;
+                        }
                     }
                 }else{
-                    
+                    if(value != ""){ // Convert to period
+                        var selectedData = JSON.parse(JSON.stringify(app.timeline.dateevents[app.ui.selectedYear][app.ui.selectedIndex]));
+                        selectedData.yearsLength = 5; selectedData.endday = 31; selectedData.endmonth = 12; selectedData.enddate = value;
+                        if(dateData.day != undefined) selectedData.endday = dateData.day;
+                        if(dateData.year != undefined){
+                            if(dateData.year >= app.ui.selectedYear) selectedData.yearsLength = dateData.year - app.ui.selectedYear;
+                        }if(dateData.month != undefined){
+                            selectedData.endmonth = dateData.month;
+                        }
+                        // delete
+                        app.timeline.dateevents[app.ui.selectedYear].splice(app.ui.selectedIndex, 1);
+                        if(app.timeline.dateevents[app.ui.selectedYear].length == 0){
+                            delete app.timeline.dateevents[app.ui.selectedYear+""];
+                        }
+                        // create
+                        if(app.timeline.periodevents[app.ui.selectedYear] == undefined) Vue.set(app.timeline.periodevents, app.ui.selectedYear, []);
+                        app.timeline.periodevents[app.ui.selectedYear].push(selectedData);
+                        app.ui.selectedIndex = app.timeline.periodevents[app.ui.selectedYear].length -1;
+                        app.ui.selectedType = 1;
+                    }
                 }
                 app.sortTimeline();
                 setTimeout(() => {
@@ -228,7 +259,7 @@ var app = new Vue({
                     selectedData.title = ""; selectedData.description = "";
                     delete selectedData.yearsLength; delete selectedData.endday; delete selectedData.endmonth; delete selectedData.enddate;
                     this.timeline.dateevents[this.ui.selectedYear].push(selectedData);
-                    this.ui.selectedIndex = this.timeline.periodevents[this.ui.selectedYear].length -1;
+                    this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
                     this.ui.selectedType = 0;
                 }
             }else{
@@ -285,9 +316,16 @@ var app = new Vue({
             }, 0);
         },
         deleteSelectedEvent(){
-            this.timeline.dateevents[this.ui.selectedYear].splice(this.ui.selectedIndex, 1);
-            if(this.timeline.dateevents[this.ui.selectedYear].length == 0){
-                delete this.timeline.dateevents[this.ui.selectedYear+""];
+            if(this.ui.selectedType === 0){
+                this.timeline.dateevents[this.ui.selectedYear].splice(this.ui.selectedIndex, 1);
+                if(this.timeline.dateevents[this.ui.selectedYear].length == 0){
+                    delete this.timeline.dateevents[this.ui.selectedYear+""];
+                }
+            }else{
+                this.timeline.periodevents[this.ui.selectedYear].splice(this.ui.selectedIndex, 1);
+                if(this.timeline.periodevents[this.ui.selectedYear].length == 0){
+                    delete this.timeline.periodevents[this.ui.selectedYear+""];
+                }
             }
             this.ui.selectedYear = undefined;
             this.ui.selectedIndex = undefined;
@@ -297,12 +335,22 @@ var app = new Vue({
             }, 0);
         },
         duplicateSelectedEvent(){
-            this.timeline.dateevents[this.ui.selectedYear].push(JSON.parse(JSON.stringify(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex])));
-            this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
-            this.sortTimeline();
-            Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
-            if(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
-            else $('#event-date-input').focus();
+            if(this.ui.selectedType === 0){
+                this.timeline.dateevents[this.ui.selectedYear].push(JSON.parse(JSON.stringify(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex])));
+                this.ui.selectedIndex = this.timeline.dateevents[this.ui.selectedYear].length -1;
+                this.sortTimeline();
+                Vue.set(this.timeline.dateevents, this.ui.selectedYear, this.timeline.dateevents[this.ui.selectedYear]);
+                if(this.timeline.dateevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
+                else $('#event-date-input').focus();
+            }else{
+                this.timeline.periodevents[this.ui.selectedYear].push(JSON.parse(JSON.stringify(this.timeline.periodevents[this.ui.selectedYear][this.ui.selectedIndex])));
+                this.ui.selectedIndex = this.timeline.periodevents[this.ui.selectedYear].length -1;
+                this.sortTimeline();
+                Vue.set(this.timeline.periodevents, this.ui.selectedYear, this.timeline.periodevents[this.ui.selectedYear]);
+                if(this.timeline.periodevents[this.ui.selectedYear][this.ui.selectedIndex].title == "") $('#event-title-input').focus();
+                else $('#event-date-input').focus();
+            }
+            
             setTimeout(() => {
                 this.sortTimeline();
             }, 0);
@@ -617,6 +665,12 @@ var app = new Vue({
             return parseInt(this.settings.global.timelineWidth, 10);
             
         },
+        centerScrollView(){
+            var scrollElement = document.getElementById('timeline');
+            var offsetTop = document.getElementById('timeline-time-line').offsetTop - $('#timeline-time-line').height()/2;
+            scrollElement.scrollTo(0, offsetTop - $('#timeline').height()/2);
+        },
+
         // TIMELINES SAVE / DELETE / RENAME
         clickToShowTimelinesMenu(event){
             var x = event.pageX < window.innerWidth-200 ? event.pageX : window.innerWidth-300;
@@ -650,6 +704,7 @@ var app = new Vue({
                 $.each($("main .panel .pane input[data-jscolor]"), function(index, element){
                     element.jscolor.fromString($(element).val()); // Update for JSColor
                 });
+                this.centerScrollView();
             }, 0);
         },
         deleteTimeline(baseName, cancelConfirm){
@@ -746,7 +801,7 @@ var app = new Vue({
         importTimelineFile(file){
             if(file != undefined){
                 console.log('Loading ' + file.name);
-                var name = file.name.split('.').slice(0, -1).join('.');
+                var name = String(file.name.split('.').slice(0, -1).join('.'));
 
                 const reader = new FileReader();
                 displayLoader();
@@ -885,13 +940,16 @@ if(read_cookie('timeline-lastopened') != undefined){
     if(data != undefined){
         app.timeline = data.timeline;
         app.settings = data.settings;
+        setTimeout(() => {
+            app.centerScrollView();
+        }, 0);
     }else{
         app.loadDefaultSettings();
     }
 }else{
     app.createTimeline();
 }
-app.timeline.periodevents = constants.defaultPeriodEvents;
+//app.timeline.periodevents = constants.defaultPeriodEvents;
 // SORT
 app.sortTimeline();
 setTimeout(() => {
@@ -971,7 +1029,3 @@ dropbox.addEventListener("drop", (e) => {
     }
     
 }, false);
-
-
-
-

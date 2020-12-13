@@ -30,7 +30,7 @@
     </script> 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Source+Sans+Pro:wght@400;600;700&display=swap');
-    </style> 
+        </style> 
 
 </head>
 <body id="body">
@@ -49,7 +49,7 @@
 
     <div id="app">
 
-        <div class="filter" :style="ui.downloadImageMenu ? '' : 'display: none;'" @click="ui.downloadImageMenu = false;">
+        <div class="filter export-filter" :style="ui.downloadImageMenu ? 'display: block;' : ''" @click="ui.downloadImageMenu = false;">
             <div class="export" :style="ui.downloadImageMenu ? '' : 'display: none;'" @click.stop="">
                 <div id="rendercanvas"><img id="previewrendercanvas"></img></div><br>
                 <center>
@@ -123,7 +123,7 @@
                                 v-bind:type="0" v-bind:ui="ui" v-on:select-event="selectEvent">
                         </app-year>
                     </div>
-                    <div class="time">
+                    <div class="time" id="timeline-time-line">
                         <app-year v-for="(year, index) in sortedTimeline.lineyears"
                                 v-bind:key="year" v-bind:year="year" v-bind:index="index"
                                 v-bind:yearpx="renderData.yearPx" v-bind:yeardividefactor="renderData.yearDivideFactor" v-bind:settings="settings"

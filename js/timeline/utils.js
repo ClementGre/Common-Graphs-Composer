@@ -1,3 +1,4 @@
+
 // from https://stackoverflow.com/questions/11344531/pure-javascript-store-object-in-cookie
 // timeline-ui-lasttab               : "event"/"settings"
 // timeline-settings-[SECTION]       : { Section JSON }
@@ -146,10 +147,13 @@ window.replaceAll = function replaceAll(text, pattern, replacement){
   return newText;
 }
 window.encode64 = function encode64(string){
-    return replaceAll(btoa(string), "=", "-");
+    return replaceAll(btoa(toLatin1(string)), "=", "-");
 }
 window.decode64 = function decode64(string){
     return atob(replaceAll(string, "-", "="));
+}
+window.toLatin1 = function toLatin1(string){
+    return unescape(encodeURIComponent(string));
 }
 
 // ARRAY/OBJ UTILS

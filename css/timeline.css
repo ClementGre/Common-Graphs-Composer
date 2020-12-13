@@ -203,6 +203,9 @@ main .panel{
 /****** FILTER ******/
 /********************/
 
+.export-filter{
+	display: none;
+}
 .filter .export{
 	position: absolute;
 	background-color: rgba(0, 0, 0, 0.7);
