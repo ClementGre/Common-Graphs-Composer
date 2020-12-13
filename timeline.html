@@ -112,7 +112,7 @@
                     <div>
                         <i class="fas fa-expand-arrows-alt" title="Enter into the browser fullscreen mode" @click="fireFullScreen()"
                             :style="this.browserFullScreen ? '{color: #ff4545;} :hover{color: white;}' : ''"></i>
-                        <i class="fas fa-download" title="Download this timeline image or the timeline data file" id="export-timeline"></i>
+                        <i class="fas fa-upload" title="Download this timeline image or the timeline data file" @click="clickToShowDownloadMenu"></i>
                     </div>
                 </div>
                 <div class="timelinecontent" id="timelinecontent" v-bind:style="'padding-right: ' + (parseInt(settings.events.width, 10) > parseInt(settings.periods.minWidth, 10) ? parseInt(settings.events.width, 10)+20 : parseInt(settings.periods.minWidth, 10)+20) + 'px; background-color: ' + settings.global.backgroundColor + ';' + getTimelineWidthStyle(settings.global.timelineWidth) + ''">

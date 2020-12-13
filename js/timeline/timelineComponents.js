@@ -131,7 +131,7 @@ window.appPeriodComp = {
     name: "appperiod",
     template: `
         <div v-bind:class="'period period-' + index" v-bind:style="'margin-left:' + getshiftpx() + 'px;' + 
-            'margin-top:' + (getMarginTop(yearindex, yearindex-1, yearpx, marginright, settings, years, index, true)+settings.events.margin) + 'px;' +
+            'margin-top:' + (getMarginTop(yearindex, yearindex-1, yearpx, marginright, settings, years, index, true)+settings.periods.margin) + 'px;' +
             'width: ' + settings.periods.width + 'px;' +
             'padding: ' + settings.periods.padding + 'px;' +
             'border-radius: ' + settings.periods.borderRadius + 'px;' +
