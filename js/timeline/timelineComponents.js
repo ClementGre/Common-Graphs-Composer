@@ -30,30 +30,30 @@ window.appEventComp = {
         </div>`,
     props: ["index", "event", "yearindex", "yearpx", "marginright", "settings", "years", "ui"],
     methods: {
-        isSelected: function(ui, index, year) {
-            return ui.fullScreen == false && ui.selectedType === 0 && ui.selectedYear === year && ui.selectedIndex === index;
+        isSelected: function(ui, index, year){
+            return ui.fullScreen === false && ui.selectedType === 0 && ui.selectedYear === year && ui.selectedIndex === index;
         },
-        getshiftpx: function() {
-            this.shiftPx = this.yearpx / 12.0 * (this.event.month-1);
+        getshiftpx: function(){
+            this.shiftPx = this.yearpx / 12.0 * (this.event.month - 1);
             return this.shiftPx;
         },
         getMarginBottom(yearIndex, lastYearIndex, yearpx, marginRight, settings, years, index, canSkip){
             //console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
 
-            if(years[lastYearIndex] == undefined) return 0; // If this is the last year, we dont have any constraint
-            var finalMarginRight = marginRight - settings.events.width - this.shiftPx + yearpx; // space between end of this event and start of the next
+            if(years[lastYearIndex] === undefined) return 0; // If this is the last year, we dont have any constraint
+            const finalMarginRight = marginRight - settings.events.width - this.shiftPx + yearpx; // space between end of this event and start of the next
 
             // If the space between the end of this event and the start of the next year is > min event margin : we can ignore this process : no margin bottom
             if(finalMarginRight > settings.events.minMargin) return 0;
 
             // Calculate the height of this event
-            var eventStartHeight = 0; // length between the bottom of this event and the top of the timeline
-            var eventHeight = settings.events.margin; // height of the event Box With margin bottom
+            let eventStartHeight = 0; // length between the bottom of this event and the top of the timeline
+            let eventHeight = settings.events.margin; // height of the event Box With margin bottom
             $(".timeline .events .year-" + years[yearIndex] + " .event").each((i, item) => { // Foreach bottom events, increment the eventStartHeight
                 if(this.getEventIndex($(item)) < index){ // Loop event is at the BOTTOM of current event
                     eventStartHeight += this.getEventFullHeight($(item)); // Increment eventStartHeight
-                }else if(this.getEventIndex($(item)) == index){ // Loop event is SAME as current event
-                    eventHeight += $(item).height()+(2*settings.events.padding); // define eventHeight (we add 10 witch is the padding)
+                }else if(this.getEventIndex($(item)) === index){ // Loop event is SAME as current event
+                    eventHeight += $(item).height() + (2 * settings.events.padding); // define eventHeight (we add 10 witch is the padding)
                 }
             });
 
@@ -62,21 +62,22 @@ window.appEventComp = {
             // ADD MARGIN BOTTOM TO BE ABOVE LAST YEAR EVENTS
 
             // canSkip : 
-            var marginBottom = 0; // Future marginBottom
-            var lastYearHeight = 0; // Height increamented bit by bit when the foreach occurs
-            var skip = false; // Skip = move under the lastYear events. When skip == true, 
+            let marginBottom = 0; // Future marginBottom
+            let lastYearHeight = 0; // Height increamented bit by bit when the foreach occurs
+            let skip = false; // Skip = move under the lastYear events. When skip == true,
             $(".timeline .events .year-" + years[lastYearIndex] + " .event").each((i, item) => { // Foreach last year event
                 ///// SKIP UNDER SYSTEM ///// (Only occurs at the first iteration)
                 if(skip) return; // When skip == true, we return definitively so we leave the each loop.
                 // i == 0 : We can decide to skip only with the bottom event : with his margin bottom.
                 // eventHeight > settings.events.margin : The event height needs to don't have the default value to measure if the free height is enough.
                 // canSkip : can be false when a skip is canceled (by re-call) when the width is too small (not enough space)
-                if(i == 0 && eventHeight > settings.events.margin && canSkip){ // This event can skip under
+                if(i === 0 && eventHeight > settings.events.margin && canSkip){ // This event can skip under
                     // The margin bottom of the last bottom event is bigger than the event height + others same year events that has maybe already skipped.
                     // (If others same year event has already skipped, we need to take them in account).
                     // We have to take in account the top margin of the event
-                    if(this.getMargin($(item), "Bottom") >= (eventHeight-settings.events.margin+settings.events.minMargin)+eventStartHeight+settings.events.minMargin){ // This event can skip -> process skiping under
-                        skip = true; return; // Set skip to true : cancel all process of the each loop since a skip will occurs
+                    if(this.getMargin($(item), "Bottom") >= (eventHeight - settings.events.margin + settings.events.minMargin) + eventStartHeight + settings.events.minMargin){ // This event can skip -> process skiping under
+                        skip = true;
+                        return; // Set skip to true : cancel all process of the each loop since a skip will occurs
                     }
                 }
 
@@ -92,36 +93,37 @@ window.appEventComp = {
             });
             // if this is not the bottom event and marginBootom != 0, this means the last event has skipped but no this one (Only the bottom event can has margin bottom)
             // So we remove the eventStartHeight (= height of all under events) to the marginBottom
-            if(index != 0 && marginBottom != 0) marginBottom -= eventStartHeight;
+            if(index !== 0 && marginBottom !== 0) marginBottom -= eventStartHeight;
             // If we have skipped under, we repeat the action to check if there is enough place :
             // YES : Try to skip one more year
             // NO : cancel the skipping (next line)
-            if(skip) return this.getMarginBottom(yearIndex, lastYearIndex-1, yearpx, marginRight+this.getYearFreeWidth(years[lastYearIndex]), settings, years, index, true);
+            if(skip) return this.getMarginBottom(yearIndex, lastYearIndex - 1, yearpx, marginRight + this.getYearFreeWidth(years[lastYearIndex]), settings, years, index, true);
             // case of NO : when a skip has occured and the marginBottom != 0
             // if marginBottom != 0, this means the function has added a margin bottom so there is not enough space to enter 
-            if(marginBottom != 0 && yearIndex-1 != lastYearIndex) return this.getMarginBottom(yearIndex, yearIndex-1, yearpx, marginRight, settings, years, index, false);
+            if(marginBottom !== 0 && yearIndex - 1 !== lastYearIndex) return this.getMarginBottom(yearIndex, yearIndex - 1, yearpx, marginRight, settings, years, index, false);
             return marginBottom;
         },
         getMargin(element, side){
-            return parseInt(element.css("margin" + side).replace('px', ''));
+            return parseInt(element.css("margin" + side).replace('px', ''), 10);
         },
         getPadding(element, side){
-            return parseInt(element.css("padding" + side).replace('px', ''));
+            return parseInt(element.css("padding" + side).replace('px', ''), 10);
         },
         getEventFullHeight(element){
             return element.height() + this.getMargin(element, "Bottom") + this.getPadding(element, "Bottom") + this.getPadding(element, "Top");
         },
         getEventIndex(element){
-            return parseInt(element.attr('class').replace('event event-', ''));
+            return parseInt(element.attr('class').replace('event event-', ''), 10);
         },
         getYearFreeWidth(year){
-            return $(".timeline .events .year-" + year).width() + parseInt(this.getMargin($(".timeline .events .year-" + year), "Right"));
+            const element = $(".timeline .events .year-" + year);
+            return element.width() + this.getMargin(element, "Right");
         },
         selectEvent(year, index){
             this.$emit('select-event', year, index);
         }
     },
-    data:  () => {
+    data: () => {
         return {
             shiftPx: 0,
         }
@@ -159,38 +161,38 @@ window.appPeriodComp = {
         </div>`,
     props: ["index", "event", "yearindex", "yearpx", "marginright", "settings", "years", "ui"],
     methods: {
-        isSelected: function(ui, index, year) {
-            return ui.fullScreen == false && ui.selectedType === 1 && ui.selectedYear === year && ui.selectedIndex === index;
+        isSelected: function(ui, index, year){
+            return ui.fullScreen === false && ui.selectedType === 1 && ui.selectedYear === year && ui.selectedIndex === index;
         },
-        getshiftpx: function() {
-            this.shiftPx = this.yearpx / 12.0 * (this.event.month-1);
+        getshiftpx: function(){
+            this.shiftPx = this.yearpx / 12.0 * (this.event.month - 1);
             return this.shiftPx;
         },
         getNormalWidth: function(){
-            return this.event.yearsLength*this.yearpx - this.yearpx/12.0*(this.event.month-1) + this.yearpx/11.0*(this.event.endmonth-1);
+            return this.event.yearsLength * this.yearpx - this.yearpx / 12.0 * (this.event.month - 1) + this.yearpx / 11.0 * (this.event.endmonth - 1);
         },
         getWidth: function(){
-            var width = this.getNormalWidth();
+            let width = this.getNormalWidth();
             if(width < this.settings.periods.minWidth) width = this.settings.periods.minWidth;
             return width;
         },
         getMarginTop(yearIndex, lastYearIndex, yearpx, marginRight, settings, years, index, canSkip){
-            if(years[yearIndex] == 1810) console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex-lastYearIndex) + " -----")
+            if(years[yearIndex] === 1810) console.log("----- PROCESS EVENT " + index + " WITH A SHIFT OF " + (yearIndex - lastYearIndex) + " -----")
 
-            if(years[lastYearIndex] == undefined) return 0; // If this is the last year, we dont have any constraint
-            var finalMarginRight = marginRight - this.getWidth() - this.shiftPx + yearpx; // space between end of this event and start of the next
-            
+            if(years[lastYearIndex] === undefined) return 0; // If this is the last year, we dont have any constraint
+            const finalMarginRight = marginRight - this.getWidth() - this.shiftPx + yearpx; // space between end of this event and start of the next
+
             // If the space between the end of this event and the start of the next year is > min event margin : we can ignore this process : no margin bottom
             if(finalMarginRight > settings.periods.minMargin) return 0;
 
             // Calculate the height of this event
-            var eventStartHeight = 0; // length between the bottom of this event and the top of the timeline
-            var eventHeight = settings.periods.margin; // height of the event Box With margin bottom
+            let eventStartHeight = 0; // length between the bottom of this event and the top of the timeline
+            let eventHeight = settings.periods.margin; // height of the event Box With margin bottom
             $(".timeline .periods .year-" + years[yearIndex] + " .period").each((i, item) => { // Foreach bottom events, increment the eventStartHeight
                 if(this.getEventIndex($(item)) > index){ // Loop event is at the BOTTOM of current event
                     eventStartHeight += this.getEventFullHeight($(item)); // Increment eventStartHeight
-                }else if(this.getEventIndex($(item)) == index){ // Loop event is SAME as current event
-                    eventHeight += $(item).height()+(2*settings.periods.padding); // define eventHeight (we add 10 witch is the padding)
+                }else if(this.getEventIndex($(item)) === index){ // Loop event is SAME as current event
+                    eventHeight += $(item).height() + (2 * settings.periods.padding); // define eventHeight (we add 10 witch is the padding)
                 }
             });
             //if(years[yearIndex] == 1810) console.log("" +);
@@ -200,66 +202,66 @@ window.appPeriodComp = {
             // ADD MARGIN BOTTOM TO BE ABOVE LAST YEAR EVENTS
 
             // canSkip : 
-            var marginBottom = 0; // Future marginBottom
-            var skip = false; // Skip = move under the lastYear events. When skip == true, 
+            let marginBottom = 0; // Future marginBottom
+            let skip = false; // Skip = move under the lastYear events. When skip == true,
             $(".timeline .periods .year-" + years[lastYearIndex] + " .period").each((i, item) => { // Foreach last year event
-                if(years[yearIndex] == 1812) console.log("LOOP " + years[lastYearIndex]);
+                if(years[yearIndex] === 1812) console.log("LOOP " + years[lastYearIndex]);
                 ///// SKIP UNDER SYSTEM ///// (Only occurs at the first iteration)
                 if(skip) return; // When skip == true, we return definitively so we leave the each loop.
                 // i == 0 : We can decide to skip only with the bottom event : with his margin bottom.
                 // eventHeight > settings.events.margin : The event height needs to don't have the default value to measure if the free height is enough.
                 // canSkip : can be false when a skip is canceled (by re-call) when the width is too small (not enough space)
-                if(i == 0 && eventHeight >= settings.periods.minMargin && canSkip){ // This event can skip under
+                if(i === 0 && eventHeight >= settings.periods.minMargin && canSkip){ // This event can skip under
                     // The margin bottom of the last bottom event is bigger than the event height + others same year events that has maybe already skipped.
                     // (If others same year event has already skipped, we need to take them in account).
                     // We have to take in account the top margin of the event
-                    if(this.getMargin($(item), "Top") >= (eventHeight-settings.periods.margin+settings.periods.minMargin)+eventStartHeight+settings.periods.minMargin){ // This event can skip -> process skiping under
-                        skip = true; return; // Set skip to true : cancel all process of the each loop since a skip will occurs
+                    if(this.getMargin($(item), "Top") >= (eventHeight - settings.periods.margin + settings.periods.minMargin) + eventStartHeight + settings.periods.minMargin){ // This event can skip -> process skiping under
+                        skip = true;
+                        return; // Set skip to true : cancel all process of the each loop since a skip will occurs
                     }
                 }
             });
 
 
-            if(skip == false){
+            if(skip === false){
 
-                var pxToCheck = this.getWidth() + this.shiftPx + settings.periods.minMargin;
+                let pxToCheck = this.getWidth() + this.shiftPx + settings.periods.minMargin;
 
                 $(".timeline .periods .year").each((i, yearItem) => {
-                    var year = $(yearItem).attr('class').replace("year year-", "");
+                    const year = $(yearItem).attr('class').replace("year year-", "");
 
-                    if(year <= years[yearIndex] || (pxToCheck - (year-years[yearIndex])*yearpx) <= 0) return;
+                    if(year <= years[yearIndex] || (pxToCheck - (year - years[yearIndex]) * yearpx) <= 0) return;
                     pxToCheck -= yearpx;
 
-                    var lastYearHeight = 0;
-                    
+                    let lastYearHeight = 0;
+
                     $(".timeline .periods .year-" + year + " .period").each((i, item) => {
                         lastYearHeight += this.getEventFullHeight($(item));
-                        if(years[yearIndex] == 1810) console.log("lastYearHeight += " + this.getEventFullHeight($(item)) );
-                        if(lastYearHeight >= eventStartHeight+marginBottom){
+                        if(years[yearIndex] === 1810) console.log("lastYearHeight += " + this.getEventFullHeight($(item)));
+                        if(lastYearHeight >= eventStartHeight + marginBottom){
                             if(finalMarginRight < settings.periods.minMargin){
-                                if(years[yearIndex] == 1810) console.log("add from " + year + "-" + i + " : " + eventStartHeight);
-                                if(years[yearIndex] == 1810) console.log("marginBottom now = " + (lastYearHeight - (eventStartHeight+marginBottom)));
+                                if(years[yearIndex] === 1810) console.log("add from " + year + "-" + i + " : " + eventStartHeight);
+                                if(years[yearIndex] === 1810) console.log("marginBottom now = " + (lastYearHeight - (eventStartHeight + marginBottom)));
                                 marginBottom = (lastYearHeight);
                             }
                         }
                     });
-                    
+
                 });
             }
 
 
-
-            if(years[yearIndex] == 1812) console.log("SKIPPED " + skip + " - MARGIN TOP " + marginBottom );
+            if(years[yearIndex] === 1812) console.log("SKIPPED " + skip + " - MARGIN TOP " + marginBottom);
             // if this is not the bottom event and marginBootom != 0, this means the last event has skipped but no this one (Only the bottom event can has margin bottom)
             // So we remove the eventStartHeight (= height of all under events) to the marginBottom
-            if(index != 0 && marginBottom != 0) marginBottom -= eventStartHeight;
+            if(index !== 0 && marginBottom !== 0) marginBottom -= eventStartHeight;
             // If we have skipped under, we repeat the action to check if there is enough place :
             // YES : Try to skip one more year
             // NO : cancel the skipping (next line)
-            if(skip) return this.getMarginTop(yearIndex, lastYearIndex-1, yearpx, marginRight+this.getYearFreeWidth(years[lastYearIndex]), settings, years, index, true);
-            // case of NO : when a skip has occured and the marginBottom != 0
+            if(skip) return this.getMarginTop(yearIndex, lastYearIndex - 1, yearpx, marginRight + this.getYearFreeWidth(years[lastYearIndex]), settings, years, index, true);
+            // case of NO : when a skip has occurred and the marginBottom != 0
             // if marginBottom != 0, this means the function has added a margin bottom so there is not enough space to enter 
-            if(marginBottom != 0 && yearIndex-1 != lastYearIndex) return this.getMarginTop(yearIndex, yearIndex-1, yearpx, marginRight, settings, years, index, false);
+            if(marginBottom !== 0 && yearIndex - 1 !== lastYearIndex) return this.getMarginTop(yearIndex, yearIndex - 1, yearpx, marginRight, settings, years, index, false);
             return marginBottom;
         },
         getMargin(element, side){
@@ -275,7 +277,8 @@ window.appPeriodComp = {
             return parseInt(element.attr('class').replace('period period-', ''));
         },
         getYearFreeWidth(year){
-            return $(".timeline .periods .year-" + year).width() + parseInt(this.getMargin($(".timeline .periods .year-" + year), "Right"));
+            let element = $(".timeline .periods .year-" + year);
+            return element.width() + this.getMargin(element, "Right");
         },
         selectEvent(year, index){
             this.$emit('select-period', year, index);
@@ -333,26 +336,19 @@ window.appYearComp = {
     },
     methods: {
         getWidth: function(yearpx, yeardividefactor, type){
-            return (type == 1) ? yearpx*yeardividefactor : yearpx;
+            return (type === 1) ? yearpx * yeardividefactor : yearpx;
         },
         getMarginRight: function(year, index, years, type, yearpx){
-            switch(type){
-                case 1: // YEARS LINE //
+            let margin;
+            if(type === 1){ // YEARS LINE //
                 return 0;
-                case 0: // EVENTS (Top) //
-                //console.log("////////// PROCESSING YEAR " + year + " //////////");
-                if(years[index-1] == undefined) return 0; // First year
-                var margin = (years[index-1]-year-1) * yearpx; // calculate margin with the years difference
-                this.marginRight = (margin >= 0) ? margin : 0; // clamp margin
+            }else{ // EVENTS (Top) /// PERIODS (Bottom) //
+                if(years[index - 1] === undefined) return 0; // First year
+                margin = (years[index - 1] - year - 1) * yearpx; // calculate margin with the years difference
+                this.marginRight = (margin >= 0) ? margin : 0; // clamp
                 return this.marginRight;
-                break;  ///////////////////////
-                case 2: // PERIODES (Bottom) //
-                if(years[index-1] == undefined) return 0;
-                var margin = (years[index-1]-year-1) * yearpx;
-                this.marginRight = (margin >= 0) ? margin : 0;
-                return this.marginRight;
-                break;  ///////////////////////
             }
+
         },
         selectEvent(year, index){
             this.$emit('select-event', year, index);

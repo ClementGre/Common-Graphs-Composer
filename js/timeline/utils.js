@@ -1,31 +1,24 @@
-
 // from https://stackoverflow.com/questions/11344531/pure-javascript-store-object-in-cookie
 // timeline-ui-lasttab               : "event"/"settings"
 // timeline-settings-[SECTION]       : { Section JSON }
 // timeline-timelines                : [timelines names list]
 // timeline-timeline-[TIMELINE NAME] : { Timeline JSON}
 // timeline-lasttimeline             : last opened timeline name
-window.bake_cookie = function bake_cookie(name, value) {
+window.bake_cookie = function bake_cookie(name, value){
     localStorage.setItem(name, JSON.stringify(value));
-    return;
-
-    var cookie = [name, '=', JSON.stringify(value), '; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 31 Dec 9999 23:59:59 GMT; '].join('');
-    document.cookie = cookie;
+    //document.cookie = [name, '=', JSON.stringify(value), '; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 31 Dec 9999 23:59:59 GMT; '].join('');
 }
-window.read_cookie = function read_cookie(name) {
+window.read_cookie = function read_cookie(name){
     return JSON.parse(localStorage.getItem(name));
-    return;
 
-    var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
+    /*var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
     result && (result = JSON.parse(result[1]));
-    return result;
+    return result;*/
 }
-window.delete_cookie = function delete_cookie(name) {
+window.delete_cookie = function delete_cookie(name){
     localStorage.removeItem(name);
-    return;
 
-    var cookie = [name, '=deleted; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 1 Jan 1970 23:59:59 GMT; '].join('');
-    document.cookie = cookie;
+    //document.cookie = [name, '=deleted; domain=', window.location.host.toString(), '; path=/; samesite = strict; expires=Fri, 1 Jan 1970 23:59:59 GMT; '].join('');
 }
 //
 
@@ -33,12 +26,12 @@ window.delete_cookie = function delete_cookie(name) {
 window.downloadObjectAsJson = function downloadObjectAsJson(exportObj, exportName){
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 4));
     var downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", exportName + ".json");
     document.body.appendChild(downloadAnchorNode); // required for firefox
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-  }
+}
 
 // FLOATERS
 window.displayCheckFloater = function displayCheckFloater(){
@@ -73,30 +66,28 @@ window.parseMonth = function parseMonth(month){
     // N         | November - Novembre
     // D         | December - Décembre
     month = month.toUpperCase();
-    var ch12 = month.substr(0, 2);
-    var ch1 = month.charAt(0);
-    var ch2 = month.charAt(1);
-    
-    var ch34 = month.substr(2, 2);
-    var ch3 = month.charAt(2);
-    var ch4 = month.charAt(3);
+    const ch1 = month.charAt(0);
+    const ch2 = month.charAt(1);
+
+    const ch34 = month.substr(2, 2);
+    const ch3 = month.charAt(2);
     switch(ch1){
         case 'F': // February
             return 2;
         case 'M': // March / May
-            if(ch3 == 'R'){
+            if(ch3 === 'R'){
                 return 3;
             }
             return 5;
         case 'J': // January / June / July
-            if(ch2 == 'A'){
+            if(ch2 === 'A'){
                 return 1;
-            }else if(ch3 == 'N' || ch34 == 'IN'){
+            }else if(ch3 === 'N' || ch34 === 'IN'){
                 return 6;
             }
             return 7;
         case 'A': // April / August
-            if(ch2 == 'P' || ch2 == 'V'){
+            if(ch2 === 'P' || ch2 === 'V'){
                 return 4;
             }
             return 8;
@@ -112,39 +103,39 @@ window.parseMonth = function parseMonth(month){
     return undefined;
 }
 window.parseDate = function parseDate(date){
-    var args = date.split(/[^a-zA-Z0-9]/);
-    var month = undefined;
-    var day = undefined;
-    var year = undefined;
+    const args = date.split(/[^a-zA-Z0-9]/);
+    let month;
+    let day;
+    let year;
     args.forEach((arg, i) => {
-        var intArg = parseInt(arg, 10);
+        const intArg = parseInt(arg, 10);
         console.log(arg)
-        if(isNaN(intArg) && month == undefined){
+        if(isNaN(intArg) && month === undefined){
             month = parseMonth(arg);
         }
     });
     args.forEach((arg, i) => {
-        var intArg = parseInt(arg, 10);
+        const intArg = parseInt(arg, 10);
         if(!isNaN(intArg)){
-            if(month == undefined && intArg <= 12 && intArg >= 1){
+            if(month === undefined && intArg <= 12 && intArg >= 1){
                 month = intArg;
-            }else if(day == undefined && intArg <= 31 && intArg >= 1){
+            }else if(day === undefined && intArg <= 31 && intArg >= 1){
                 day = intArg;
-            }else if(year == undefined && intArg <= 9999 && intArg >= 0){
+            }else if(year === undefined && intArg <= 9999 && intArg >= 0){
                 year = intArg;
             }
         }
     });
-    if(month == undefined) month = 1;
-    if(day == undefined) day = 1;
+    if(month === undefined) month = 1;
+    if(day === undefined) day = 1;
     return {month: month, day: day, year: year};
 }
 window.replaceAll = function replaceAll(text, pattern, replacement){
-  var newText = text.replace(pattern, replacement);
-  if(newText !== text){
-    return replaceAll(newText, pattern, replacement);
-  }
-  return newText;
+    const newText = text.replace(pattern, replacement);
+    if(newText !== text){
+        return replaceAll(newText, pattern, replacement);
+    }
+    return newText;
 }
 window.encode64 = function encode64(string){
     return replaceAll(btoa(toLatin1(string)), "=", "-");
@@ -158,9 +149,9 @@ window.toLatin1 = function toLatin1(string){
 
 // ARRAY/OBJ UTILS
 window.findElementIndex = function findElementIndex(arr, name){
-    for(var i = 0 ; i < arr.length ; i++){
-    if(arr[i] == name)
-        return i;
+    for(let i = 0; i < arr.length; i++){
+        if(arr[i] === name)
+            return i;
     }
     return undefined;
 }
@@ -184,34 +175,31 @@ window.exitFullscreen = function exitFullscreen(){
     }
 }
 window.updateTimelineNameInputWidth = function updateTimelineNameInputWidth(){
-    var textfield = document.getElementById("timeline-name");
-    if(textfield != undefined){
+    const textfield = document.getElementById("timeline-name");
+    if(textfield !== undefined){
         textfield.style.width = "";
-        textfield.style.width = ((textfield.scrollWidth+10) > 380 ? 380 : (textfield.scrollWidth+10)) + "px";
+        textfield.style.width = ((textfield.scrollWidth + 10) > 380 ? 380 : (textfield.scrollWidth + 10)) + "px";
     }
 }
 // from https://stackoverflow.com/questions/2863351/checking-if-browser-is-in-fullscreen
 window.isFullScreen = function isFullScreen(){
     return false;
-  if($.browser.opera){
+    /*if($.browser.opera){
+        const fs = $('<div class="fullscreen"></div>');
+        $('body').append(fs);
 
-    var fs=$('<div class="fullscreen"></div>');
-    $('body').append(fs);
+        const check = fs.css('display') === 'block';
+        fs.remove();
 
-    var check=fs.css('display')=='block';
-    fs.remove();
+        return check;
+    }
 
-    return check;
-  }
+    const st = screen.top || screen.availTop || window.screenTop;
+    if(st !== window.screenY){
+        return false;
+    }
 
-  var st=screen.top || screen.availTop || window.screenTop;
-
-  if(st!=window.screenY){
-
-    return false;
-  }
-
-  return window.fullScreen==true || screen.height-document.documentElement.clientHeight<=30;
+    return window.fullScreen==true || screen.height-document.documentElement.clientHeight<=30;*/
 }
 
 

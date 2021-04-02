@@ -15,7 +15,7 @@ window.appSettingComp = {
         stringValue: {
             get: function(){
                 if(this.auto){
-                    if(this.setting == this.min){
+                    if(this.setting === this.min){
                         return "Auto";
                     }
                 }
@@ -25,7 +25,12 @@ window.appSettingComp = {
     },
     methods: {
         editSetting(value){
-            if(this.subname != undefined) this.$emit('edit-setting', {value: value, section: this.section, name: this.name, subname: this.subname});
+            if(this.subname !== undefined) this.$emit('edit-setting', {
+                value: value,
+                section: this.section,
+                name: this.name,
+                subname: this.subname
+            });
             else this.$emit('edit-setting', {value: value, section: this.section, name: this.name});
         },
         updateValue(){
@@ -35,8 +40,8 @@ window.appSettingComp = {
             this.editSetting(this.$refs.value.value);
         },
         updateStringValue(){
-            value = this.$refs.stringvalue.value
-            if(!isNaN(parseInt(value, 10)) && parseInt(value, 10) != undefined && !(parseInt(value, 10) < this.min || parseInt(value, 10) > this.max)){
+            let value = this.$refs.stringvalue.value
+            if(!isNaN(parseInt(value, 10)) && parseInt(value, 10) !== undefined && !(parseInt(value, 10) < this.min || parseInt(value, 10) > this.max)){
                 this.editSetting(parseInt(value, 10));
             }else if(this.auto && isNaN(parseInt(value, 10))){
                 this.editSetting(parseInt(this.min, 10));
