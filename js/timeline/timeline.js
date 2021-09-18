@@ -671,7 +671,7 @@ const app = new Vue({
             this.ui.dropMenuX = x;
         },
         updateTimelines(){
-            this.ui.timelines = read_cookie('timeline-timelines') === undefined ? [] : read_cookie('timeline-timelines');
+            this.ui.timelines = !read_cookie('timeline-timelines') ? [] : read_cookie('timeline-timelines');
         },
         loadTimeline(name){
             this.$set(this.ui, "selectedType", undefined);
