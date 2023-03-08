@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="100% free graphics Composer. Create now a wonderful timeline !"/>
+    <meta name="keywords" content="ReadGedcom tree family famille arbre généalogique"/>
+
+    <title>Common Graphs Composer | GedTree</title>
+
+    <link rel="icon" href="img/icon.png"/>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Source+Sans+Pro:wght@400;600;700&display=swap"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="css/gedtree.css"/>
+    <link rel="stylesheet" type="text/css" href="css/gedtree-tree.css"/>
+
+    <script src="js/api/vue.js"></script>
+    <script src="js/api/lodash.js"></script>
+    <script src="js/api/jquery.js"></script>
+    <script src="js/api/read-gedcom.js"></script>
+    <script src="js/api/jscolor.js"></script>
+    <script src="js/api/dom-to-image.js"></script>
+    <script>
+        jscolor.presets.default = {
+            format: 'rgba', alphaChannel: true, borderRadius: 5, padding: 5,
+            buttonColor: 'rgba(255,101,213,1)', controlBorderWidth: 0
+        };
+    </script>
+
+</head>
+<body id="body">
+
+<input id="file-input" type="file" name="name" accept="application/json" multiple="true" style="display: none;"/>
+
+<div id="app">
+
+    <header>
+        <div><img src="img/icon.png"></img>
+            <h2>Common Graphs Composer</h2></div>
+        <!-- HEADER PROJECT ACTIONS -->
+        <div class="project-actions">
+
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="timeline.html">Timeline</a></li>
+                <li><a href="gedtree.html">GedTree</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <center>
+            <br>
+            <h1>Application en cours de développement !</h1>
+            <h2>Bientôt disponible, soyez patients...</h2>
+            <br>
+        </center>
+        <p>
+            <label>
+                Rechercher :
+                <input type="text" v-model="ui.search_query">
+            </label>
+            <p v-html="gedcom_search_html"></p>
+        </p>
+    </main>
+
+    <footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by <a href="https://github.com/ClementGre"
+                                                                                    target="_blank">ClémentGrennerat</a>
+    </h5></footer>
+</div>
+</body>
+<script src="js/gedtree/gedtree.js"></script>
+</html>
