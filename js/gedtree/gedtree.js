@@ -38,7 +38,7 @@ const app = new Vue({
 
             let query = this.ui.search_query;
             let data = "";
-            if(query.length > 0){
+            if(query.length >= 3){
                 const results = this.search_someone(query);
                 for (let i = 0; i < results.length; i++) {
                     data += results.getName().valueAsParts()[i][0] + " " + results.getName().valueAsParts()[i][1] + "<br>";
@@ -56,7 +56,7 @@ const app = new Vue({
                 const names = individual.getName().valueAsParts()[0];
                 if(names !== null) {
                     const namesTokens = names.filter(v => v).flatMap(tokenize);
-                    return queryTokens.every(s => namesTokens.includes(s));
+                    return queryTokens.every(s => namesTokens.some(n => utf8ToAscii(n.toLowerCase()).includes(utf8ToAscii(s.toLowerCase()))));
                 }
                 return false;
             });
