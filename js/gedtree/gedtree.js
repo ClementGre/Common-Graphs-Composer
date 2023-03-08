@@ -41,7 +41,9 @@ const app = new Vue({
             if(query.length >= 3){
                 const results = this.search_someone(query);
                 for (let i = 0; i < results.length; i++) {
-                    data += results.getName().valueAsParts()[i][0] + " " + results.getName().valueAsParts()[i][1] + "<br>";
+                    let result = results.arraySelect()[i];
+                    console.log()
+                    data += result.getName().valueAsParts()[0][0] + " " + result.getName().valueAsParts()[0][1] +  " (" + gedDateToString(result.getEventBirth().getDate()) + ") <br>";
                 }
             }
             return data;
