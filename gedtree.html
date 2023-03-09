@@ -38,6 +38,14 @@
 </head>
 <body id="body">
 
+<!-- FLOATERS -->
+<div class="floater disapear" id="disapear-floater">
+    <i class="fas fa-check check"></i>
+</div>
+<div class="floater" id="floater">
+    <i class="fas fa-spinner loader"></i>
+</div>
+
 <input id="file-input" type="file" name="name" accept="application/json" multiple="true" style="display: none;"/>
 
 <div id="app">
@@ -59,19 +67,66 @@
     </header>
 
     <main>
-        <center>
-            <br>
-            <h1>Development in progress !</h1>
-            <h2>Soon available, be patient...</h2>
-            <br>
-        </center>
-        <p>
-            <label>
-                Rechercher :
-                <input type="text" v-model="ui.search_query">
-            </label>
-            <p v-html="gedcom_search_html"></p>
-        </p>
+<!--
+Things to parameter :
+- Tree
+    - Files
+        - Gedcom file
+        - Images ressources folder
+    - Size
+        - Width
+        - Aspect ratio
+        - Right columns number
+        - Left columns number
+    - Individual column settings
+        + For each column :
+            - Do show browsers & sisters
+            - If descending column : show cousins (parents browsers must be shown)
+
+- Design
+    - Colors
+    - Fonts
+    - Sizes
+    - Background (color/img)
+-
+
+
+ -->
+        <div class="render">
+            <div id="tree">
+                <center>
+                    <br>
+                    <h1>Development in progress !</h1>
+                    <h2>Soon available, be patient...</h2>
+                    <br>
+                </center>
+                <label>
+                    Search :
+                    <input type="text" v-model="ui.search_query">
+                </label>
+                <p v-html="gedcom_search_html"></p>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="nav">
+                <p v-bind:class="ui.currentTab == 'tree' ? 'selected' : ''" v-on:click="ui.currentTab = 'tree'">
+                    Tree
+                </p>
+                <p v-bind:class="ui.currentTab == 'settings' ? 'selected' : ''" v-on:click="ui.currentTab = 'settings'">
+                    Settings
+                </p>
+            </div>
+            <div class="pane event-pane" v-show="ui.currentTab == 'tree'">
+
+            </div>
+            <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails"
+                          v-show="ui.currentTab == 'settings'"
+                          v-on:edit-setting="editSetting"
+                          v-on:reset-section="resetSection"
+                          v-on:load-default-section="loadDefaultSection"
+                          v-on:set-default-section="setDefaultSection"></app-settings>
+
+        </div>
     </main>
 
     <footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by <a href="https://github.com/ClementGre"
@@ -79,6 +134,8 @@
     </h5></footer>
 </div>
 </body>
+<script src="js/gedtree/constants.js"></script>
 <script src="js/gedtree/utils.js"></script>
+<script src="js/gedtree/settings.js"></script>
 <script src="js/gedtree/gedtree.js"></script>
 </html>

@@ -15,10 +15,10 @@ const app = new Vue({
         renderData: {
 
         },
-        settings: {
-            backgroundColor: "#ffffff",
-        },
+        settings: {},
+        settingsDetails: constants.settingsDetails,
         ui: {
+            currentTab: "settings",
             search_query: "grennerat",
         },
         dump: "no.."
@@ -62,7 +62,48 @@ const app = new Vue({
                 }
                 return false;
             });
-        }
+        },
+
+        //     SETTINGS
+        editSetting: function(data){
+            if(data.subname !== undefined) this.$set(this.settings[data.section][data.name], data.subname, data.value);
+            else this.$set(this.settings[data.section], data.name, data.value);
+        },
+        resetSection: function(section){
+            this.settings[section] = this.generateSettings(this.settingsDetails[section]);
+            setTimeout(() => {
+                $.each($("main .panel .pane input[data-jscolor]"), function(index, element){
+                    element.jscolor.fromString($(element).val()); // Update for JSColor
+                });
+            }, 0);
+        },
+        loadDefaultSection: function(section){
+            const data = get_local_data('timeline-settings-' + section);
+            if(!data) this.settings[section] = this.generateSettings(this.settingsDetails[section]);
+            else this.settings[section] = data;
+            setTimeout(() => {
+                $.each($("main .panel .pane input[data-jscolor]"), function(index, element){
+                    element.jscolor.fromString($(element).val()); // Update for JSColor
+                });
+            }, 0);
+        },
+        setDefaultSection: function(section){
+            set_local_data('timeline-settings-' + section, this.settings[section]);
+            displayCheckFloater();
+        },
+        generateSettings: function(source){
+            const result = {};
+            Object.keys(source).forEach(name => {
+                if(typeof source[name] == 'object'){
+                    if(source[name].type !== undefined){
+                        result[name] = source[name].value;
+                    }else{
+                        result[name] = this.generateSettings(source[name]);
+                    }
+                }
+            });
+            return result;
+        },
     },
     watch: {
         settings: {
@@ -72,14 +113,15 @@ const app = new Vue({
             }
         },
         // START WATCHER (immediate)
-        // 'ui.currentTab': {
-        //     immediate: true,
-        //     handler: function(val, oldVal){
-        //
-        //     }
-        // }
+        'ui.currentTab': {
+            immediate: true,
+            handler: function(val, oldVal){
+                if(this.settings.global === undefined) this.settings = this.generateSettings(this.settingsDetails);
+                set_local_data('timeline-ui-lasttab', val);
+            }
+        },
     },
     components: {
-        // "app-year": appYearComp,
+        "app-settings": appSettingsComp,
     }
 });
