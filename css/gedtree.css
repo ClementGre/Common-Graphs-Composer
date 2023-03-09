@@ -174,3 +174,13 @@ main .panel .pane .date-summary {
     font-weight: 300;
     line-height: 29px;
 }
+main .panel input[type="file"]{
+    padding-left: 0 !important;
+}
+main .panel input[type="file"]::file-selector-button {
+    height: 25px;
+    border-radius: 3px;
+    background-color: #f3f3f3;
+    border: 1px solid gray;
+    cursor: pointer;
+}

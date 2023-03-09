@@ -1,14 +1,56 @@
+// Types :
+// 0 : color
+// 1 : number
+// 2 : text
+// 3 : file/dir
 window.constants = {
     settingsDetails: {
+        files: {
+            name: "Source files",
+            gedFile: {
+                name: "Gedcom file",
+                type: 3,
+                isDirectory: false
+            },
+            imgDir: {
+                name: "Images folder",
+                type: 3,
+                isDirectory: true
+            }
+        },
+        size: {
+            name: "Render dimensions",
+            width: {
+                name: "Width (px)",
+                type: 1, value: 750,
+                min: 20, max: 100000, step: 10,
+            },
+            aspectRatio: {
+                name: "Aspect ratio",
+                type: 1, isFloat: true, value: 0.75,
+                min: 0.1, max: 10, step: 0.05,
+            },
+            leftColumns: {
+                name: "Left columns (ascending)",
+                type: 1, value: 5,
+                min: 0, max: 15, step: 1,
+            },
+            rightColumns: {
+                name: "Right columns (descending)",
+                type: 1, value: 0,
+                min: 0, max: 15, step: 1,
+            }
+        },
+
         global: {
             name: "Colors",
             backgroundColor: {
                 name: "Background Color",
-                type: 0, value: "rgba(255, 255, 255, 0)",
+                type: 0, value: "rgb(225, 221, 195)",
             },
             backgroundImage: {
                 name: "background Image",
-                type: 1, value: 499,
+                type: 2, value: "", placeholder: "https://example.com/image.png",
             }
         },
         margins: {

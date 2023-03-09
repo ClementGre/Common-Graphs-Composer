@@ -18,7 +18,7 @@ const app = new Vue({
         settings: {},
         settingsDetails: constants.settingsDetails,
         ui: {
-            currentTab: "settings",
+            currentTab:  !get_local_data('timeline-ui-lasttab') ? "settings" : get_local_data('timeline-ui-lasttab'),
             search_query: "grennerat",
         },
         dump: "no.."
@@ -115,7 +115,7 @@ const app = new Vue({
         // START WATCHER (immediate)
         'ui.currentTab': {
             immediate: true,
-            handler: function(val, oldVal){
+            handler: function(val){
                 if(this.settings.global === undefined) this.settings = this.generateSettings(this.settingsDetails);
                 set_local_data('timeline-ui-lasttab', val);
             }

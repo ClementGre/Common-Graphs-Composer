@@ -116,15 +116,20 @@ Things to parameter :
                     Settings
                 </p>
             </div>
-            <div class="pane event-pane" v-show="ui.currentTab == 'tree'">
-
-            </div>
             <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails"
                           v-show="ui.currentTab == 'settings'"
                           v-on:edit-setting="editSetting"
                           v-on:reset-section="resetSection"
                           v-on:load-default-section="loadDefaultSection"
                           v-on:set-default-section="setDefaultSection"></app-settings>
+
+            <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails"
+                          v-show="ui.currentTab == 'settings'"
+                          v-on:edit-setting="editSetting"
+                          v-on:reset-section="resetSection"
+                          v-on:load-default-section="loadDefaultSection"
+                          v-on:set-default-section="setDefaultSection"></app-settings>
+
 
         </div>
     </main>
