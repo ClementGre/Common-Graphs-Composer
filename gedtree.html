@@ -111,8 +111,8 @@
                         <tr>
                             <td>Root individual<br>
                                 <div style="display: flex; gap: 10px">
-                                    <input type="text" placeholder="Search..." style="flex-grow: 1;">
-                                    <input type="text" placeholder="@I342438494116@" style="width: 100px;">
+                                    <input type="text" placeholder="Search..." style="flex-grow: 1;" v-model="ui.search_query">
+                                    <input type="text" placeholder="@I342438494116@" style="width: 100px;" v-model="settings.hidden.rootIndividualId">
                                 </div>
                             </td>
                         </tr>

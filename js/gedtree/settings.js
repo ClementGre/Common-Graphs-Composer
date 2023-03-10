@@ -62,7 +62,6 @@ window.appSettingComp = {
             else this.editSetting(parseInt(this.$refs.value.value, 10));
         },
         updateBoolValue(){
-            console.log(this.$refs.value.checked)
             this.editSetting(this.$refs.value.checked);
         },
         updateRgbValue(){
@@ -138,11 +137,7 @@ window.appSettingsGroupComp = {
                                     :isfloat="section[name][subname].isFloat"
                                     :placeholder="section[name][subname].placeholder"
                                     :isdirectory="section[name][subname].isDirectory"
-                                    v-show="section[name][subname].require
-                                        ? (settings[sectionName][name]?.['n' + rindex]?.[section[name][subname].require] === undefined
-                                            ? section[name][section[name][subname].require].value
-                                            : settings[sectionName][name]?.['n' + rindex]?.[section[name][subname].require])
-                                        : true"/>
+                                    v-show="!isRepeatedSectionItemDisabled(name, rindex, subname)"/>
     
                                 <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
     
@@ -193,7 +188,17 @@ window.appSettingsGroupComp = {
         },
         setDefaultSection(section){
             this.$emit('manage', 'set-default-section', section);
-        }
+        },
+        isRepeatedSectionItemDisabled: function(name, rindex, subname){
+            if(this.section[name][subname].require){
+                if (!this.settings[this.sectionName][name]['n' + rindex]){
+                    this.$set(this.settings[this.sectionName][name], 'n' + rindex, {})
+                    this.$set(this.settings[this.sectionName][name]['n' + rindex], this.section[name][subname].require, this.section[name][this.section[name][subname].require].value)
+                }
+                return !this.settings[this.sectionName][name]?.['n' + rindex]?.[this.section[name][subname].require];
+            }
+            return false;
 
+        }
     }
 }

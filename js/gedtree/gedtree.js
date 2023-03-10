@@ -10,7 +10,7 @@ const app = new Vue({
         settingsDetails: constants.settingsDetails,
         ui: {
             currentTab:  !get_local_data('gedtree-ui-lasttab') ? "settings" : get_local_data('gedtree-ui-lasttab'),
-            search_query: "grennerat",
+            search_query: "",
         },
         temp: {
             settingsEditCount: 0,
