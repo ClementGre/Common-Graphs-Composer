@@ -68,14 +68,14 @@
 
     <main>
         <div class="render">
-            <div id="tree">
-                <center>
-                    <br>
-                    <h1>Development in progress !</h1>
-                    <h2>Soon available, be patient...</h2>
-                    <br>
-                </center>
-            </div>
+            <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings"
+                  :render-data="renderData"></tree>
+            <center v-else>
+                <br>
+                <h1>Development in progress !</h1>
+                <h2>Soon available, be patient...</h2>
+                <br>
+            </center>
         </div>
         <div class="panel">
             <div class="nav">
@@ -106,7 +106,9 @@
                         <tr>
                             <td>Root individual<br>
                                 <div style="display: flex; gap: 10px">
-                                    <input type="text" :placeholder="format_individual_name(rootIndividual) ?? 'Search...'" style="flex-grow: 1;"
+                                    <input type="text"
+                                           :placeholder="format_individual_name(rootIndividual) ?? 'Search...'"
+                                           style="flex-grow: 1;"
                                            v-model="ui.search_query">
                                     <input type="text" placeholder="@I342438494116@" style="width: 100px;"
                                            v-model="settings.hidden.rootIndividualId">
@@ -130,7 +132,7 @@
             </div>
             <div class="pane settings-pane" v-show="ui.currentTab === 'settings'">
 
-                <app-settings-group :settings="settings" section-name="global" :section="settingsDetails.global"
+                <app-settings-group :settings="settings" section-name="background" :section="settingsDetails.background"
                                     v-on:manage="manageSettings"></app-settings-group>
 
                 <app-settings-group :settings="settings" section-name="margins" :section="settingsDetails.margins"
@@ -153,5 +155,6 @@
 <script src="js/gedtree/constants.js"></script>
 <script src="js/gedtree/utils.js"></script>
 <script src="js/gedtree/settings.js"></script>
+<script src="js/gedtree/tree.js"></script>
 <script src="js/gedtree/gedtree.js"></script>
 </html>

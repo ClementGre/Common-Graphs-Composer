@@ -3,9 +3,7 @@ const app = new Vue({
     name: "gedtree",
     data: {
         gedcom: null,
-        renderData: {
-
-        },
+        renderData: {},
         settings: !get_local_data('gedtree-settings') ? {} : get_local_data('gedtree-settings'),
         settingsDetails: constants.settingsDetails,
         ui: {
@@ -14,8 +12,7 @@ const app = new Vue({
         },
         temp: {
             settingsEditCount: 0,
-        },
-        dump: "no.."
+        }
     },
     created: function(){
         const promise = fetch('example.ged')
@@ -168,5 +165,6 @@ const app = new Vue({
     },
     components: {
         "app-settings-group": appSettingsGroupComp,
+        "tree": treeComp,
     }
 });

@@ -18,7 +18,7 @@ window.constants = {
             width: {
                 name: "Width (px)",
                 type: 1, value: 750,
-                min: 20, max: 100000, step: 10,
+                min: 20, max: 5000, step: 10,
             },
             aspectRatio: {
                 name: "Aspect ratio",
@@ -82,15 +82,30 @@ window.constants = {
             },
         },
 
-        global: {
+        background: {
             name: "Colors",
             backgroundColor: {
                 name: "Background Color",
-                type: 0, value: "rgb(225, 221, 195)",
+                type: 0, value: "rgba(249,246,232,1)",
             },
             backgroundImage: {
-                name: "background Image",
-                type: 2, value: "", placeholder: "https://example.com/image.png",
+                name: "Background image",
+                type: 2, value: "img/tree.svg", placeholder: "https://example.com/image.png",
+            },
+            backgroundSize: {
+                name: "Background size (%)",
+                type: 1, value: 0, isFloat: true,
+                min: 0, max: 300, step: 1, auto: true
+            },
+            backgroundImageX: {
+                name: "Background image x (%)",
+                type: 1, value: 100, isFloat: true,
+                min: -200, max: 200, step: 1
+            },
+            backgroundImageY: {
+                name: "Background image y (%)",
+                type: 1, value: 0, isFloat: true,
+                min: -200, max: 200, step: 1
             }
         },
         margins: {

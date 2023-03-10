@@ -5,13 +5,13 @@ window.appSettingComp = {
             <td>{{title}}</td>
             
             <td v-if="type == 0">
-                <input :value="setting" ref="value" @input="updateRgbValue()" data-jscolor="" placeholder="rgba(r, g, b, a)">
+                <input :value="setting" ref="value" @input="updateRawValue()" data-jscolor="" placeholder="rgba(r, g, b, a)">
             </td>
             <td v-if="type == 1" class="double">
-                <input :value="setting" ref="value" @input="updateNumberValue()" type="range" :min="min" :max="max" :step="step"><input :value="stringValue" ref="stringvalue" @input="updateNumberStringValue()" type="text" :placeholder="min + ' - ' + max">
+                <input :value="setting" ref="value" @input="updateRawValue()" type="range" :min="min" :max="max" :step="step"><input :value="numberStringValue" ref="numbervalue" @input="updateNumberValue()" type="text" :placeholder="min + ' - ' + max">
             </td>
             <td v-if="type == 2">
-               <input :value="setting" ref="value" @input="updateStringValue()" type="text" :placeholder="placeholder">
+               <input :value="setting" ref="value" @input="updateRawValue()" type="text" :placeholder="placeholder">
             </td>
             <td v-if="type == 3" style="padding-left: 15px">
                <input :checked="setting" ref="value" @input="updateBoolValue()" type="checkbox" style="width: 25px">
@@ -19,10 +19,10 @@ window.appSettingComp = {
         </tr>`,
     props: ["setting", "title", "section", "sectionId", "name", "subname", "type", "min", "max", "step", "placeholder", "isfloat", "isdirectory", "auto", "rindex"],
     computed: {
-        stringValue: {
+        numberStringValue: {
             get: function(){
                 if(this.auto){
-                    if(this.setting === this.min){
+                    if(this.setting == this.min){
                         return "Auto";
                     }
                 }
@@ -51,26 +51,16 @@ window.appSettingComp = {
             }
             else this.$emit('edit-setting', {value: value, section: this.sectionId, name: this.name});
         },
-        updateFileValue(){
+        updateRawValue(){
             this.editSetting(this.$refs.value.value);
-        },
-        updateStringValue(){
-            this.editSetting(this.$refs.value.value);
-        },
-        updateNumberValue(){
-            if(this.isfloat) this.editSetting(parseFloat(this.$refs.value.value));
-            else this.editSetting(parseInt(this.$refs.value.value, 10));
         },
         updateBoolValue(){
             this.editSetting(this.$refs.value.checked);
         },
-        updateRgbValue(){
-            this.editSetting(this.$refs.value.value);
-        },
-        updateNumberStringValue(){
-            let value = this.$refs.stringvalue.value
+        updateNumberValue(){
+            let value = this.$refs.numbervalue.value
             if (this.isfloat){
-                if(!isNaN(parseFloat(value)) && parseFloat(value) !== undefined && parseFloat(value) <= this.min && parseFloat(value) <= this.max){
+                if(!isNaN(parseFloat(value)) && parseFloat(value) !== undefined && parseFloat(value) >= this.min && parseFloat(value) <= this.max){
                     this.editSetting(parseFloat(value));
                 }else if(this.auto && isNaN(parseFloat(value))){
                     this.editSetting(parseFloat(this.min));
