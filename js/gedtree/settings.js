@@ -14,7 +14,7 @@ window.appSettingComp = {
                <input :value="setting" ref="value" @input="updateStringValue()" type="text" :placeholder="placeholder">
             </td>
             <td v-if="type == 3" style="padding-left: 15px">
-               <input :checked="setting" ref="value" @input="updateBoolValue()" type="checkbox" style="width: 25px" >
+               <input :checked="setting" ref="value" @input="updateBoolValue()" type="checkbox" style="width: 25px">
             </td>
         </tr>`,
     props: ["setting", "title", "section", "sectionId", "name", "subname", "type", "min", "max", "step", "placeholder", "isfloat", "isdirectory", "auto", "rindex"],
@@ -125,11 +125,10 @@ window.appSettingsGroupComp = {
                             <template v-for="(subname, subindex) in Object.keys(section[name])"
                                     v-if="typeof section[name][subname] == 'object' && section[name][subname].type != undefined">
                                 
-                                {{settings[sectionName][name]?.[rindex]?.[subname]}}
                                 <tr :key="index + '.' + subindex + '.' + rindex" is="app-setting"
                                     :rindex="rindex"
                                     v-on:edit-setting="editSetting"
-                                    :setting="settings[sectionName][name]?.[rindex]?.[subname]" 
+                                    :setting="settings[sectionName][name]['n' + rindex] ? settings[sectionName][name]['n' + rindex][subname] : section[name][subname].value" 
                                     :section="section" :name="name" :subname="subname"
                                     :section-id="sectionName"
                                     :type="section[name][subname].type"
@@ -138,7 +137,12 @@ window.appSettingsGroupComp = {
                                     :step="section[name][subname].step" :auto="section[name][subname].auto"
                                     :isfloat="section[name][subname].isFloat"
                                     :placeholder="section[name][subname].placeholder"
-                                    :isdirectory="section[name][subname].isDirectory" />
+                                    :isdirectory="section[name][subname].isDirectory"
+                                    v-show="section[name][subname].require
+                                        ? (settings[sectionName][name]?.['n' + rindex]?.[section[name][subname].require] === undefined
+                                            ? section[name][section[name][subname].require].value
+                                            : settings[sectionName][name]?.['n' + rindex]?.[section[name][subname].require])
+                                        : true"/>
     
                                 <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
     
@@ -161,7 +165,8 @@ window.appSettingsGroupComp = {
                                     :step="section[name][subname].step" :auto="section[name][subname].auto"
                                     :isfloat="section[name][subname].isFloat"
                                     :placeholder="section[name][subname].placeholder"
-                                    :isdirectory="section[name][subname].isDirectory" />
+                                    :isdirectory="section[name][subname].isDirectory"
+                                    v-show="section[name][subname].require ? settings[sectionName][name][section[name][subname].require] : true" />
     
                                 <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
     
@@ -190,8 +195,5 @@ window.appSettingsGroupComp = {
             this.$emit('manage', 'set-default-section', section);
         }
 
-    },
-    mounted: function() {
-        console.log(this.settings['size']['leftColumns'])
-    },
+    }
 }

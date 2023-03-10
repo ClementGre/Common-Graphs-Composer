@@ -12,6 +12,9 @@ const app = new Vue({
             currentTab:  !get_local_data('gedtree-ui-lasttab') ? "settings" : get_local_data('gedtree-ui-lasttab'),
             search_query: "grennerat",
         },
+        temp: {
+            settingsEditCount: 0,
+        },
         dump: "no.."
     },
     created: function(){
@@ -33,7 +36,6 @@ const app = new Vue({
                 const results = this.search_someone(query);
                 for (let i = 0; i < results.length; i++) {
                     let result = results.arraySelect()[i];
-                    console.log()
                     data += result.getName().valueAsParts()[0][0] + " " + result.getName().valueAsParts()[0][1] +  " (" + gedDateToString(result.getEventBirth().getDate()) + ") <br>";
                 }
             }
@@ -73,17 +75,24 @@ const app = new Vue({
             }
         },
         editSetting: function(data){
-            if(!this.settings[data.section]) this.settings[data.section] = {};
-
             if(data.subname !== undefined){
-                if(!this.settings[data.section][data.name]) this.settings[data.section][data.name] = {};
                 if(data.rindex !== undefined){
-                    if(!this.settings[data.section][data.name][data.rindex]) this.settings[data.section][data.name][data.rindex] = [];
-                    this.$set(this.settings[data.section][data.name][data.rindex], data.subname, data.value);
+                    if(!this.settings[data.section][data.name]['n' + data.rindex]) this.settings[data.section][data.name]['n' + data.rindex] = {};
+                    this.$set(this.settings[data.section][data.name]['n' + data.rindex], data.subname, data.value);
                 }
                 else this.$set(this.settings[data.section][data.name], data.subname, data.value);
             }
             else this.$set(this.settings[data.section], data.name, data.value);
+            this.saveSettings()
+        },
+        saveSettings: function() {
+            this.temp.settingsEditCount++;
+            const lastEditCount = this.temp.settingsEditCount;
+            setTimeout(() => {
+                if (lastEditCount === this.temp.settingsEditCount) {
+                    set_local_data('gedtree-settings', this.settings);
+                }
+            }, 1000);
         },
         resetSection: function(section){
             this.settings[section] = this.generateSettings(this.settingsDetails[section]);
@@ -124,10 +133,8 @@ const app = new Vue({
     watch: {
         settings: {
             immediate: true,
-            deep: true,
-            handler: function(val){
+            handler: function(){
                 if(_.isEmpty(this.settings)) this.settings = this.generateSettings(this.settingsDetails);
-                set_local_data('gedtree-settings', this.settings);
             }
         },
         'ui.currentTab': {

@@ -2,20 +2,15 @@
 // 0 : color
 // 1 : number
 // 2 : text
-// 3 : file/dir
+// 3 : checkbox
 window.constants = {
     settingsDetails: {
-        files: {
-            name: "Source files",
-            gedFile: {
-                name: "Gedcom file",
-                type: 3,
-                isDirectory: false
-            },
-            imgDir: {
-                name: "Images folder",
-                type: 3,
-                isDirectory: true
+        hidden: {
+            name: "Hidden",
+            rootIndividualId: {
+                name: "Root individual ID",
+                type: 2,
+                value: '',
             }
         },
         size: {
@@ -49,7 +44,7 @@ window.constants = {
                 repeat: {section: 'size', name: 'leftColumns'},
                 showBrothers: {
                     name: "Show brothers",
-                    type: 3, value: true,
+                    type: 3, value: false,
                 },
                 showBrothersChildren: {
                     name: "Show brothers children",
@@ -79,9 +74,10 @@ window.constants = {
                     type: 3, value: false,
                 },
                 showBrothersChildren: {
-                    name: "Show brothers childrens",
+                    name: "Show brothers children",
                     type: 3, value: false,
-                    require: 'showBrothers'
+                    require: 'showBrothers',
+                    separator: true
                 }
             },
         },
