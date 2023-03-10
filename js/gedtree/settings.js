@@ -2,24 +2,19 @@ window.appSettingComp = {
     name: "appsetting",
     template: `
         <tr style="width:100%">
-            <td v-if="type == 3" style="width:100%; padding-bottom: 5px;">
-                {{title}}<br>
-               <input v-if="!isdirectory" v-bind:value="setting" ref="value" @input="updateFileValue()" type="file" accept=".ged,.gdz">
-               <input v-else v-bind:value="setting" ref="value" @input="updateFileValue()" type="file" accept="*" webkitdirectory directory multiple>
-            </td>
-        
-            <td v-else >{{title}}</td>
+            <td>{{title}}</td>
+            
             <td v-if="type == 0">
-                <input v-bind:value="setting" ref="value" @input="updateRgbValue()" data-jscolor="" placeholder="rgba(r, g, b, a)">
+                <input :value="setting" ref="value" @input="updateRgbValue()" data-jscolor="" placeholder="rgba(r, g, b, a)">
             </td>
             <td v-if="type == 1" class="double">
-                <input v-bind:value="setting" ref="value" @input="updateNumberValue()" type="range" v-bind:min="min" v-bind:max="max" v-bind:step="step"><input v-bind:value="stringValue" ref="stringvalue" @input="updateNumberStringValue()" type="text" v-bind:placeholder="min + ' - ' + max">
+                <input :value="setting" ref="value" @input="updateNumberValue()" type="range" :min="min" :max="max" :step="step"><input :value="stringValue" ref="stringvalue" @input="updateNumberStringValue()" type="text" :placeholder="min + ' - ' + max">
             </td>
             <td v-if="type == 2">
-               <input v-bind:value="setting" ref="value" @input="updateStringValue()" type="text" :placeholder="placeholder">
+               <input :value="setting" ref="value" @input="updateStringValue()" type="text" :placeholder="placeholder">
             </td>
         </tr>`,
-    props: ["setting", "title", "section", "name", "subname", "type", "min", "max", "step", "placeholder", "isfloat", "isdirectory", "auto"],
+    props: ["setting", "title", "section", "sectionId", "name", "subname", "type", "min", "max", "step", "placeholder", "isfloat", "isdirectory", "auto"],
     computed: {
         stringValue: {
             get: function(){
@@ -36,11 +31,11 @@ window.appSettingComp = {
         editSetting(value){
             if(this.subname !== undefined) this.$emit('edit-setting', {
                 value: value,
-                section: this.section,
-                name: this.name,
-                subname: this.subname
+                section: this.sectionId,
+                subname: this.subname,
+                name: this.name
             });
-            else this.$emit('edit-setting', {value: value, section: this.section, name: this.name});
+            else this.$emit('edit-setting', {value: value, section: this.sectionId, name: this.name});
         },
         updateFileValue(){
             this.editSetting(this.$refs.value.value);
@@ -73,112 +68,82 @@ window.appSettingComp = {
         }
     }
 }
-window.appSettingsComp = {
-    name: "appsetting",
+window.appSettingsGroupComp = {
+    name: "appsettingsgroup",
     template: `
-        <div class="pane settings-pane" >
-            <div v-for="(section) in Object.keys(settingsdetails)">
-                <div class="content">
-                    <div>
-                        <button @click="loadDefaultSection(section)">Load Default</button>
-                        <button @click="setDefaultSection(section)">Save As Default</button>
-                        <button @click="resetSection(section)">Reset</button>
-                    </div>
-                    <h3>{{settingsdetails[section].name}}</h3>
-                    <table>
-                        <template v-for="(name, index) in Object.keys(settingsdetails[section])"
-                            v-if="typeof settingsdetails[section][name] == 'object'">
+        <div class="content">
+            <div>
+                <button @click="loadDefaultSection(sectionName)">Load Default</button>
+                <button @click="setDefaultSection(sectionName)">Save As Default</button>
+                <button @click="resetSection(sectionName)">Reset</button>
+            </div>
+            <h3>{{section.name}}</h3>
+            <table>
+                <template v-for="(name, index) in Object.keys(section)"
+                    v-if="typeof section[name] == 'object'">
+                    
+                    <template v-if="section[name].type != undefined">
+                    
+                        <tr :key="index" is="app-setting"
+                            v-on:edit-setting="editSetting"
+                            :setting="settings[sectionName][name]" 
+                            :section="section" :name="name"
+                            :section-id="sectionName"
+                            :type="section[name].type"
+                            :title="section[name].name"
+                            :min="section[name].min" :max="section[name].max"
+                            :step="section[name].step" :auto="section[name].auto"
+                            :isfloat="section[name].isFloat"
+                            :placeholder="section[name].placeholder"
+                            :isdirectory="section[name].isDirectory" />
+
+                        <tr v-if="section[name].separator"><td><hr></td><td></td></tr>
+
+                    </template>
+                    <template v-else>
+                        <tr><td><h4>{{section[name].name}}</h4></td><td></td></tr>
+                        <template v-for="(subname, subindex) in Object.keys(section[name])"
+                                v-if="typeof section[name][subname] == 'object' && section[name][subname].type != undefined">
                             
-                            <template v-if="settingsdetails[section][name].type != undefined">
-                            
-                                <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name].type == 0"
-                                    v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
-                                    v-bind:section="section" v-bind:name="name" v-bind:type="0"
-                                    v-bind:title="settingsdetails[section][name].name"/>
-                                
-                                <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name].type == 1"
-                                    v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
-                                    v-bind:section="section" v-bind:name="name" v-bind:type="1"
-                                    v-bind:title="settingsdetails[section][name].name"
-                                    v-bind:min="settingsdetails[section][name].min" v-bind:max="settingsdetails[section][name].max"
-                                    v-bind:step="settingsdetails[section][name].step" v-bind:auto="settingsdetails[section][name].auto"
-                                    v-bind:placeholder="settingsdetails[section][name].placeholder"
-                                    v-bind:isfloat="settingsdetails[section][name].isFloat"/>
-                                    
-                                <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name].type == 2"
-                                    v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
-                                    v-bind:section="section" v-bind:name="name" v-bind:type="2"
-                                    v-bind:title="settingsdetails[section][name].name"
-                                    v-bind:placeholder="settingsdetails[section][name].placeholder" />
-                                    
-                                <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name].type == 3"
-                                    v-bind:setting="settings[section][name]" v-on:edit-setting="editSetting"
-                                    v-bind:section="section" v-bind:name="name" v-bind:type="3"
-                                    v-bind:isdirectory="settingsdetails[section][name].isDirectory"
-                                    v-bind:title="settingsdetails[section][name].name" />
+                            <tr :key="index + '.' + subindex" is="app-setting"
+                                v-on:edit-setting="editSetting"
+                                :setting="settings[sectionName][name][subname]" 
+                                :section="section" :name="name" :subname="subname"
+                                :section-id="sectionName"
+                                :type="section[name][subname].type"
+                                :title="section[name][subname].name"
+                                :min="section[name][subname].min" :max="section[name][subname].max"
+                                :step="section[name][subname].step" :auto="section[name][subname].auto"
+                                :isfloat="section[name][subname].isFloat"
+                                :placeholder="section[name][subname].placeholder"
+                                :isdirectory="section[name][subname].isDirectory" />
 
-                                <tr v-if="settingsdetails[section][name].separator"><td><hr></td><td></td></tr>
-
-                            </template>
-                            <template v-else>
-                                <tr><td><h4>{{settingsdetails[section][name].name}}</h4></td><td></td></tr>
-                                <template v-for="(subname, subindex) in Object.keys(settingsdetails[section][name])"
-                                        v-if="typeof settingsdetails[section][name][subname] == 'object' && settingsdetails[section][name][subname].type != undefined">
-                                
-                                    <tr v-bind:key="index + '.' + subindex" is="app-setting" v-if="settingsdetails[section][name][subname].type == 0"
-                                        v-bind:setting="settings[section][name][subname]" v-on:edit-setting="editSetting"
-                                        v-bind:section="section" v-bind:name="name" v-bind:subname="subname" v-bind:type="0"
-                                        v-bind:title="settingsdetails[section][name][subname].name"
-                                        v-bind:placeholder="settingsdetails[section][name][subname].placeholder"
-                                        v-bind:isfloat="settingsdetails[section][name][subname].isFloat"/>
-                                    
-                                    <tr v-bind:key="index + '.' + subindex" is="app-setting" v-if="settingsdetails[section][name][subname].type == 1"
-                                        v-bind:setting="settings[section][name][subname]" v-on:edit-setting="editSetting"
-                                        v-bind:section="section" v-bind:name="name" v-bind:subname="subname" v-bind:type="1"
-                                        v-bind:title="settingsdetails[section][name][subname].name"
-                                        v-bind:min="settingsdetails[section][name][subname].min" v-bind:max="settingsdetails[section][name][subname].max"
-                                        v-bind:step="settingsdetails[section][name][subname].step" v-bind:auto="settingsdetails[section][name][subname].auto"
-                                        v-bind:isfloat="settingsdetails[section][name][subname].isFloat"/>
-                                        
-                                    <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name][subname].type == 2"
-                                        v-bind:setting="settings[section][name][subname]" v-on:edit-setting="editSetting"
-                                        v-bind:section="section" v-bind:name="name" v-bind:type="2"
-                                        v-bind:title="settingsdetails[section][name][subname].name"
-                                        v-bind:placeholder="settingsdetails[section][name][subname].placeholder" />
-                                        
-                                    <tr v-bind:key="index" is="app-setting" v-if="settingsdetails[section][name][subname].type == 3"
-                                        v-bind:setting="settings[section][name][subname]" v-on:edit-setting="editSetting"
-                                        v-bind:section="section" v-bind:name="name" v-bind:type="3"
-                                        v-bind:isdirectory="settingsdetails[section][name][subname].isDirectory"
-                                        v-bind:title="settingsdetails[section][name][subname].name" />
-
-                                    <tr v-if="settingsdetails[section][name][subname].separator"><td><hr></td><td></td></tr>
-
-                                </template>
-                            </template>
+                            <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
 
                         </template>
+                    </template>
 
-                    </table>
-                </div>
-            </div>
+                </template>
+
+            </table>
         </div>`,
-    props: ["settings", "settingsdetails"],
+    props: ["settings", "section-name", "section"],
     components: {
         "app-setting": appSettingComp,
     },
     methods: {
         editSetting(data){
-            this.$emit('edit-setting', data);
+            console.log(data)
+            this.$emit('manage', 'edit-setting', data);
         },
         resetSection(section){
-            this.$emit('reset-section', section);
+            this.$emit('manage', 'reset-section', section);
         },
         loadDefaultSection(section){
-            this.$emit('load-default-section', section);
+            this.$emit('manage', 'load-default-section', section);
         },
         setDefaultSection(section){
-            this.$emit('set-default-section', section);
+            this.$emit('manage', 'set-default-section', section);
         }
 
     }

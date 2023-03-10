@@ -67,31 +67,6 @@
     </header>
 
     <main>
-<!--
-Things to parameter :
-- Tree
-    - Files
-        - Gedcom file
-        - Images ressources folder
-    - Size
-        - Width
-        - Aspect ratio
-        - Right columns number
-        - Left columns number
-    - Individual column settings
-        + For each column :
-            - Do show browsers & sisters
-            - If descending column : show cousins (parents browsers must be shown)
-
-- Design
-    - Colors
-    - Fonts
-    - Sizes
-    - Background (color/img)
--
-
-
- -->
         <div class="render">
             <div id="tree">
                 <center>
@@ -109,26 +84,54 @@ Things to parameter :
         </div>
         <div class="panel">
             <div class="nav">
-                <p v-bind:class="ui.currentTab == 'tree' ? 'selected' : ''" v-on:click="ui.currentTab = 'tree'">
+                <p v-bind:class="ui.currentTab === 'tree' ? 'selected' : ''" v-on:click="ui.currentTab = 'tree'">
                     Tree
                 </p>
-                <p v-bind:class="ui.currentTab == 'settings' ? 'selected' : ''" v-on:click="ui.currentTab = 'settings'">
+                <p v-bind:class="ui.currentTab === 'settings' ? 'selected' : ''"
+                   v-on:click="ui.currentTab = 'settings'">
                     Settings
                 </p>
             </div>
-            <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails"
-                          v-show="ui.currentTab == 'settings'"
-                          v-on:edit-setting="editSetting"
-                          v-on:reset-section="resetSection"
-                          v-on:load-default-section="loadDefaultSection"
-                          v-on:set-default-section="setDefaultSection"></app-settings>
 
-            <app-settings v-bind:settings="settings" v-bind:settingsdetails="settingsDetails"
-                          v-show="ui.currentTab == 'settings'"
-                          v-on:edit-setting="editSetting"
-                          v-on:reset-section="resetSection"
-                          v-on:load-default-section="loadDefaultSection"
-                          v-on:set-default-section="setDefaultSection"></app-settings>
+            <div class="pane settings-pane" v-show="ui.currentTab === 'tree'">
+
+                <div class="content">
+                    <h3>Source files</h3>
+                    <table>
+                        <tr style="width: 100%;">
+                            <td style="width: 100%; padding-bottom: 5px;">
+                                Gedcom file<br><input type="file" accept=".ged,.gdz">
+                            </td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 100%; padding-bottom: 5px;">
+                                Images folder<br><input type="file" accept="*" webkitdirectory directory multiple>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Root individual<br><input type="text" placeholder="Clément Grennerat"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <app-settings-group :settings="settings" section-name="size" :section="settingsDetails.size"
+                                    v-on:manage="manageSettings"></app-settings-group>
+
+                <app-settings-group :settings="settings" section-name="columns" :section="settingsDetails.columns"
+                                    v-on:manage="manageSettings"></app-settings-group>
+            </div>
+            <div class="pane settings-pane" v-show="ui.currentTab === 'settings'">
+
+                <app-settings-group :settings="settings" section-name="global" :section="settingsDetails.global"
+                                    v-on:manage="manageSettings"></app-settings-group>
+
+                <app-settings-group :settings="settings" section-name="margins" :section="settingsDetails.margins"
+                                    v-on:manage="manageSettings"></app-settings-group>
+
+                <app-settings-group :settings="settings" section-name="fonts" :section="settingsDetails.fonts"
+                                    v-on:manage="manageSettings"></app-settings-group>
+
+            </div>
 
 
         </div>

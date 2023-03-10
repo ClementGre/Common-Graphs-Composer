@@ -29,6 +29,7 @@ window.constants = {
                 name: "Aspect ratio",
                 type: 1, isFloat: true, value: 0.75,
                 min: 0.1, max: 10, step: 0.05,
+                separator: true
             },
             leftColumns: {
                 name: "Left columns (ascending)",
@@ -40,6 +41,50 @@ window.constants = {
                 type: 1, value: 0,
                 min: 0, max: 15, step: 1,
             }
+        },
+        columns: {
+            name: "Columns",
+            leftColumns: {
+                name: "Left cloumn",
+                repeat: 'size.leftColumns',
+                showBrowsers: {
+                    name: "Show browsers",
+                    type: 2, value: false,
+                },
+                showCousins: {
+                    name: "Show browsers childrens",
+                    type: 2, value: false,
+                    require: 'showBrowsers',
+                    separator: true
+                }
+            },
+            middleColumn: {
+                name: "Middle cloumn",
+                repeat: 'size.rightColumns',
+                showBrowsers: {
+                    name: "Show browsers",
+                    type: 2, value: false,
+                },
+                showCousins: {
+                    name: "Show browsers childrens",
+                    type: 2, value: false,
+                    require: 'showBrowsers',
+                    separator: true
+                }
+            },
+            rightColumn: {
+                name: "Right cloumn",
+                repeat: true,
+                showBrowsers: {
+                    name: "Show browsers",
+                    type: 2, value: false,
+                },
+                showCousins: {
+                    name: "Show browsers childrens",
+                    type: 2, value: false,
+                    require: 'showBrowsers'
+                }
+            },
         },
 
         global: {

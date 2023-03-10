@@ -18,7 +18,7 @@ const app = new Vue({
         settings: {},
         settingsDetails: constants.settingsDetails,
         ui: {
-            currentTab:  !get_local_data('timeline-ui-lasttab') ? "settings" : get_local_data('timeline-ui-lasttab'),
+            currentTab:  !get_local_data('gedtree-ui-lasttab') ? "settings" : get_local_data('gedtree-ui-lasttab'),
             search_query: "grennerat",
         },
         dump: "no.."
@@ -65,6 +65,22 @@ const app = new Vue({
         },
 
         //     SETTINGS
+        manageSettings: function(action, data){
+            switch (action) {
+                case "edit-setting":
+                    this.editSetting(data);
+                    break;
+                case "reset-section":
+                    this.resetSection(data);
+                    break;
+                case "load-default-section":
+                    this.loadDefaultSection(data);
+                    break;
+                case "set-default-section":
+                    this.setDefaultSection(data);
+                    break;
+            }
+        },
         editSetting: function(data){
             if(data.subname !== undefined) this.$set(this.settings[data.section][data.name], data.subname, data.value);
             else this.$set(this.settings[data.section], data.name, data.value);
@@ -78,7 +94,7 @@ const app = new Vue({
             }, 0);
         },
         loadDefaultSection: function(section){
-            const data = get_local_data('timeline-settings-' + section);
+            const data = get_local_data('gedtree-settings-' + section);
             if(!data) this.settings[section] = this.generateSettings(this.settingsDetails[section]);
             else this.settings[section] = data;
             setTimeout(() => {
@@ -88,7 +104,7 @@ const app = new Vue({
             }, 0);
         },
         setDefaultSection: function(section){
-            set_local_data('timeline-settings-' + section, this.settings[section]);
+            set_local_data('gedtree-settings-' + section, this.settings[section]);
             displayCheckFloater();
         },
         generateSettings: function(source){
@@ -117,11 +133,11 @@ const app = new Vue({
             immediate: true,
             handler: function(val){
                 if(this.settings.global === undefined) this.settings = this.generateSettings(this.settingsDetails);
-                set_local_data('timeline-ui-lasttab', val);
+                set_local_data('gedtree-ui-lasttab', val);
             }
         },
     },
     components: {
-        "app-settings": appSettingsComp,
+        "app-settings-group": appSettingsGroupComp,
     }
 });
