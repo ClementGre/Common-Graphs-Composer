@@ -14,10 +14,7 @@ main .render {
     padding: 10px;
 }
 main .render #tree {
-    background-color: #e8e8d3;
     margin: auto;
-    width: 1000px;
-    height: 750px;
     overflow: scroll;
 }
 
@@ -176,6 +173,7 @@ main .panel .pane .date-summary {
 }
 main .panel input[type="file"]{
     padding-left: 0 !important;
+    width: 100%;
 }
 main .panel input[type="file"]::file-selector-button {
     height: 25px;
@@ -183,4 +181,23 @@ main .panel input[type="file"]::file-selector-button {
     background-color: #f3f3f3;
     border: 1px solid gray;
     cursor: pointer;
+}
+
+/* SEARCH */
+main .panel ul.search-results{
+    list-style: none;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 3px;
+    background-color: white;
+}
+main .panel ul.search-results li{
+    margin: 0;
+    padding: 0 3px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all .3s ease-in-out;
+}
+main .panel ul.search-results li:hover{
+    background: #e5e5e5;
 }

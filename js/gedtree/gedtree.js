@@ -27,27 +27,27 @@ const app = new Vue({
         });
     },
     computed: {
-        gedcom_search_html: function(){
+        gedcom_search: function(){
             if (this.gedcom === null) return "";
 
             let query = this.ui.search_query;
-            let data = "";
+            let data = [];
             if(query.length >= 3){
-                const results = this.search_someone(query);
-                for (let i = 0; i < results.length; i++) {
-                    let result = results.arraySelect()[i];
-                    data += result.getName().valueAsParts()[0][0] + " " + result.getName().valueAsParts()[0][1] +  " (" + gedDateToString(result.getEventBirth().getDate()) + ") <br>";
-                }
+                return this.gedcom_search_structured(query);
             }
             return data;
         },
+        rootIndividual: function(){
+            if (this.gedcom === null) return null;
+            return this.gedcom.getIndividualRecord(this.settings.hidden.rootIndividualId).arraySelect()[0];
+        }
     },
     methods: {
-        search_someone(query){
+        gedcom_search_structured(query){
             const tokenize = name => name.trim().toLowerCase().split(/ +/);
             const queryTokens = tokenize(query);
 
-            return this.gedcom.getIndividualRecord().filterSelect(individual => {
+            let individuals = this.gedcom.getIndividualRecord().filterSelect(individual => {
                 const names = individual.getName().valueAsParts()[0];
                 if(names !== null) {
                     const namesTokens = names.filter(v => v).flatMap(tokenize);
@@ -55,6 +55,28 @@ const app = new Vue({
                 }
                 return false;
             });
+
+            let results = [];
+            for (let i = 0; i < individuals.length; i++) {
+                let result = individuals.arraySelect()[i];
+                results.push({
+                    lastname: result.getName().valueAsParts()[0][1].toUpperCase(),
+                    firstname: result.getName().valueAsParts()[0][0],
+                    birth: getDateToJSDate(result.getEventBirth().getDate())?.getFullYear(),
+                    death: getDateToJSDate(result.getEventDeath().getDate())?.getFullYear(),
+                    pointer: result.pointer()[0],
+                });
+            }
+            return results;
+        },
+        select_root_individual: function(pointer){
+            this.ui.search_query = "";
+            this.settings.hidden.rootIndividualId = pointer;
+            this.saveSettings();
+        },
+        format_individual_name: function(individual){
+            if (!individual) return undefined;
+            return individual.getName().valueAsParts()[0][1].toUpperCase() + ' ' + individual.getName().valueAsParts()[0][0];
         },
 
         //     SETTINGS

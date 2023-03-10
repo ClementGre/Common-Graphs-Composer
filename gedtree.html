@@ -75,11 +75,6 @@
                     <h2>Soon available, be patient...</h2>
                     <br>
                 </center>
-                <label>
-                    Search :
-                    <input type="text" v-model="ui.search_query">
-                </label>
-                <p v-html="gedcom_search_html"></p>
             </div>
         </div>
         <div class="panel">
@@ -111,9 +106,17 @@
                         <tr>
                             <td>Root individual<br>
                                 <div style="display: flex; gap: 10px">
-                                    <input type="text" placeholder="Search..." style="flex-grow: 1;" v-model="ui.search_query">
-                                    <input type="text" placeholder="@I342438494116@" style="width: 100px;" v-model="settings.hidden.rootIndividualId">
+                                    <input type="text" :placeholder="format_individual_name(rootIndividual) ?? 'Search...'" style="flex-grow: 1;"
+                                           v-model="ui.search_query">
+                                    <input type="text" placeholder="@I342438494116@" style="width: 100px;"
+                                           v-model="settings.hidden.rootIndividualId">
                                 </div>
+                                <ul class="search-results" v-if="gedcom_search.length">
+                                    <li v-for="a in gedcom_search" :key="a.pointer"
+                                        @click="select_root_individual(a.pointer)">
+                                        {{a.lastname + ' ' + a.firstname + " (" + (a.birth ?? '?') + " - " + (a.death ?? '?') + ")"}}
+                                    </li>
+                                </ul>
                             </td>
                         </tr>
                     </table>

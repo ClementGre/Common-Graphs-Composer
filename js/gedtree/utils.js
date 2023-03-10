@@ -1,7 +1,7 @@
 function utf8ToAscii(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
-function gedDateToJSDate(gedDate) {
+function getDateToJSDate(gedDate) {
     gedDate = gedDate?.valueAsDate()[0]?.date;
     if (gedDate === undefined) return null;
     let date = new Date();
@@ -10,8 +10,8 @@ function gedDateToJSDate(gedDate) {
     date.setFullYear(gedDate.year.value);
     return date;
 }
-function gedDateToString(gedDate) {
-    const date = gedDateToJSDate(gedDate)
+function getDateToString(gedDate) {
+    const date = getDateToJSDate(gedDate)
     if (date === null) return "";
     return date.toDateString();
 }
