@@ -1,12 +1,3 @@
-function str2ab(str) {
-    var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-    var bufView = new Uint16Array(buf);
-    for (var i=0, strLen=str.length; i<strLen; i++) {
-        bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-}
-
 const app = new Vue({
     el: "#app",
     name: "gedtree",
@@ -15,7 +6,7 @@ const app = new Vue({
         renderData: {
 
         },
-        settings: {},
+        settings: !get_local_data('gedtree-settings') ? {} : get_local_data('gedtree-settings'),
         settingsDetails: constants.settingsDetails,
         ui: {
             currentTab:  !get_local_data('gedtree-ui-lasttab') ? "settings" : get_local_data('gedtree-ui-lasttab'),
@@ -82,7 +73,16 @@ const app = new Vue({
             }
         },
         editSetting: function(data){
-            if(data.subname !== undefined) this.$set(this.settings[data.section][data.name], data.subname, data.value);
+            if(!this.settings[data.section]) this.settings[data.section] = {};
+
+            if(data.subname !== undefined){
+                if(!this.settings[data.section][data.name]) this.settings[data.section][data.name] = {};
+                if(data.rindex !== undefined){
+                    if(!this.settings[data.section][data.name][data.rindex]) this.settings[data.section][data.name][data.rindex] = [];
+                    this.$set(this.settings[data.section][data.name][data.rindex], data.subname, data.value);
+                }
+                else this.$set(this.settings[data.section][data.name], data.subname, data.value);
+            }
             else this.$set(this.settings[data.section], data.name, data.value);
         },
         resetSection: function(section){
@@ -123,19 +123,19 @@ const app = new Vue({
     },
     watch: {
         settings: {
+            immediate: true,
             deep: true,
-            handler: function(val, oldVal){
-
+            handler: function(val){
+                if(_.isEmpty(this.settings)) this.settings = this.generateSettings(this.settingsDetails);
+                set_local_data('gedtree-settings', this.settings);
             }
         },
-        // START WATCHER (immediate)
         'ui.currentTab': {
-            immediate: true,
             handler: function(val){
-                if(this.settings.global === undefined) this.settings = this.generateSettings(this.settingsDetails);
                 set_local_data('gedtree-ui-lasttab', val);
             }
         },
+
     },
     components: {
         "app-settings-group": appSettingsGroupComp,

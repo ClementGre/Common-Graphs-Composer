@@ -13,8 +13,11 @@ window.appSettingComp = {
             <td v-if="type == 2">
                <input :value="setting" ref="value" @input="updateStringValue()" type="text" :placeholder="placeholder">
             </td>
+            <td v-if="type == 3" style="padding-left: 15px">
+               <input :checked="setting" ref="value" @input="updateBoolValue()" type="checkbox" style="width: 25px" >
+            </td>
         </tr>`,
-    props: ["setting", "title", "section", "sectionId", "name", "subname", "type", "min", "max", "step", "placeholder", "isfloat", "isdirectory", "auto"],
+    props: ["setting", "title", "section", "sectionId", "name", "subname", "type", "min", "max", "step", "placeholder", "isfloat", "isdirectory", "auto", "rindex"],
     computed: {
         stringValue: {
             get: function(){
@@ -29,12 +32,23 @@ window.appSettingComp = {
     },
     methods: {
         editSetting(value){
-            if(this.subname !== undefined) this.$emit('edit-setting', {
-                value: value,
-                section: this.sectionId,
-                subname: this.subname,
-                name: this.name
-            });
+            if(this.subname !== undefined){
+                if(this.rindex !== undefined){
+                    this.$emit('edit-setting', {
+                        value: value,
+                        section: this.sectionId,
+                        name: this.name,
+                        rindex: this.rindex,
+                        subname: this.subname
+                    });
+                }
+                else this.$emit('edit-setting', {
+                    value: value,
+                    section: this.sectionId,
+                    name: this.name,
+                    subname: this.subname
+                });
+            }
             else this.$emit('edit-setting', {value: value, section: this.sectionId, name: this.name});
         },
         updateFileValue(){
@@ -46,6 +60,10 @@ window.appSettingComp = {
         updateNumberValue(){
             if(this.isfloat) this.editSetting(parseFloat(this.$refs.value.value));
             else this.editSetting(parseInt(this.$refs.value.value, 10));
+        },
+        updateBoolValue(){
+            console.log(this.$refs.value.checked)
+            this.editSetting(this.$refs.value.checked);
         },
         updateRgbValue(){
             this.editSetting(this.$refs.value.value);
@@ -100,27 +118,54 @@ window.appSettingsGroupComp = {
                         <tr v-if="section[name].separator"><td><hr></td><td></td></tr>
 
                     </template>
+                    <template v-else-if="section[name].repeat != undefined">
+                        <!-- REPEATED SUBSECTION -->
+                        <template v-for="rindex in settings[section[name].repeat.section]?.[section[name].repeat.name]">
+                            <tr><td><h4>{{section[name].name + ' #' + rindex}}</h4></td><td></td></tr>
+                            <template v-for="(subname, subindex) in Object.keys(section[name])"
+                                    v-if="typeof section[name][subname] == 'object' && section[name][subname].type != undefined">
+                                
+                                {{settings[sectionName][name]?.[rindex]?.[subname]}}
+                                <tr :key="index + '.' + subindex + '.' + rindex" is="app-setting"
+                                    :rindex="rindex"
+                                    v-on:edit-setting="editSetting"
+                                    :setting="settings[sectionName][name]?.[rindex]?.[subname]" 
+                                    :section="section" :name="name" :subname="subname"
+                                    :section-id="sectionName"
+                                    :type="section[name][subname].type"
+                                    :title="section[name][subname].name"
+                                    :min="section[name][subname].min" :max="section[name][subname].max"
+                                    :step="section[name][subname].step" :auto="section[name][subname].auto"
+                                    :isfloat="section[name][subname].isFloat"
+                                    :placeholder="section[name][subname].placeholder"
+                                    :isdirectory="section[name][subname].isDirectory" />
+    
+                                <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
+    
+                            </template>
+                        </template>
+                    </template>
                     <template v-else>
                         <tr><td><h4>{{section[name].name}}</h4></td><td></td></tr>
-                        <template v-for="(subname, subindex) in Object.keys(section[name])"
-                                v-if="typeof section[name][subname] == 'object' && section[name][subname].type != undefined">
-                            
-                            <tr :key="index + '.' + subindex" is="app-setting"
-                                v-on:edit-setting="editSetting"
-                                :setting="settings[sectionName][name][subname]" 
-                                :section="section" :name="name" :subname="subname"
-                                :section-id="sectionName"
-                                :type="section[name][subname].type"
-                                :title="section[name][subname].name"
-                                :min="section[name][subname].min" :max="section[name][subname].max"
-                                :step="section[name][subname].step" :auto="section[name][subname].auto"
-                                :isfloat="section[name][subname].isFloat"
-                                :placeholder="section[name][subname].placeholder"
-                                :isdirectory="section[name][subname].isDirectory" />
-
-                            <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
-
-                        </template>
+                            <template v-for="(subname, subindex) in Object.keys(section[name])"
+                                    v-if="typeof section[name][subname] == 'object' && section[name][subname].type != undefined">
+                                
+                                <tr :key="index + '.' + subindex" is="app-setting"
+                                    v-on:edit-setting="editSetting"
+                                    :setting="settings[sectionName][name][subname]" 
+                                    :section="section" :name="name" :subname="subname"
+                                    :section-id="sectionName"
+                                    :type="section[name][subname].type"
+                                    :title="section[name][subname].name"
+                                    :min="section[name][subname].min" :max="section[name][subname].max"
+                                    :step="section[name][subname].step" :auto="section[name][subname].auto"
+                                    :isfloat="section[name][subname].isFloat"
+                                    :placeholder="section[name][subname].placeholder"
+                                    :isdirectory="section[name][subname].isDirectory" />
+    
+                                <tr v-if="section[name][subname].separator"><td><hr></td><td></td></tr>
+    
+                            </template>
                     </template>
 
                 </template>
@@ -133,7 +178,6 @@ window.appSettingsGroupComp = {
     },
     methods: {
         editSetting(data){
-            console.log(data)
             this.$emit('manage', 'edit-setting', data);
         },
         resetSection(section){
@@ -146,5 +190,8 @@ window.appSettingsGroupComp = {
             this.$emit('manage', 'set-default-section', section);
         }
 
-    }
+    },
+    mounted: function() {
+        console.log(this.settings['size']['leftColumns'])
+    },
 }

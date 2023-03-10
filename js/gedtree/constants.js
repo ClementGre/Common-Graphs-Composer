@@ -46,43 +46,42 @@ window.constants = {
             name: "Columns",
             leftColumns: {
                 name: "Left cloumn",
-                repeat: 'size.leftColumns',
-                showBrowsers: {
-                    name: "Show browsers",
-                    type: 2, value: false,
+                repeat: {section: 'size', name: 'leftColumns'},
+                showBrothers: {
+                    name: "Show brothers",
+                    type: 3, value: true,
                 },
-                showCousins: {
-                    name: "Show browsers childrens",
-                    type: 2, value: false,
-                    require: 'showBrowsers',
+                showBrothersChildren: {
+                    name: "Show brothers children",
+                    type: 3, value: false,
+                    require: 'showBrothers',
                     separator: true
                 }
             },
             middleColumn: {
                 name: "Middle cloumn",
-                repeat: 'size.rightColumns',
-                showBrowsers: {
-                    name: "Show browsers",
-                    type: 2, value: false,
+                showBrothers: {
+                    name: "Show brothers",
+                    type: 3, value: false,
                 },
-                showCousins: {
-                    name: "Show browsers childrens",
-                    type: 2, value: false,
-                    require: 'showBrowsers',
+                showBrothersChildren: {
+                    name: "Show brothers children",
+                    type: 3, value: false,
+                    require: 'showBrothers',
                     separator: true
                 }
             },
             rightColumn: {
                 name: "Right cloumn",
-                repeat: true,
-                showBrowsers: {
-                    name: "Show browsers",
-                    type: 2, value: false,
+                repeat: {section: 'size', name: 'rightColumns'},
+                showBrothers: {
+                    name: "Show brothers",
+                    type: 3, value: false,
                 },
-                showCousins: {
-                    name: "Show browsers childrens",
-                    type: 2, value: false,
-                    require: 'showBrowsers'
+                showBrothersChildren: {
+                    name: "Show brothers childrens",
+                    type: 3, value: false,
+                    require: 'showBrothers'
                 }
             },
         },
