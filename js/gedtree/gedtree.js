@@ -53,6 +53,9 @@ const app = new Vue({
                 ...this.settings.columns.rightColumn
             }
             return structureGedcomData(this.gedcom, this.settings.hidden.rootIndividualId, leftCols, middleCol, rightCols);
+        },
+        gedcomStructuredDataHtml: function() {
+            return prettyPrintJSONtoHTML(this.gedcomStructuredData);
         }
     },
     methods: {

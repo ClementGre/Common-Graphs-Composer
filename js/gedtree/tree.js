@@ -3,7 +3,6 @@ window.treeComp = {
     template: `
         <div id="tree" :style="rootStyle">
             <div class="content" :style="contentStyle">
-                {{JSON.stringify(data)}}
                 <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col"></column>
             </div>
         </div>

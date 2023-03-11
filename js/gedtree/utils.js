@@ -44,3 +44,31 @@ window.get_local_data = function read_local_data(name){
 window.remove_local_data = function delete_local_data(name){
     localStorage.removeItem(name);
 }
+
+// UTILS
+
+function prettyPrintJSONtoHTML(json) {
+    return JSON.stringify(json, function(k, v){
+        let doStringify = false;
+        if(v instanceof Array && v.every(a => !(a instanceof Object || a instanceof Array) || a instanceof Date)){
+            doStringify = true;
+
+        }else if(v instanceof Object && Object.values(v).every(a => !(a instanceof Object || a instanceof Array) || a instanceof Date )){
+            doStringify = true;
+        }
+        if (doStringify){
+            return JSON.stringify(v)
+                .replace(/\\"/g, "\"")
+                .replace(/","/g, "\", \"")
+                .replace(/":"/g, "\": \"")
+        }
+        return v;
+    }, 4)
+        .replace(/\\/g, '')
+        .replace(/\"\[/g, '[')
+        .replace(/\]\"/g,']')
+        .replace(/\"\{/g, '{')
+        .replace(/\}\"/g,'}')
+        .replace(/\n/g, "<br>")
+        .replace(/    /g, "&nbsp;&nbsp;")
+}

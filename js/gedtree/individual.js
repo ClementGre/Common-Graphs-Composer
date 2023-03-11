@@ -2,7 +2,7 @@ window.individualComp = {
     name: "individual",
     template: `
         <div class="individual" :style="individualStyle">
-            {{data.firstName}}
+            {{data?.firstName}}
         </div>
         `,
     props: ["gedcom", "settings", "data"],
