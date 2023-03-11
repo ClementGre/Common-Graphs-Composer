@@ -37,6 +37,22 @@ const app = new Vue({
         rootIndividual: function(){
             if (this.gedcom === null) return null;
             return this.gedcom.getIndividualRecord(this.settings.hidden.rootIndividualId).arraySelect()[0];
+        },
+        gedcomStructuredData: function(){
+            if(!this.rootIndividual) return null;
+
+            let leftCols = {
+                count: this.settings.size.leftColumns,
+                ...this.settings.columns.leftColumns
+            }
+            let middleCol = {
+                ...this.settings.columns.middleColumn
+            }
+            let rightCols = {
+                count: this.settings.size.rightColumns,
+                ...this.settings.columns.rightColumn
+            }
+            return structureGedcomData(this.gedcom, this.settings.hidden.rootIndividualId, leftCols, middleCol, rightCols);
         }
     },
     methods: {

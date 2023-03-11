@@ -27,13 +27,13 @@ window.constants = {
                 separator: true
             },
             leftColumns: {
-                name: "Left columns (ascending)",
-                type: 1, value: 5,
+                name: "Left columns (descending)",
+                type: 1, value: 0,
                 min: 0, max: 15, step: 1,
             },
             rightColumns: {
-                name: "Right columns (descending)",
-                type: 1, value: 0,
+                name: "Right columns (ascending)",
+                type: 1, value: 5,
                 min: 0, max: 15, step: 1,
             }
         },
@@ -94,52 +94,49 @@ window.constants = {
             },
             backgroundSize: {
                 name: "Background size (%)",
-                type: 1, value: 0, isFloat: true,
+                type: 1, value: 124, isFloat: true,
                 min: 0, max: 300, step: 1, auto: true
             },
             backgroundImageX: {
                 name: "Background image x (%)",
-                type: 1, value: 100, isFloat: true,
+                type: 1, value: -4, isFloat: true,
                 min: -200, max: 200, step: 1
             },
             backgroundImageY: {
                 name: "Background image y (%)",
-                type: 1, value: 0, isFloat: true,
+                type: 1, value: 8, isFloat: true,
                 min: -200, max: 200, step: 1
             }
         },
-        margins: {
-            name: "Margins",
-            height: {
-                name: "Height",
-                type: 1, value: 45,
-                min: 20, max: 100, step: 5
+        decoration: {
+            name: "Decoration",
+            rootMargin: {
+                name: "Poster margin",
+                type: 1, value: 32,
+                min: 20, max: 100, step: 0
             },
-            backgroundColor: {
-                name: "Background Color",
-                type: 0, value: "rgba(231,0,0,0.75)",
+            innerMargin: {
+                name: "Inner margin",
+                type: 1, value: 16,
+                min: 20, max: 100, step: 0,
                 separator: true
             },
-
-            textColor: {
-                name: "Text Color",
-                type: 0, value: "rgba(0, 0, 0, 1)"
-            },
-            fontWeight: {
-                name: "Font Weight",
-                type: 1, value: 500,
-                min: 100, max: 900, step: 100,
-                separator: true
-            },
-
-            borderColor: {
-                name: "Border Color",
-                type: 0, value: "rgba(119,0,0,1)"
-            },
-            borderWidth: {
-                name: "Border Width",
-                type: 1, value: 1,
-                min: 0, max: 10
+            border: {
+                name: "Border",
+                borderWidth: {
+                    name: "Width",
+                    type: 1, value: 2, isFloat: true,
+                    min: 0, max: 40, step: 0.25
+                },
+                borderColor: {
+                    name: "Color",
+                    type: 0, value: "rgba(106,104,95,1)"
+                },
+                borderBorderRadius: {
+                    name: "Border radius",
+                    type: 1, value: 5,
+                    min: 0, max: 50, step: 1,
+                }
             }
         },
         fonts: {
