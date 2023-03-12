@@ -4,12 +4,8 @@ window.columnComp = {
         <div class="column" :style="colStyle">
             <div class="couple"
                 v-for="(ind, i) in data.couples">
-                <div class="husband">
-                    <individual :gedcom="gedcom" :settings="settings" :data="ind.husband"></individual>
-                </div>
-                <div class="wife">
-                    <individual :gedcom="gedcom" :settings="settings" :data="ind.wife"></individual>
-                </div>
+                <individual v-if="ind.husband" :gedcom="gedcom" :settings="settings" :data="ind.husband"></individual>
+                <individual v-if="ind.wife" :gedcom="gedcom" :settings="settings" :data="ind.wife"></individual>
             </div>
         </div>
         `,

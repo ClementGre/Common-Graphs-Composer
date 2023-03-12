@@ -72,15 +72,16 @@
             <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings"
                   :data="gedcomStructuredData"></tree>
 
-            <p v-html="gedcomStructuredDataHtml"
-            style="font-size: 13px; font-weight: 400; font-family: monospace"></p>
-
             <center v-else>
                 <br>
                 <h1>Development in progress !</h1>
                 <h2>Soon available, be patient...</h2>
                 <br>
             </center>
+
+            <p v-html="gedcomStructuredDataHtml"
+               style="font-size: 13px; font-weight: 400; font-family: monospace"></p>
+
         </div>
         <div class="panel">
             <div class="nav">
