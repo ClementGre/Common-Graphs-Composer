@@ -3,11 +3,13 @@ window.individualComp = {
     template: `
         <div :class="individualClasses" :style="individualStyle">
             <div v-if="big" class="virtual-top"></div>
+            <div v-if="big" class="hline"></div>
             <div class="img" :style="imgStyle"></div>
             <div class="content">
                 <div class="top">
                     <p>{{data?.firstName}}</p>
                 </div>
+                <div v-if="small" class="hline"></div>
                 <div class="bottom">
                     <p>{{data?.lastName}}</p>
                 </div>
