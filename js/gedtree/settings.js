@@ -8,7 +8,7 @@ window.appSettingComp = {
                 <input :value="setting" ref="value" @input="updateRawValue()" data-jscolor="" placeholder="rgba(r, g, b, a)">
             </td>
             <td v-if="type == 1" class="double">
-                <input :value="setting" ref="value" @input="updateRawValue()" type="range" :min="min" :max="max" :step="step"><input :value="numberStringValue" ref="numbervalue" @input="updateNumberValue()" type="text" :placeholder="min + ' - ' + max">
+                <input :value="setting" ref="value" @input="updateNumberValueFromSlider()" type="range" :min="min" :max="max" :step="step"><input :value="numberStringValue" ref="numbervalue" @input="updateNumberValueFromField()" type="text" :placeholder="min + ' - ' + max">
             </td>
             <td v-if="type == 2">
                <input :value="setting" ref="value" @input="updateRawValue()" type="text" :placeholder="placeholder">
@@ -57,8 +57,13 @@ window.appSettingComp = {
         updateBoolValue(){
             this.editSetting(this.$refs.value.checked);
         },
-        updateNumberValue(){
-            let value = this.$refs.numbervalue.value
+        updateNumberValueFromSlider(){
+            this.updateNumberValue(this.$refs.value.value);
+        },
+        updateNumberValueFromField(){
+            this.updateNumberValue(this.$refs.numbervalue.value);
+        },
+        updateNumberValue(value){
             if (this.isfloat){
                 if(!isNaN(parseFloat(value)) && parseFloat(value) !== undefined && parseFloat(value) >= this.min && parseFloat(value) <= this.max){
                     this.editSetting(parseFloat(value));
@@ -113,7 +118,6 @@ window.appSettingsGroupComp = {
                             <tr><td><h4>{{section[name].name + ' #' + rindex}}</h4></td><td></td></tr>
                             <template v-for="(subname, subindex) in Object.keys(section[name])"
                                     v-if="typeof section[name][subname] == 'object' && section[name][subname].type != undefined">
-                                
                                 <tr :key="index + '.' + subindex + '.' + rindex" is="app-setting"
                                     :rindex="rindex"
                                     v-on:edit-setting="editSetting"

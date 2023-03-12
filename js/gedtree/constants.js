@@ -66,7 +66,7 @@ window.constants = {
                     separator: true
                 }
             },
-            rightColumn: {
+            rightColumns: {
                 name: "Right cloumn",
                 repeat: {section: 'size', name: 'rightColumns'},
                 showBrothers: {

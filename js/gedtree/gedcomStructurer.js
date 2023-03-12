@@ -12,7 +12,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
 
     console.log(root.getSex())
 
-    let rootCouple = constituteCouple(root);
+    let rootCouple = constituteCouple(root, !middleCol.showBrothersChildren, false);
     columns.push({
         // Child groups are only used when doing descendant trees
         childGroups: [
@@ -29,13 +29,13 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         let brothers = root.getFamilyAsChild().getChild().arraySelect().map(child => child.getIndividualRecord())
             .filter(ind => ind[0].pointer !== root[0].pointer);
 
-        let brotherCouples = brothers.map(brother => constituteCouple(brother, !middleCol.showBrothersChildren, true));
+        let brotherCouples = brothers.map(brother => constituteCouple(brother, !middleCol.showBrothersChildren, false, true));
         columns[0].childGroups[0].couples = columns[0].childGroups[0].couples.concat(brotherCouples);
 
         // Sort brothers by birth date
-        // columns[0].childGroups[0].couples = _.sortBy(columns[0].childGroups[0].couples, [function(c) {
-        //     return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
-        // }]);
+        columns[0].childGroups[0].couples = _.sortBy(columns[0].childGroups[0].couples, [function(c) {
+            return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
+        }]);
     }
 
     ///////////////////
@@ -46,6 +46,12 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         let rightColumn = generateRightColumn(gedcom, columns.slice(-1)[0], rightCol);
         columns.push(rightColumn);
     }
+
+    //////////////////
+    // LEFT COLUMNS //
+    //////////////////
+
+
 
     /////////////////
     // FORMAT DATA //
@@ -74,35 +80,42 @@ function generateRightColumn(gedcom, previousColData, rightCol){
         for (let couple of fam.couples) {
             if (couple.isBrother) continue; // don't ascend brothers
 
-            let husband = couple.husband;
-            let wife = couple.wife;
+            let husbandParentCouple = getParentCouple(couple.husband);
+            let wifeParentCouple = getParentCouple(couple.wife);
 
-            let husbandFamilyHusband = husband?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord();
-            let wifeFamilyHusband = wife?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord();
-
-            if(husbandFamilyHusband) rightColumn.childGroups.push({couples: [constituteCouple(husbandFamilyHusband)]})
-            if(wifeFamilyHusband) rightColumn.childGroups.push({couples: [constituteCouple(wifeFamilyHusband)]})
+            if(couple.doAscendSpouse || couple.wasMen){
+                if(husbandParentCouple) rightColumn.childGroups.push({couples: [husbandParentCouple]})
+            }
+            if(couple.doAscendSpouse || !couple.wasMen){
+                if(wifeParentCouple) rightColumn.childGroups.push({couples: [wifeParentCouple]})
+            }
         }
     }
 
     return rightColumn;
 }
+function getParentCouple(record) {
+    let family = record?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord();
+    if (!family) return null;
+    return constituteCouple(family);
+}
 
-function constituteCouple(record, disableSouse = false, isBrother = false) {
+function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, isBrother = false) {
     let isMen = record.getSex()[0].value === "M";
     let family = record.getFamilyAsSpouse();
     let husband;
     let wife;
     if (isMen) {
         husband = record;
-        if(!disableSouse) wife = family.getWife().getIndividualRecord();
+        if(!disableSpouse) wife = family.getWife().getIndividualRecord();
     } else {
-        if(!disableSouse) husband = family.getHusband().getIndividualRecord();
+        if(!disableSpouse) husband = family.getHusband().getIndividualRecord();
         wife = record;
     }
     return {
         wasMen: isMen,
         isBrother: isBrother,
+        doAscendSpouse: doAscendSpouse,
         husband,
         wife
     }

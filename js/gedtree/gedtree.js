@@ -43,14 +43,14 @@ const app = new Vue({
 
             let leftCols = []
             for (let i = 0; i < this.settings.size.leftColumns; i++) {
-                leftCols.push({...this.settings.columns.leftColumn['n' + i]})
+                leftCols.push({...this.settings.columns.leftColumns['n' + i]})
             }
             let middleCol = {
                 ...this.settings.columns.middleColumn
             }
             let rightCols = []
             for (let i = 0; i < this.settings.size.rightColumns; i++) {
-                rightCols.push({...this.settings.columns.rightColumn['n' + i]})
+                rightCols.push({...this.settings.columns.rightColumns['n' + i]})
             }
             return structureGedcomData(this.gedcom, this.settings.hidden.rootIndividualId, leftCols, middleCol, rightCols);
         },

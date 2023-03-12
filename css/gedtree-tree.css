@@ -35,6 +35,19 @@
 #tree .individual {
     position: relative;
 }
+#tree .individual .hline{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    z-index: 10;
+}
+#tree .individual p {
+    font-weight: 300;
+    font-size: 12px;
+}
 
 /* BIG DESIGN */
 
@@ -51,14 +64,7 @@
     z-index: 20;
 }
 #tree .individual.big .hline{
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    width: 100%;
-    background-color: #000;
-    z-index: 10;
+
 }
 #tree .individual.big .content{
     flex-basis: 100%;
@@ -76,6 +82,15 @@
 /* SMALL DESIGN */
 
 #tree .individual.small{
+    align-items: center;
+    gap: 5px;
+}
+#tree .individual.small .img{
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 20;
+}
+#tree .individual.small .hline{
 
 }
 #tree .individual.small .content .top{

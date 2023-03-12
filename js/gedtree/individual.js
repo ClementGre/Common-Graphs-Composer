@@ -33,8 +33,8 @@ window.individualComp = {
         imgStyle: function(){
             return {
                 background: 'url(https://www.gravatar.com/avatar/bonjour) center center/cover no-repeat',
-                width: this.convertLength(50),
-                height: this.convertLength(75),
+                width: this.convertLength(30),
+                height: this.convertLength(40),
                 border: this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
             };
         },
@@ -44,8 +44,8 @@ window.individualComp = {
                 height: '0'
             };
         },
-        big: function(){ return true; },
-        small: function(){ return false; }
+        big: function(){ return false; },
+        small: function(){ return true; }
     },
     methods: {
         convertLength(length){
