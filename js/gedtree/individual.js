@@ -3,13 +3,13 @@ window.individualComp = {
     template: `
         <div :class="individualClasses" :style="individualStyle">
             <div v-if="big" class="virtual-top"></div>
-            <div v-if="big" class="hline"></div>
+            <div v-if="big" class="hline" :style="hlineStyle"></div>
             <div class="img" :style="imgStyle"></div>
             <div class="content">
                 <div class="top">
                     <p>{{data?.firstName}}</p>
                 </div>
-                <div v-if="small" class="hline"></div>
+                <div v-if="small" class="hline" :style="hlineStyle"></div>
                 <div class="bottom">
                     <p>{{data?.lastName}}</p>
                 </div>
@@ -35,6 +35,13 @@ window.individualComp = {
                 background: 'url(https://www.gravatar.com/avatar/bonjour) center center/cover no-repeat',
                 width: this.convertLength(50),
                 height: this.convertLength(75),
+                border: this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
+            };
+        },
+        hlineStyle: function(){
+            return {
+                'border-bottom': this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
+                height: '0'
             };
         },
         big: function(){ return true; },

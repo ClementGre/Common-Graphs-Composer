@@ -2,10 +2,11 @@ window.columnComp = {
     name: "column",
     template: `
         <div class="column" :style="colStyle">
-            <div class="couple"
-                v-for="(ind, i) in data.couples">
-                <individual v-if="ind.husband" :gedcom="gedcom" :settings="settings" :data="ind.husband"></individual>
-                <individual v-if="ind.wife" :gedcom="gedcom" :settings="settings" :data="ind.wife"></individual>
+            <div class="family" v-for="(childGroups, i1) in data.childGroups" :key="i1">
+                <div class="couple" v-for="(ind, i2) in childGroups.couples" :key="i2">
+                    <individual v-if="ind.husband" :gedcom="gedcom" :settings="settings" :data="ind.husband"></individual>
+                    <individual v-if="ind.wife" :gedcom="gedcom" :settings="settings" :data="ind.wife"></individual>
+                </div>
             </div>
         </div>
         `,

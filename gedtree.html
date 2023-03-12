@@ -68,20 +68,19 @@
 
     <main>
         <div class="render">
+            <div class="margins">
+                <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings"
+                      :data="gedcomStructuredData"></tree>
+                <center v-else>
+                    <br>
+                    <h1>Development in progress !</h1>
+                    <h2>Soon available, be patient...</h2>
+                    <br>
+                </center>
 
-            <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings"
-                  :data="gedcomStructuredData"></tree>
-
-            <center v-else>
-                <br>
-                <h1>Development in progress !</h1>
-                <h2>Soon available, be patient...</h2>
-                <br>
-            </center>
-
-            <p v-html="gedcomStructuredDataHtml"
-               style="font-size: 13px; font-weight: 400; font-family: monospace"></p>
-
+                <p v-html="gedcomStructuredDataHtml"
+                   style="font-size: 13px; font-weight: 400; font-family: monospace"></p>
+            </div>
         </div>
         <div class="panel">
             <div class="nav">
@@ -138,13 +137,10 @@
             </div>
             <div class="pane settings-pane" v-show="ui.currentTab === 'settings'">
 
-                <app-settings-group :settings="settings" section-name="background" :section="settingsDetails.background"
-                                    v-on:manage="manageSettings"></app-settings-group>
-
                 <app-settings-group :settings="settings" section-name="decoration" :section="settingsDetails.decoration"
                                     v-on:manage="manageSettings"></app-settings-group>
 
-                <app-settings-group :settings="settings" section-name="fonts" :section="settingsDetails.fonts"
+                <app-settings-group :settings="settings" section-name="individual" :section="settingsDetails.individual"
                                     v-on:manage="manageSettings"></app-settings-group>
 
             </div>

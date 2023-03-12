@@ -11,10 +11,13 @@ main {
 
 main .render {
     overflow: scroll;
-    padding: 10px;
+}
+main .render .margins {
+    margin: auto;
+    width: fit-content;
 }
 main .render #tree {
-    margin: auto;
+    margin: 20px;
     overflow: scroll;
 }
 

@@ -11,26 +11,26 @@ window.treeComp = {
     computed: {
         rootStyle: function(){
             let styles = {
-                padding: this.convertLength(this.settings.decoration.rootMargin),
-                background: this.settings.background.backgroundColor + ' url(' + this.settings.background.backgroundImage + ') no-repeat',
+                padding: this.convertLength(this.settings.decoration.margins.rootMargin),
+                background: this.settings.decoration.background.backgroundColor + ' url(' + this.settings.decoration.background.backgroundImage + ') no-repeat',
                 width: this.settings.size.width + 'px',
                 height: this.settings.size.width*this.settings.size.aspectRatio + 'px',
             };
             // 50% = center
-            styles['background-position-x'] = 'calc(50% + ' + (this.settings.background.backgroundImageX/100 * this.settings.size.width) + 'px)';
-            styles['background-position-y'] = 'calc(50% + ' + (this.settings.background.backgroundImageY/100 * this.settings.size.width*this.settings.size.aspectRatio) + 'px)';
+            styles['background-position-x'] = 'calc(50% + ' + (this.settings.decoration.background.backgroundImageX/100 * this.settings.size.width) + 'px)';
+            styles['background-position-y'] = 'calc(50% + ' + (this.settings.decoration.background.backgroundImageY/100 * this.settings.size.width*this.settings.size.aspectRatio) + 'px)';
 
-            if(this.settings.background.backgroundSize == 0){
+            if(this.settings.decoration.background.backgroundSize == 0){
                 styles['background-size'] = 'cover';
             }else{
-                styles['background-size'] = this.settings.background.backgroundSize + '%';
+                styles['background-size'] = this.settings.decoration.background.backgroundSize + '%';
             }
 
             return styles;
         },
         contentStyle: function(){
             return {
-                padding: this.convertLength(this.settings.decoration.innerMargin),
+                padding: this.convertLength(this.settings.decoration.margins.innerMargin),
                 border: this.convertLength(this.settings.decoration.border.borderWidth) + ' solid ' + this.settings.decoration.border.borderColor,
                 'border-radius': this.convertLength(this.settings.decoration.border.borderBorderRadius),
             };

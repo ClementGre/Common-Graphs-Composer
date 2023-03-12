@@ -41,16 +41,16 @@ const app = new Vue({
         gedcomStructuredData: function(){
             if(!this.rootIndividual) return null;
 
-            let leftCols = {
-                count: this.settings.size.leftColumns,
-                ...this.settings.columns.leftColumns
+            let leftCols = []
+            for (let i = 0; i < this.settings.size.leftColumns; i++) {
+                leftCols.push({...this.settings.columns.leftColumn['n' + i]})
             }
             let middleCol = {
                 ...this.settings.columns.middleColumn
             }
-            let rightCols = {
-                count: this.settings.size.rightColumns,
-                ...this.settings.columns.rightColumn
+            let rightCols = []
+            for (let i = 0; i < this.settings.size.rightColumns; i++) {
+                rightCols.push({...this.settings.columns.rightColumn['n' + i]})
             }
             return structureGedcomData(this.gedcom, this.settings.hidden.rootIndividualId, leftCols, middleCol, rightCols);
         },
