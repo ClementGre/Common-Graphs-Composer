@@ -84,6 +84,11 @@ function generateRightColumn(gedcom, previousColData, rightCol){
 
     for (let fam of previousColData.childGroups) {
         for (let couple of fam.couples) {
+            if (!couple){
+                rightColumn.childGroups.push({couples: [undefined]})
+                rightColumn.childGroups.push({couples: [undefined]})
+                continue;
+            }
             if (couple.isBrother) continue; // don't ascend brothers
 
             let husbandParentCouple = getParentCouple(couple.husband);
@@ -91,9 +96,11 @@ function generateRightColumn(gedcom, previousColData, rightCol){
 
             if(couple.doAscendSpouse || couple.wasMen){
                 if(husbandParentCouple) rightColumn.childGroups.push({couples: [husbandParentCouple]})
+                else rightColumn.childGroups.push({couples: [undefined]})
             }
             if(couple.doAscendSpouse || !couple.wasMen){
                 if(wifeParentCouple) rightColumn.childGroups.push({couples: [wifeParentCouple]})
+                else rightColumn.childGroups.push({couples: [undefined]})
             }
         }
     }
@@ -128,6 +135,7 @@ function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, 
 }
 
 function coupleToData(couple) {
+    if(!couple) return undefined;
     return {
         wasMen: couple.wasMen,
         husband: getIndividualData(couple.husband),

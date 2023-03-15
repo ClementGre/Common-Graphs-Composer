@@ -13,6 +13,8 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    min-width: 0;
+    overflow: hidden;
 }
 #tree .column .family{
     flex-basis: 100%;
@@ -48,6 +50,9 @@
 #tree .individual p {
     font-weight: 300;
     font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* BIG DESIGN */
@@ -88,7 +93,6 @@
 }
 #tree .column.small .individual .img{
     flex: 0 0 auto;
-    position: relative;
     z-index: 20;
 }
 #tree .column.small .individual .hline{
@@ -96,17 +100,23 @@
 }
 #tree .column.small .individual .content{
     flex-basis: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    height: 100%;
+    position: relative;
+    min-width: 0;
 }
 #tree .column.small .individual .content .top{
-    flex-basis: 100%;
-    flex-grow: 1;
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    top: 0;
+    left: 0;
 }
 #tree .column.small .individual .content .bottom{
-    flex-basis: 100%;
-    flex-grow: 1;
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    top: 50%;
+    left: 0;
 }
 
 

@@ -3,10 +3,15 @@ window.columnComp = {
     template: `
         <div ref="column" :class="colClasses" :style="colStyle">
             <div class="family" v-for="(childGroups, i1) in data.childGroups" :key="i1">
+            <template v-if="childGroups">
                 <div class="couple" v-for="(ind, i2) in childGroups.couples" :key="i2">
-                    <individual v-if="ind.husband" :gedcom="gedcom" :settings="settings" :data="ind.husband" :layout="data.layout"></individual>
-                    <individual v-if="ind.wife" :gedcom="gedcom" :settings="settings" :data="ind.wife" :layout="data.layout"></individual>
+                    <template v-if="ind">
+                        <individual v-if="ind.husband" :gedcom="gedcom" :settings="settings" :data="ind.husband" :layout="data.layout"></individual>
+                        <individual v-if="ind.wife" :gedcom="gedcom" :settings="settings" :data="ind.wife" :layout="data.layout"></individual>
+                    </template>
                 </div>
+            </template>
+                
             </div>
         </div>
         `,
