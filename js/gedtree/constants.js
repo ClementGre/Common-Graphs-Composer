@@ -49,7 +49,15 @@ window.constants = {
                 showBrothersChildren: {
                     name: "Show brothers children",
                     type: 3, value: false,
-                    require: 'showBrothers',
+                    require: 'showBrothers'
+                },
+                verticalDisplay: {
+                    name: "Vertical display",
+                    type: 3, value: false
+                },
+                showPictures: {
+                    name: "Show pictures",
+                    type: 3, value: false,
                     separator: true
                 }
             },
@@ -62,7 +70,15 @@ window.constants = {
                 showBrothersChildren: {
                     name: "Show brothers children",
                     type: 3, value: false,
-                    require: 'showBrothers',
+                    require: 'showBrothers'
+                },
+                verticalDisplay: {
+                    name: "Vertical display",
+                    type: 3, value: true
+                },
+                showPictures: {
+                    name: "Show pictures",
+                    type: 3, value: true,
                     separator: true
                 }
             },
@@ -76,7 +92,15 @@ window.constants = {
                 showBrothersChildren: {
                     name: "Show brothers children",
                     type: 3, value: false,
-                    require: 'showBrothers',
+                    require: 'showBrothers'
+                },
+                verticalDisplay: {
+                    name: "Vertical display",
+                    type: 3, value: false
+                },
+                showPictures: {
+                    name: "Show pictures",
+                    type: 3, value: false,
                     separator: true
                 }
             },

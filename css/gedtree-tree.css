@@ -31,6 +31,7 @@
 #tree .column .couple .individual{
     flex-basis: 100%;
     display: flex;
+
 }
 #tree .individual {
     position: relative;
@@ -51,53 +52,61 @@
 
 /* BIG DESIGN */
 
-#tree .individual.big{
+#tree .column.big .individual{
     flex-direction: column;
     align-items: center;
 }
-#tree .individual.big .virtual-top{
+#tree .column.big .individual .virtual-top{
     flex-basis: 100%;
 }
-#tree .individual.big .img{
+#tree .column.big .individual .img{
     flex: 0 0 auto;
     position: relative;
     z-index: 20;
 }
-#tree .individual.big .hline{
+#tree .column.big .individual .hline{
 
 }
-#tree .individual.big .content{
+#tree .column.big .individual .content{
     flex-basis: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-#tree .individual.big .content .top{
+#tree .column.big .individual .content .top{
 
 }
-#tree .individual.big .content .bottom{
+#tree .column.big .individual .content .bottom{
 
 }
 
 /* SMALL DESIGN */
 
-#tree .individual.small{
+#tree .column.small .individual{
     align-items: center;
     gap: 5px;
 }
-#tree .individual.small .img{
+#tree .column.small .individual .img{
     flex: 0 0 auto;
     position: relative;
     z-index: 20;
 }
-#tree .individual.small .hline{
+#tree .column.small .individual .hline{
 
 }
-#tree .individual.small .content .top{
+#tree .column.small .individual .content{
     flex-basis: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
-#tree .individual.small .content .bottom{
+#tree .column.small .individual .content .top{
     flex-basis: 100%;
+    flex-grow: 1;
+}
+#tree .column.small .individual .content .bottom{
+    flex-basis: 100%;
+    flex-grow: 1;
 }
 
 

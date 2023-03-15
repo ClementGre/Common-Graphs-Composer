@@ -2,27 +2,25 @@ window.individualComp = {
     name: "individual",
     template: `
         <div :class="individualClasses" :style="individualStyle">
-            <div v-if="big" class="virtual-top"></div>
-            <div v-if="big" class="hline" :style="hlineStyle"></div>
-            <div class="img" :style="imgStyle"></div>
+            <div v-if="layout.verticalDisplay" class="virtual-top"></div>
+            <div v-if="layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
+            <div v-if="layout.showPictures || layout.verticalDisplay" class="img" :style="imgStyle"></div>
             <div class="content">
                 <div class="top">
-                    <p>{{data?.firstName}}</p>
+                    <p>{{data?.firstName}} {{data?.lastName}}</p>
                 </div>
-                <div v-if="small" class="hline" :style="hlineStyle"></div>
+                <div v-if="!layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
                 <div class="bottom">
-                    <p>{{data?.lastName}}</p>
+                    <p></p>
                 </div>
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data"],
+    props: ["gedcom", "settings", "data", "layout"],
     computed: {
         individualClasses: function(){
             return {
                 individual: true,
-                big: this.big,
-                small: this.small
             };
         },
         individualStyle: function(){
@@ -43,9 +41,7 @@ window.individualComp = {
                 'border-bottom': this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
                 height: '0'
             };
-        },
-        big: function(){ return false; },
-        small: function(){ return true; }
+        }
     },
     methods: {
         convertLength(length){

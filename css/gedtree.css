@@ -18,7 +18,6 @@ main .render .margins {
 }
 main .render #tree {
     margin: 20px;
-    overflow: scroll;
 }
 
 /*******************/

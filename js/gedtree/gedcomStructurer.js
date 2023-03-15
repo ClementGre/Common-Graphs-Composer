@@ -10,8 +10,6 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
     // MIDDLE COLUMN //
     ///////////////////
 
-    console.log(root.getSex())
-
     let rootCouple = constituteCouple(root, !middleCol.showBrothersChildren, false);
     columns.push({
         // Child groups are only used when doing descendant trees
@@ -23,7 +21,11 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
                     }
                 ]
             }
-        ]
+        ],
+        layout: {
+            verticalDisplay: middleCol.verticalDisplay,
+            showPictures: middleCol.showPictures
+        }
     })
     if (middleCol.showBrothers) {
         let brothers = root.getFamilyAsChild().getChild().arraySelect().map(child => child.getIndividualRecord())
@@ -73,7 +75,11 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
 
 function generateRightColumn(gedcom, previousColData, rightCol){
     let rightColumn = {
-        childGroups : []
+        childGroups : [],
+        layout: {
+            verticalDisplay: rightCol.verticalDisplay ?? false,
+            showPictures: rightCol.showPictures ?? false
+        }
     }
 
     for (let fam of previousColData.childGroups) {
@@ -95,9 +101,9 @@ function generateRightColumn(gedcom, previousColData, rightCol){
     return rightColumn;
 }
 function getParentCouple(record) {
-    let family = record?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord();
-    if (!family) return null;
-    return constituteCouple(family);
+    let husband = record?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord();
+    if (!husband || husband.length === 0) return null;
+    return constituteCouple(husband);
 }
 
 function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, isBrother = false) {
