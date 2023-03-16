@@ -29,12 +29,12 @@ window.constants = {
             leftColumns: {
                 name: "Left columns (descending)",
                 type: 1, value: 0,
-                min: 0, max: 15, step: 1,
+                min: 0, max: 8, step: 1,
             },
             rightColumns: {
                 name: "Right columns (ascending)",
                 type: 1, value: 5,
-                min: 0, max: 15, step: 1,
+                min: 0, max: 8, step: 1,
             }
         },
         columns: {

@@ -10,7 +10,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
     // MIDDLE COLUMN //
     ///////////////////
 
-    let rootCouple = constituteCouple(root, !middleCol.showBrothersChildren, false);
+    let rootCouple = constituteCouple(root, !middleCol.showBrothersChildren, false, false, leftCols.length > 0);
     columns.push({
         // Child groups are only used when doing descendant trees
         childGroups: [
@@ -31,7 +31,8 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         let brothers = root.getFamilyAsChild().getChild().arraySelect().map(child => child.getIndividualRecord())
             .filter(ind => ind[0].pointer !== root[0].pointer);
 
-        let brotherCouples = brothers.map(brother => constituteCouple(brother, !middleCol.showBrothersChildren, false, true));
+        let brotherCouples = brothers.map(brother => constituteCouple(brother, !middleCol.showBrothersChildren,
+            false, true, middleCol.showBrothersChildren && leftCols.length > 0));
         columns[0].childGroups[0].couples = columns[0].childGroups[0].couples.concat(brotherCouples);
 
         // Sort brothers by birth date
@@ -113,7 +114,7 @@ function getParentCouple(record) {
     return constituteCouple(husband);
 }
 
-function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, isBrother = false) {
+function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, isBrother = false, hasChild = true) {
     let isMen = record.getSex()[0].value === "M";
     let family = record.getFamilyAsSpouse();
     let husband;
@@ -129,6 +130,7 @@ function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, 
         wasMen: isMen,
         isBrother: isBrother,
         doAscendSpouse: doAscendSpouse,
+        hasChild: hasChild && family.getChildrenCount() > 0,
         husband,
         wife
     }

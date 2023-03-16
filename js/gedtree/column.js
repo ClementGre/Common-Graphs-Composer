@@ -6,6 +6,7 @@ window.columnComp = {
             <template v-if="childGroups">
                 <div class="couple" v-for="(ind, i2) in childGroups.couples" :key="i2">
                     <template v-if="ind">
+                        <div class="vline" :style="vlineStyle"></div>
                         <individual v-if="ind.husband" :gedcom="gedcom" :settings="settings" :data="ind.husband" :layout="data.layout"></individual>
                         <individual v-if="ind.wife" :gedcom="gedcom" :settings="settings" :data="ind.wife" :layout="data.layout"></individual>
                     </template>
@@ -32,6 +33,11 @@ window.columnComp = {
         colStyle: function(){
             return {
 
+            };
+        },
+        vlineStyle: function(){
+            return {
+                'border-left': this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
             };
         },
         verticalDisplay: function(){
