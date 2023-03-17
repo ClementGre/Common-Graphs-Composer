@@ -16,7 +16,7 @@ window.individualComp = {
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data", "layout"],
+    props: ["gedcom", "settings", "data", "layout", "hasChild"],
     computed: {
         individualClasses: function(){
             return {
@@ -33,16 +33,21 @@ window.individualComp = {
                 background: 'url(https://www.gravatar.com/avatar/bonjour) center center/cover no-repeat',
                 width: this.convertLength(30),
                 height: this.convertLength(40),
-                border: this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
+                border: this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
             };
         },
         hlineStyle: function(){
+            let widthPercent = 100;
+            if (this.layout.verticalDisplay && !this.hasChild) widthPercent = 50;
             return {
-                'right': this.convertLength(this.settings.individual.linkLines.width/2),
-                'width': 'calc(100% - ' + this.convertLength(this.settings.individual.linkLines.width) + ')',
-                'border-bottom': this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
-                //'border-radius': this.convertLength(this.settings.individual.linkLines.width*2),
+                'right': this.linkLinesWidth/2 + 'px',
+                'width': 'calc(' + widthPercent + '% - ' + this.linkLinesWidth + 'px)',
+                'border-bottom': this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
             };
+        },
+        linkLinesWidth: function () {
+            // Returns an even number of pixels so it can be divided by 2 safely
+            return Math.ceil(this.settings.individual.linkLines.width / 1000 * this.settings.size.width / 2) * 2;
         }
     },
     methods: {
