@@ -9,35 +9,43 @@
 }
 #tree .column {
     flex-basis: 100%;
-
+    overflow: visible;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     min-width: 0;
-    overflow: hidden;
 }
-#tree .column .family{
+#tree .column .child-group{
     flex-basis: 100%;
-
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-#tree .column .couple{
-    flex-basis: 100%;
-
+    overflow: visible;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    min-height: 0;
 }
-#tree .column .couple .vline{
+#tree .column .couple{
+    flex-basis: 100%;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+}
+#tree .column .vline{
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
+    top: 50%;
     z-index: 10;
+}
+#tree .column .child-group > .vline{
+    right: 0;
+    height: 66.666%;
+    transform: translateX(50%) translateY(-50%);
+}
+#tree .column .couple > .vline{
+    left: 0;
+    transform: translateX(-50%) translateY(-50%);
 }
 #tree .column .couple .individual{
     flex-basis: 100%;
@@ -45,6 +53,7 @@
     display: flex;
     align-items: stretch;
     position: relative;
+    min-height: 0;
 }
 #tree .column .couple .individual .content {
     flex-basis: 100%;
@@ -67,7 +76,6 @@
 #tree .individual .hline{
     position: absolute;
     top: 50%;
-    left: 0;
     transform: translateY(-50%);
     width: 100%;
     height: 0;

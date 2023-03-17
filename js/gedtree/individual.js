@@ -38,8 +38,10 @@ window.individualComp = {
         },
         hlineStyle: function(){
             return {
+                'right': this.convertLength(this.settings.individual.linkLines.width/2),
+                'width': 'calc(100% - ' + this.convertLength(this.settings.individual.linkLines.width) + ')',
                 'border-bottom': this.convertLength(this.settings.individual.linkLines.width) + ' solid ' + this.settings.individual.linkLines.color,
-                height: '0'
+                //'border-radius': this.convertLength(this.settings.individual.linkLines.width*2),
             };
         }
     },

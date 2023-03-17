@@ -130,7 +130,7 @@ function constituteCouple(record, disableSpouse = false, doAscendSpouse = true, 
         wasMen: isMen,
         isBrother: isBrother,
         doAscendSpouse: doAscendSpouse,
-        hasChild: hasChild && family.getChildrenCount() > 0,
+        hasChild: hasChild && family.getChild().length > 0,
         husband,
         wife
     }
@@ -140,6 +140,7 @@ function coupleToData(couple) {
     if(!couple) return undefined;
     return {
         wasMen: couple.wasMen,
+        hasChild: couple.hasChild,
         husband: getIndividualData(couple.husband),
         wife: getIndividualData(couple.wife),
     }
