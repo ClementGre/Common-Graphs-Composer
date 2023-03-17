@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+
 #tree{
 
 }
@@ -82,12 +84,21 @@
     z-index: 10;
 }
 #tree .individual p {
-    font-weight: 300;
-    font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0;
+
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 12px;
+}
+#tree .individual p.name {
+    font-weight: 700;
+}
+#tree .individual p.occupation {
+    font-style: italic;
+    font-size: 9px;
 }
 
 /* BIG DESIGN */

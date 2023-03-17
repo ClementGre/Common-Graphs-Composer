@@ -151,6 +151,7 @@ function getIndividualData(record) {
     return {
         firstName: record.getName().valueAsParts()[0][0],
         lastName: record.getName().valueAsParts()[0][1],
+        occupation: record.getAttributeOccupation()[0]?.value,
         birth: getDateToJSDate(record.getEventBirth().getDate()),
         death: getDateToJSDate(record.getEventDeath().getDate()),
     }

@@ -7,11 +7,12 @@ window.individualComp = {
             <div v-if="layout.showPictures || layout.verticalDisplay" class="img" :style="imgStyle"></div>
             <div class="content">
                 <div class="top">
-                    <p>{{data?.firstName}} {{data?.lastName}}</p>
+                    <p class="name">{{data?.firstName}} {{data?.lastName}}</p>
+                    <p class="occupation">{{data?.occupation}}</p>
                 </div>
                 <div v-if="!layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
                 <div class="bottom">
-                    <p></p>
+                    <p class="date"></p>
                 </div>
             </div>
         </div>
