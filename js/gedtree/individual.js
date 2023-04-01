@@ -55,11 +55,14 @@ window.individualComp = {
             };
         },
         imgStyle: function(){
-
+            let height = 70;
+            if (!this.layout.verticalDisplay){
+                height = 50 * Math.pow(0.75, Math.log2(this.chGroupCount/4));
+            }
             return {
                 background: 'url(https://www.gravatar.com/avatar/bonjour) center center/cover no-repeat',
-                width: this.convertLength(30),
-                height: this.convertLength(40),
+                width: this.convertLength(height * 0.7),
+                height: this.convertLength(height),
                 border: this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
             };
         },
