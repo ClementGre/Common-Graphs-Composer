@@ -262,14 +262,18 @@ window.constants = {
                 },
                 fontSize: {
                     name: "Relative font size",
-                    type: 1, value: 65,
+                    type: 1, value: 80,
                     min: 1, max: 300, step: 2
+                },
+                decreaseDifference: {
+                    name: "Limit scale when font size decreases",
+                    type: 3, value: true,
+                    separator: true
                 },
                 fontWeight: {
                     name: "Font Weight",
                     type: 1, value: 400,
-                    min: 400, max: 700, step: 100,
-                    separator: true
+                    min: 400, max: 700, step: 100
                 }
             },
             date: {
@@ -280,8 +284,13 @@ window.constants = {
                 },
                 fontSize: {
                     name: "Relative font size",
-                    type: 1, value: 72,
+                    type: 1, value: 80,
                     min: 1, max: 300, step: 2
+                },
+                decreaseDifference: {
+                    name: "Limit scale when font size decreases",
+                    type: 3, value: true,
+                    separator: true
                 },
                 fontWeight: {
                     name: "Font Weight",
@@ -320,7 +329,7 @@ window.constants = {
                 },
                 textLeftMargin: {
                     name: "Text left margin",
-                    type: 1, value: 20,
+                    type: 1, value: 17,
                     min: 0, max: 100, step: 1
                 },
                 nameOccupationSpacing: {
@@ -330,10 +339,9 @@ window.constants = {
                 },
                 linkLineMargin: {
                     name: "Link line margin",
-                    type: 1, value: 20,
+                    type: 1, value: 17,
                     min: 0, max: 100, step: 1,
                 }
-
             }
         }
     }

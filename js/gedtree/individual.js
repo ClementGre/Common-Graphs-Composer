@@ -96,7 +96,7 @@ window.individualComp = {
         },
         occupationStyle: function(){
             return {
-                'font-size': this.getFontSize(this.settings.individual.occupation.fontSize),
+                'font-size': this.getFontSize(this.settings.individual.occupation.fontSize, this.settings.individual.occupation.decreaseDifference),
                 'font-weight': this.settings.individual.occupation.fontWeight,
                 'color': this.settings.individual.occupation.color,
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.nameOccupationSpacing) : false,
@@ -104,7 +104,7 @@ window.individualComp = {
         },
         dateStyle: function(){
             return {
-                'font-size': this.getFontSize(this.settings.individual.date.fontSize),
+                'font-size': this.getFontSize(this.settings.individual.date.fontSize, this.settings.individual.date.decreaseDifference),
                 'font-weight': this.settings.individual.date.fontWeight,
                 'color': this.settings.individual.date.color,
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.occupationDateSpacing) : false,
@@ -136,15 +136,21 @@ window.individualComp = {
             // Margins depends on the font size (expressed in per fifty of font size in px)
             return length * this.getFontSizeRaw()/50 + 'px';
         },
-        getFontSize(scale = 100){
-            return this.getFontSizeRaw(scale) + 'px';
+        getFontSize(scale = 100, decreaseDifference= false){
+            return this.getFontSizeRaw(scale, decreaseDifference) + 'px';
         },
-        getFontSizeRaw(scale = 100){
+        getFontSizeRaw(scale = 100, decreaseDifference= false){
             let size = 23;
             if (!this.layout.verticalDisplay){
                 size = 23 * 2/3 * Math.pow(0.9, Math.log2(this.chGroupCount/4));
             }
-            return size/2000 * this.settings.size.width * scale/100 * this.layout.fontSize/100;
+            if (decreaseDifference){
+                let a = 23/(scale * (1 - Math.log(0.23 * scale)/Math.log(23)));
+                // a is the coefficient we are adjusting to make sure the size stays the same at 23 px
+                // see https://www.desmos.com/calculator/pb6g2alicm
+                return Math.max(Math.pow(size, 1-size/(a*scale)), size * scale/100) * this.settings.size.width/2000 * this.layout.fontSize/100;
+            }
+            return size * this.settings.size.width/2000 * scale/100 * this.layout.fontSize/100;
         }
     }
 }
