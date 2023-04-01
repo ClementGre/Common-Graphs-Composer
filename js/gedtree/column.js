@@ -8,8 +8,8 @@ window.columnComp = {
                 <div class="couple" v-for="(couple, i2) in childGroup.couples" :key="i2">
                     <template v-if="couple">
                         <div v-if="couple.hasChild" class="vline" :style="colVlineStyle"></div>
-                        <individual v-if="couple.husband" :gedcom="gedcom" :settings="settings" :data="couple.husband" :layout="data.layout" :hasChild="couple.hasChild"></individual>
-                        <individual v-if="couple.wife" :gedcom="gedcom" :settings="settings" :data="couple.wife" :layout="data.layout" :hasChild="couple.hasChild"></individual>
+                        <individual v-if="couple.husband" :gedcom="gedcom" :settings="settings" :data="couple.husband" :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
+                        <individual v-if="couple.wife" :gedcom="gedcom" :settings="settings" :data="couple.wife" :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
                     </template>
                 </div>
             </template>
@@ -40,6 +40,9 @@ window.columnComp = {
                 'border-left': this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
                 'border-radius': this.linkLinesWidth*2 + 'px 0 0 ' + this.linkLinesWidth*2 + 'px'
             };
+        },
+        chGroupCount: function () {
+              return this.data.childGroups.length;
         },
         verticalDisplay: function () {
             return this.data.layout.verticalDisplay;

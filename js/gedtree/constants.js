@@ -177,43 +177,74 @@ window.constants = {
                 },
                 width: {
                     name: "Width",
-                    type: 1, value: 2, isFloat: true,
-                    min: 0, max: 10, step: 0.25
-                }
-            },
-            date: {
-                name: "Date Text",
-                color: {
-                    name: "Color",
-                    type: 0, value: "rgba(231,0,0,0.75)"
-                },
-                fontSize: {
-                    name: "Font Size",
-                    type: 1, value: 14,
-                    min: 10, max: 30
-                },
-                fontWeight: {
-                    name: "Font Weight",
-                    type: 1, value: 400,
-                    min: 100, max: 900, step: 100,
+                    type: 1, value: 1, isFloat: true,
+                    min: 0, max: 10, step: 0.25,
                     separator: true
                 }
             },
-            description: {
-                name: "Description Text",
+            displayName: {
+                name: "Name",
+                cutMiddleNames: {
+                    name: "Cut middle names",
+                    type: 3, value: true
+                },
+                pascalCaseSurname: {
+                    name: "Force Pascal Case Surname",
+                    type: 3, value: true
+                },
+                upperCaseSurname: {
+                    name: "Force Upper Case Surname",
+                    type: 3, value: false
+                },
                 color: {
                     name: "Color",
-                    type: 0, value: "rgba(0,0,0,0.89)"
+                    type: 0, value: "rgba(73,71,63,1)"
                 },
                 fontSize: {
-                    name: "Font Size",
-                    type: 1, value: 14,
-                    min: 10, max: 30
+                    name: "Relative font size",
+                    type: 1, value: 100,
+                    min: 1, max: 300
+                },
+                fontWeight: {
+                    name: "Font Weight",
+                    type: 1, value: 700,
+                    min: 400, max: 700, step: 100,
+                    separator: true
+                }
+            },
+            occupation: {
+                name: "Occupation",
+                color: {
+                    name: "Color",
+                    type: 0, value: "rgba(73,71,63,1)"
+                },
+                fontSize: {
+                    name: "Relative font size",
+                    type: 1, value: 65,
+                    min: 1, max: 300
                 },
                 fontWeight: {
                     name: "Font Weight",
                     type: 1, value: 400,
-                    min: 100, max: 900, step: 100
+                    min: 400, max: 700, step: 100,
+                    separator: true
+                }
+            },
+            date: {
+                name: "Date",
+                color: {
+                    name: "Color",
+                    type: 0, value: "rgba(73,71,63,1)"
+                },
+                fontSize: {
+                    name: "Relative font size",
+                    type: 1, value: 72,
+                    min: 1, max: 300
+                },
+                fontWeight: {
+                    name: "Font Weight",
+                    type: 1, value: 400,
+                    min: 400, max: 700, step: 100
                 }
             }
         }

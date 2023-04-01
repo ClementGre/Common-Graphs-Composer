@@ -154,6 +154,18 @@ const app = new Vue({
             set_local_data('gedtree-settings-' + section, this.settings[section]);
             displayCheckFloater();
         },
+        checkSettings: function(settings, source){
+            Object.keys(source).forEach(name => {
+                if(typeof source[name] == 'object'){
+                    if(source[name].type !== undefined){
+                        if(settings[name] === undefined) settings[name] = source[name].value;
+                    }else{
+                        settings[name] = settings[name] || {};
+                        this.checkSettings(settings[name], source[name]);
+                    }
+                }
+            });
+        },
         generateSettings: function(source){
             const result = {};
             Object.keys(source).forEach(name => {
@@ -173,6 +185,7 @@ const app = new Vue({
             immediate: true,
             handler: function(){
                 if(_.isEmpty(this.settings)) this.settings = this.generateSettings(this.settingsDetails);
+                else this.checkSettings(this.settings, this.settingsDetails);
             }
         },
         'ui.currentTab': {
