@@ -85,7 +85,7 @@
 }
 #tree .individual p {
     white-space: nowrap;
-    overflow: hidden;
+    overflow-x: hidden;
     text-overflow: ellipsis;
     margin: 0;
 
@@ -134,8 +134,7 @@
 /* SMALL DESIGN */
 
 #tree .column.small .individual{
-    padding-left: 15px;
-    gap: 5px;
+
 }
 #tree .column.small .individual .img{
     flex: 0 0 auto;
@@ -156,7 +155,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
-    align-items: flex-end;
+    align-items: baseline;
     align-content: flex-end;
 }
 #tree .column.small .individual .content .bottom{

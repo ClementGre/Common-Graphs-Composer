@@ -4,14 +4,14 @@ window.individualComp = {
         <div :class="individualClasses" :style="individualStyle">
             <div v-if="layout.verticalDisplay" class="virtual-top"></div>
             <div v-if="layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
-            <div v-if="layout.showPictures || layout.verticalDisplay" class="img" :style="imgStyle"></div>
-            <div class="content">
-                <div class="top">
+            <div v-if="isImageVisible" class="img" :style="imgStyle"></div>
+            <div class="content" :style="contentStyle">
+                <div class="top" :style="topStyle">
                     <p class="name" :style="nameStyle">{{firstNames + ' ' + lastName}}</p>
-                    <p class="occupation" :style="occupationStyle">{{data?.occupation}}</p>
+                    <p class="occupation" v-if="data?.occupation" :style="occupationStyle">{{data?.occupation}}</p>
                 </div>
                 <div v-if="!layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
-                <div class="bottom">
+                <div class="bottom" :style="bottomStyle">
                     <p class="date" :style="dateStyle"></p>
                 </div>
             </div>
@@ -51,6 +51,24 @@ window.individualComp = {
         },
         individualStyle: function(){
             return {
+                'padding-left': (!this.layout.verticalDisplay && this.isImageVisible) ? this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin) : false,
+            };
+        },
+        contentStyle: function(){
+            return {
+                gap: !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.linkLineMargin*2) : false,
+            };
+        },
+        topStyle: function(){
+            return {
+                gap: !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.nameOccupationSpacing) : false,
+                'padding-left': !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.textLeftMargin) : false,
+
+            };
+        },
+        bottomStyle: function(){
+            return {
+                'padding-left': !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.textLeftMargin) : false,
 
             };
         },
@@ -72,6 +90,8 @@ window.individualComp = {
                 'font-size': this.getFontSize(this.settings.individual.displayName.fontSize),
                 'font-weight': this.settings.individual.displayName.fontWeight,
                 'color': this.settings.individual.displayName.color,
+                'width': this.layout.forceWrapOccupation ? '100%' : false,
+                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.imageNameSpacing) : false,
             };
         },
         occupationStyle: function(){
@@ -79,6 +99,7 @@ window.individualComp = {
                 'font-size': this.getFontSize(this.settings.individual.occupation.fontSize),
                 'font-weight': this.settings.individual.occupation.fontWeight,
                 'color': this.settings.individual.occupation.color,
+                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.nameOccupationSpacing) : false,
             };
         },
         dateStyle: function(){
@@ -86,6 +107,7 @@ window.individualComp = {
                 'font-size': this.getFontSize(this.settings.individual.date.fontSize),
                 'font-weight': this.settings.individual.date.fontWeight,
                 'color': this.settings.individual.date.color,
+                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.occupationDateSpacing) : false,
             };
         },
         hlineStyle: function(){
@@ -100,6 +122,9 @@ window.individualComp = {
         linkLinesWidth: function () {
             // Returns an even number of pixels so it can be divided by 2 safely
             return Math.ceil(this.settings.individual.linkLines.width / 1000 * this.settings.size.width / 2) * 2;
+        },
+        isImageVisible: function(){
+            return this.layout.showPictures || this.layout.verticalDisplay
         }
     },
     methods: {
@@ -107,12 +132,19 @@ window.individualComp = {
             // Lengths are expressed in ‰ (per mille) of the width of the tree
             return length/1000 * this.settings.size.width+ 'px';
         },
+        convertMargin(length){
+            // Margins depends on the font size (expressed in per fifty of font size in px)
+            return length * this.getFontSizeRaw()/50 + 'px';
+        },
         getFontSize(scale = 100){
+            return this.getFontSizeRaw(scale) + 'px';
+        },
+        getFontSizeRaw(scale = 100){
             let size = 23;
             if (!this.layout.verticalDisplay){
                 size = 23 * 2/3 * Math.pow(0.9, Math.log2(this.chGroupCount/4));
             }
-            return size/2000 * this.settings.size.width * scale/100 * this.layout.fontSize/100 + 'px';
+            return size/2000 * this.settings.size.width * scale/100 * this.layout.fontSize/100;
         }
     }
 }

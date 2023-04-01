@@ -64,14 +64,14 @@ window.constants = {
                     type: 3, value: false
                 },
                 fontSize: {
-                    name: "Font relative size",
+                    name: "Relative font size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 1,
+                    min: 1, max: 300, step: 2,
                 },
                 pictureSize: {
-                    name: "Picture relative size",
+                    name: "Relative picture size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 1,
+                    min: 1, max: 300, step: 2,
                     separator: true
                 }
             },
@@ -99,14 +99,14 @@ window.constants = {
                     type: 3, value: false
                 },
                 fontSize: {
-                    name: "Font relative size",
+                    name: "Relative font size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 1,
+                    min: 1, max: 300, step: 2,
                 },
                 pictureSize: {
-                    name: "Picture relative size",
+                    name: "Relative picture size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 1,
+                    min: 1, max: 300, step: 2,
                     separator: true
                 }
             },
@@ -135,14 +135,14 @@ window.constants = {
                     type: 3, value: false
                 },
                 fontSize: {
-                    name: "Font relative size",
+                    name: "Relative font size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 1,
+                    min: 1, max: 300, step: 2,
                 },
                 pictureSize: {
-                    name: "Picture relative size",
+                    name: "Relative picture size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 1,
+                    min: 1, max: 300, step: 2,
                     separator: true
                 }
             },
@@ -231,11 +231,11 @@ window.constants = {
                     type: 3, value: true
                 },
                 pascalCaseSurname: {
-                    name: "Force Pascal Case Surname",
+                    name: "Title case Surname",
                     type: 3, value: true
                 },
                 upperCaseSurname: {
-                    name: "Force Upper Case Surname",
+                    name: "Upper case Surname",
                     type: 3, value: false
                 },
                 color: {
@@ -245,7 +245,7 @@ window.constants = {
                 fontSize: {
                     name: "Relative font size",
                     type: 1, value: 100,
-                    min: 1, max: 300
+                    min: 1, max: 300, step: 2
                 },
                 fontWeight: {
                     name: "Font Weight",
@@ -263,7 +263,7 @@ window.constants = {
                 fontSize: {
                     name: "Relative font size",
                     type: 1, value: 65,
-                    min: 1, max: 300
+                    min: 1, max: 300, step: 2
                 },
                 fontWeight: {
                     name: "Font Weight",
@@ -281,13 +281,59 @@ window.constants = {
                 fontSize: {
                     name: "Relative font size",
                     type: 1, value: 72,
-                    min: 1, max: 300
+                    min: 1, max: 300, step: 2
                 },
                 fontWeight: {
                     name: "Font Weight",
                     type: 1, value: 400,
                     min: 400, max: 700, step: 100
                 }
+            }
+        },
+        margins: {
+            name: "Margins (relative to font size)",
+            verticalLayout: {
+                name: "Vertical Layout",
+                imageNameSpacing: {
+                    name: "Image-Name spacing",
+                    type: 1, value: 17,
+                    min: 0, max: 100, step: 1
+                },
+                nameOccupationSpacing: {
+                    name: "Name-Occupation spacing",
+                    type: 1, value: 7,
+                    min: 0, max: 100, step: 1
+                },
+                occupationDateSpacing: {
+                    name: "Occupation-Date spacing",
+                    type: 1, value: 20,
+                    min: 0, max: 100, step: 1,
+                    separator: true
+                }
+            },
+            horizontalLayout: {
+                name: "Horizontal Layout",
+                imageLeftMargin: {
+                    name: "Image left margin",
+                    type: 1, value: 60,
+                    min: 0, max: 100, step: 1
+                },
+                textLeftMargin: {
+                    name: "Text left margin",
+                    type: 1, value: 20,
+                    min: 0, max: 100, step: 1
+                },
+                nameOccupationSpacing: {
+                    name: "Name-Occupation spacing",
+                    type: 1, value: 10,
+                    min: 0, max: 100, step: 1
+                },
+                linkLineMargin: {
+                    name: "Link line margin",
+                    type: 1, value: 20,
+                    min: 0, max: 100, step: 1,
+                }
+
             }
         }
     }
