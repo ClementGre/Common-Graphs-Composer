@@ -24,7 +24,10 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         ],
         layout: {
             verticalDisplay: middleCol.verticalDisplay,
-            showPictures: middleCol.showPictures
+            showPictures: middleCol.showPictures,
+            forceWrapOccupation: middleCol.forceWrapOccupation,
+            fontSize: middleCol.fontSize,
+            pictureSize: middleCol.pictureSize,
         }
     })
     if (middleCol.showBrothers) {
@@ -79,7 +82,10 @@ function generateRightColumn(gedcom, previousColData, rightCol){
         childGroups : [],
         layout: {
             verticalDisplay: rightCol.verticalDisplay ?? false,
-            showPictures: rightCol.showPictures ?? false
+            showPictures: rightCol.showPictures ?? false,
+            forceWrapOccupation: rightCol.forceWrapOccupation ?? false,
+            fontSize: rightCol.fontSize ?? 100,
+            pictureSize: rightCol.pictureSize?? 100
         }
     }
 

@@ -59,6 +59,7 @@ window.individualComp = {
             if (!this.layout.verticalDisplay){
                 height = 50 * Math.pow(0.75, Math.log2(this.chGroupCount/4));
             }
+            height *= this.layout.pictureSize/100
             return {
                 background: 'url(https://www.gravatar.com/avatar/bonjour) center center/cover no-repeat',
                 width: this.convertLength(height * 0.7),
@@ -111,7 +112,7 @@ window.individualComp = {
             if (!this.layout.verticalDisplay){
                 size = 23 * 2/3 * Math.pow(0.9, Math.log2(this.chGroupCount/4));
             }
-            return size/2000 * this.settings.size.width * scale/100 + 'px';
+            return size/2000 * this.settings.size.width * scale/100 * this.layout.fontSize/100 + 'px';
         }
     }
 }

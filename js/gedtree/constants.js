@@ -57,7 +57,21 @@ window.constants = {
                 },
                 showPictures: {
                     name: "Show pictures",
-                    type: 3, value: false,
+                    type: 3, value: false
+                },
+                forceWrapOccupation: {
+                    name: "Force wrap occupation",
+                    type: 3, value: false
+                },
+                fontSize: {
+                    name: "Font relative size",
+                    type: 1, value: 100,
+                    min: 1, max: 300, step: 1,
+                },
+                pictureSize: {
+                    name: "Picture relative size",
+                    type: 1, value: 100,
+                    min: 1, max: 300, step: 1,
                     separator: true
                 }
             },
@@ -78,7 +92,21 @@ window.constants = {
                 },
                 showPictures: {
                     name: "Show pictures",
-                    type: 3, value: true,
+                    type: 3, value: true
+                },
+                forceWrapOccupation: {
+                    name: "Force wrap occupation",
+                    type: 3, value: false
+                },
+                fontSize: {
+                    name: "Font relative size",
+                    type: 1, value: 100,
+                    min: 1, max: 300, step: 1,
+                },
+                pictureSize: {
+                    name: "Picture relative size",
+                    type: 1, value: 100,
+                    min: 1, max: 300, step: 1,
                     separator: true
                 }
             },
@@ -100,7 +128,21 @@ window.constants = {
                 },
                 showPictures: {
                     name: "Show pictures",
-                    type: 3, value: false,
+                    type: 3, value: false
+                },
+                forceWrapOccupation: {
+                    name: "Force wrap occupation",
+                    type: 3, value: false
+                },
+                fontSize: {
+                    name: "Font relative size",
+                    type: 1, value: 100,
+                    min: 1, max: 300, step: 1,
+                },
+                pictureSize: {
+                    name: "Picture relative size",
+                    type: 1, value: 100,
+                    min: 1, max: 300, step: 1,
                     separator: true
                 }
             },

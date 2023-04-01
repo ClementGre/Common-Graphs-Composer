@@ -121,7 +121,7 @@ window.appSettingsGroupComp = {
                                 <tr :key="index + '.' + subindex + '.' + rindex" is="app-setting"
                                     :rindex="rindex"
                                     v-on:edit-setting="editSetting"
-                                    :setting="settings[sectionName][name]['n' + rindex] ? settings[sectionName][name]['n' + rindex][subname] : section[name][subname].value" 
+                                    :setting="settings[sectionName][name]?.['n' + rindex]?.[subname] ? settings[sectionName][name]['n' + rindex][subname] : section[name][subname].value" 
                                     :section="section" :name="name" :subname="subname"
                                     :section-id="sectionName"
                                     :type="section[name][subname].type"
