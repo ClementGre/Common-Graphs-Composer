@@ -236,6 +236,19 @@ window.constants = {
                     separator: true
                 }
             },
+            image: {
+                name: "Image",
+                borderRelativeWidth: {
+                    name: "Border relative width (%)",
+                    type: 1, value: 50, isFloat: false,
+                    min: 0, max: 200, step: 1
+                },
+                keepAlignmentWhenNoImage: {
+                    name: "Keep alignment when no image",
+                    type: 3, value: true,
+                    separator: true
+                }
+            },
             displayName: {
                 name: "Name",
                 cutMiddleNames: {

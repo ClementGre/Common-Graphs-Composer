@@ -88,11 +88,12 @@ window.individualComp = {
                 height = 50 * Math.pow(0.75, Math.log2(this.chGroupCount/4));
             }
             height *= this.layout.pictureSize/100
+            let url = this.imageUrl;
             return {
-                background: 'url(https://www.gravatar.com/avatar/bonjour) center center/cover no-repeat',
-                width: this.convertLength(height * 0.7),
-                height: this.convertLength(height),
-                border: this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
+                background: 'url("' + url + '") center center/cover no-repeat',
+                width: url === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.convertLength(height * 0.7),
+                height: url === undefined ? 0 : this.convertLength(height),
+                border: url === undefined ? "none" : (this.linkLinesWidth * this.settings.individual.image.borderRelativeWidth / 100.0) + 'px solid ' + this.settings.individual.linkLines.color,
             };
         },
         nameStyle: function(){
@@ -136,6 +137,9 @@ window.individualComp = {
         },
         isImageVisible: function(){
             return this.layout.showPictures || this.layout.verticalDisplay
+        },
+        imageUrl: function(){
+            return this.data?.multimediaPaths?.[0]
         }
     },
     methods: {
