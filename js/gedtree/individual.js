@@ -7,12 +7,12 @@ window.individualComp = {
             <div v-if="isImageVisible" class="img" :style="imgStyle"></div>
             <div class="content" :style="contentStyle">
                 <div class="top" :style="topStyle">
-                    <p class="name" :style="nameStyle">{{firstNames + ' ' + lastName}}</p>
+                    <p class="name" :style="nameStyle">{{firstNames}} {{lastName}}</p>
                     <p class="occupation" v-if="data?.occupation" :style="occupationStyle">{{data?.occupation}}</p>
                 </div>
                 <div v-if="!layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
                 <div class="bottom" :style="bottomStyle">
-                    <p class="date" :style="dateStyle"></p>
+                    <p class="datesAndPlaces" :style="datesAndPlacesStyle" v-html="date"></p>
                 </div>
             </div>
         </div>
@@ -34,15 +34,25 @@ window.individualComp = {
         },
         lastName: function(){
             if (this.settings.individual.displayName.pascalCaseSurname){
-                let lastName = ""
-                let nameParts = this.data?.lastName.split(' ');
-                nameParts.forEach(part => {
-                    lastName += part.charAt(0).toUpperCase() + part.slice(1).toLowerCase() + ' ';
-                })
-                return lastName
+                return this.toTitleCase(this.data?.lastName);
             }else if (this.settings.individual.displayName.upperCaseSurname){
                 return this.data?.lastName?.toUpperCase();
             }else return this.data?.lastName;
+        },
+        date: function(){
+            let birthDate = this.formatDate(this.data?.birth)
+            let birthPlace = this.formatPlace(this.data?.birthPlace)
+            let birthSeparator = birthDate && birthPlace ? " - " : ""
+            let deathDate = this.formatDate(this.data?.death)
+            let deathPlace = this.formatPlace(this.data?.deathPlace)
+            let deathSeparator = deathDate && deathPlace ? " - " : ""
+
+            let separator = ""
+            if((birthDate || birthPlace) && (deathDate || deathPlace)){
+                separator = this.layout.inlineDate ? " ➞ " : "<br>"
+            }
+
+            return birthDate + birthSeparator + birthPlace + separator + deathDate + deathSeparator + deathPlace
         },
         individualClasses: function(){
             return {
@@ -102,12 +112,13 @@ window.individualComp = {
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.nameOccupationSpacing) : false,
             };
         },
-        dateStyle: function(){
+        datesAndPlacesStyle: function(){
             return {
-                'font-size': this.getFontSize(this.settings.individual.date.fontSize, this.settings.individual.date.decreaseDifference),
-                'font-weight': this.settings.individual.date.fontWeight,
-                'color': this.settings.individual.date.color,
+                'font-size': this.getFontSize(this.settings.individual.datesAndPlaces.fontSize, this.settings.individual.datesAndPlaces.decreaseDifference),
+                'font-weight': this.settings.individual.datesAndPlaces.fontWeight,
+                'color': this.settings.individual.datesAndPlaces.color,
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.occupationDateSpacing) : false,
+                'line-height': this.settings.individual.datesAndPlaces.lineHeight + "%",
             };
         },
         hlineStyle: function(){
@@ -151,6 +162,31 @@ window.individualComp = {
                 return Math.max(Math.pow(size, 1-size/(a*scale)), size * scale/100) * this.settings.size.width/2000 * this.layout.fontSize/100;
             }
             return size * this.settings.size.width/2000 * scale/100 * this.layout.fontSize/100;
+        },
+        toTitleCase(str) {
+            if(!str) return "";
+            return str.toString().replace(
+                /\w\S*/g,
+                function(txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }
+            );
+        },
+        formatDate(date){
+            const options = {year: 'numeric', month: 'long', day: 'numeric'};
+            try{
+                return this.toTitleCase(date?.toLocaleDateString(this.settings.individual.dates.formatLanguage, options));
+            }catch (e) {
+                return this.toTitleCase(date?.toLocaleDateString("en", options));
+            }
+        },
+        formatPlace(place){
+            let result = "";
+            if(place?.[3] && this.settings.individual.places.showCity) result += this.toTitleCase(place[3]);
+
+            if(place?.[4] && this.settings.individual.places.showDepartment) result += (result ? ", " : "") + this.toTitleCase(place[4]);
+            if(place?.[5] && this.settings.individual.places.countryDifferentFrom !== place[5]) result += (result ? ", " : "") + this.toTitleCase(place[5]);
+            return result;
         }
     }
 }

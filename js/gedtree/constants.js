@@ -71,7 +71,11 @@ window.constants = {
                 pictureSize: {
                     name: "Relative picture size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 2,
+                    min: 1, max: 300, step: 2
+                },
+                inlineDate: {
+                    name: "Inline date",
+                    type: 3, value: false,
                     separator: true
                 }
             },
@@ -106,7 +110,11 @@ window.constants = {
                 pictureSize: {
                     name: "Relative picture size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 2,
+                    min: 1, max: 300, step: 2
+                },
+                inlineDate: {
+                    name: "Inline date",
+                    type: 3, value: false,
                     separator: true
                 }
             },
@@ -142,7 +150,11 @@ window.constants = {
                 pictureSize: {
                     name: "Relative picture size",
                     type: 1, value: 100,
-                    min: 1, max: 300, step: 2,
+                    min: 1, max: 300, step: 2
+                },
+                inlineDate: {
+                    name: "Inline date",
+                    type: 3, value: false,
                     separator: true
                 }
             },
@@ -182,12 +194,12 @@ window.constants = {
                 rootMargin: {
                     name: "Poster margin",
                     type: 1, value: 32,
-                    min: 20, max: 50, step: 0
+                    min: 0, max: 50, step: 0
                 },
                 innerMargin: {
                     name: "Inner margin",
                     type: 1, value: 16,
-                    min: 20, max: 50, step: 0,
+                    min: 0, max: 50, step: 0,
                     separator: true
                 },
             },
@@ -267,17 +279,17 @@ window.constants = {
                 },
                 decreaseDifference: {
                     name: "Limit scale when font size decreases",
-                    type: 3, value: true,
-                    separator: true
+                    type: 3, value: true
                 },
                 fontWeight: {
                     name: "Font Weight",
                     type: 1, value: 400,
-                    min: 400, max: 700, step: 100
+                    min: 400, max: 700, step: 100,
+                    separator: true
                 }
             },
-            date: {
-                name: "Date",
+            datesAndPlaces: {
+                name: "Dates and Places",
                 color: {
                     name: "Color",
                     type: 0, value: "rgba(73,71,63,1)"
@@ -289,14 +301,43 @@ window.constants = {
                 },
                 decreaseDifference: {
                     name: "Limit scale when font size decreases",
-                    type: 3, value: true,
-                    separator: true
+                    type: 3, value: true
                 },
                 fontWeight: {
                     name: "Font Weight",
                     type: 1, value: 400,
                     min: 400, max: 700, step: 100
+                },
+                lineHeight: {
+                    name: "Line height (%)",
+                    type: 1, value: 108, isFloat: true,
+                    min: 50, max: 200, step: 1,
+                    separator: true
                 }
+            },
+            dates: {
+                name: "Dates",
+                formatLanguage: {
+                    name: "Format language code",
+                    type: 2, value: "fr", placeholder: "en",
+                    separator: true
+                },
+            },
+            places: {
+                name: "Places",
+                countryDifferentFrom: {
+                    name: "Show country if different from",
+                    type: 2, value: "France", placeholder: "France",
+                },
+                showDepartment: {
+                    name: "Show department",
+                    type: 3, value: true
+                },
+                showCity: {
+                    name: "Show city",
+                    type: 3, value: true,
+                    separator: true
+                },
             }
         },
         margins: {
@@ -315,7 +356,7 @@ window.constants = {
                 },
                 occupationDateSpacing: {
                     name: "Occupation-Date spacing",
-                    type: 1, value: 20,
+                    type: 1, value: 10,
                     min: 0, max: 100, step: 1,
                     separator: true
                 }

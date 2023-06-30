@@ -28,6 +28,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
             forceWrapOccupation: middleCol.forceWrapOccupation,
             fontSize: middleCol.fontSize,
             pictureSize: middleCol.pictureSize,
+            inlineDate: middleCol.inlineDate ?? false,
         }
     })
     if (middleCol.showBrothers) {
@@ -85,7 +86,8 @@ function generateRightColumn(gedcom, previousColData, rightCol){
             showPictures: rightCol.showPictures ?? false,
             forceWrapOccupation: rightCol.forceWrapOccupation ?? false,
             fontSize: rightCol.fontSize ?? 100,
-            pictureSize: rightCol.pictureSize?? 100
+            pictureSize: rightCol.pictureSize ?? 100,
+            inlineDate: rightCol.inlineDate ?? false,
         }
     }
 
@@ -160,6 +162,8 @@ function getIndividualData(record) {
         occupation: record.getAttributeOccupation()[0]?.value,
         birth: getDateToJSDate(record.getEventBirth().getDate()),
         death: getDateToJSDate(record.getEventDeath().getDate()),
+        birthPlace: record.getEventBirth().getPlace()?.valueAsParts()?.[0],
+        deathPlace: record.getEventDeath().getPlace()?.valueAsParts()?.[0],
     }
 }
 
