@@ -3,7 +3,6 @@
 window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, leftCols, middleCol, rightCols) {
     let root = gedcom.getIndividualRecord(rootIndPtr).arraySelect()[0]
 
-    // example
     let columns = []
 
     ///////////////////
@@ -39,7 +38,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
             false, true, middleCol.showBrothersChildren && leftCols.length > 0));
         columns[0].childGroups[0].couples = columns[0].childGroups[0].couples.concat(brotherCouples);
 
-        // Sort brothers by birth date
+        // Sort brothers by birthdate
         columns[0].childGroups[0].couples = _.sortBy(columns[0].childGroups[0].couples, [function(c) {
             return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
         }]);
@@ -59,6 +58,14 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
     //////////////////
 
 
+    ////////////////////////
+    // ADDING GEDCOM DATA //
+    ////////////////////////
+
+    let gedcom_data = {
+        file_name: gedcom.getHeader().getFilename().value()[0],
+        place_format: gedcom.getHeader().get('PLAC').get('FORM').value()[0].split(",").map(s => s.trim())
+    }
 
     /////////////////
     // FORMAT DATA //
@@ -75,7 +82,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
     console.log('After conversion', columns)
 
 
-    return {columns};
+    return {gedcom_data, columns};
 }
 
 function generateRightColumn(gedcom, previousColData, rightCol){

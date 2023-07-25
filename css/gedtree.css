@@ -93,13 +93,17 @@ main .panel .pane .content {
     box-sizing: border-box;
     background-color: #e5e5e5;
     border-radius: 1px;
-    padding: 10px;
-    padding-right: 20px;
+    padding: 10px 20px 10px 10px;
     min-height: 100%;
 }
 
 main .panel .pane table td {
     padding: 0;
+    max-width: 250px;
+    white-space: normal;
+}
+main .panel .pane.wide table td {
+    max-width: unset;
 }
 
 main .panel .pane table td ~ td {

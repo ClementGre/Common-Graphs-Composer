@@ -17,7 +17,7 @@ window.individualComp = {
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data", "layout", "chGroupCount", "hasChild"],
+    props: ["gedcom", "settings", "data", "gedcom_data", "layout", "chGroupCount", "hasChild"],
     computed: {
         firstNames: function(){
             if (this.settings.individual.displayName.cutMiddleNames){
@@ -90,7 +90,7 @@ window.individualComp = {
             height *= this.layout.pictureSize/100
             let url = this.imageUrl;
             return {
-                background: 'url("' + url + '") center center/cover no-repeat',
+                background: this.settings.decoration.background.backgroundColor + ' url("' + url + '") center center/cover no-repeat',
                 width: url === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.convertLength(height * 0.7),
                 height: url === undefined ? 0 : this.convertLength(height),
                 border: url === undefined ? "none" : (this.linkLinesWidth * this.settings.individual.image.borderRelativeWidth / 100.0) + 'px solid ' + this.settings.individual.linkLines.color,
@@ -185,11 +185,38 @@ window.individualComp = {
             }
         },
         formatPlace(place){
-            let result = "";
-            if(place?.[3] && this.settings.individual.places.showCity) result += this.toTitleCase(place[3]);
+            if(!place) return ""
 
-            if(place?.[4] && this.settings.individual.places.showDepartment) result += (result ? ", " : "") + this.toTitleCase(place[4]);
-            if(place?.[5] && this.settings.individual.places.countryDifferentFrom !== place[5]) result += (result ? ", " : "") + this.toTitleCase(place[5]);
+            let format = this.settings.individual.places.placeFormat;
+            const  gedcom_format = this.gedcom_data.place_format;
+            let last_replace_length = 0;
+            let is_last_empty = false;
+            let result = "";
+
+            while(format.length > 0){
+                let i = gedcom_format.findIndex(f => format.startsWith(f))
+                if(i !== -1){
+                    format = format.substring(gedcom_format[i].length);
+                    if(!place[i]
+                        || (gedcom_format[i] === this.settings.individual.places.countryKey
+                                        && this.settings.individual.places.countryDifferentFrom === place[i])
+                        || (gedcom_format[i] === this.settings.individual.places.departmentKey
+                            && this.settings.individual.places.departmentDifferentFrom === place[i])){
+
+                        // Removing characters between the last replacement
+                        result = result.substring(0, last_replace_length)
+                        is_last_empty = true;
+                    }else{
+                        result += place[i]
+                        is_last_empty = false;
+                    }
+                    last_replace_length = result.length
+                }else{
+                    if (!is_last_empty) result += format.charAt(0);
+                    format = format.substring(1);
+                }
+            }
+
             return result;
         }
     }

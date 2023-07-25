@@ -3,21 +3,22 @@ window.columnComp = {
     template: `
         <div ref="column" :class="colClasses" :style="colStyle">
             <div class="child-group" v-for="(childGroup, i1) in data.childGroups" :key="i1">
-            <template v-if="childGroup">
-                <div v-if="childGroup.couples.length > 1" class="vline" :style="childGroupVlineStyle(childGroup.couples.length)"></div>
-                <div class="couple" v-for="(couple, i2) in childGroup.couples" :key="i2">
-                    <template v-if="couple">
-                        <div v-if="couple.hasChild" class="vline" :style="colVlineStyle"></div>
-                        <individual v-if="couple.husband" :gedcom="gedcom" :settings="settings" :data="couple.husband" :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
-                        <individual v-if="couple.wife" :gedcom="gedcom" :settings="settings" :data="couple.wife" :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
-                    </template>
-                </div>
-            </template>
-                
+                <template v-if="childGroup">
+                    <div v-if="childGroup.couples.length > 1" class="vline" :style="childGroupVlineStyle(childGroup.couples.length)"></div>
+                    <div class="couple" v-for="(couple, i2) in childGroup.couples" :key="i2">
+                        <template v-if="couple">
+                            <div v-if="couple.hasChild" class="vline" :style="colVlineStyle"></div>
+                            <individual v-if="couple.husband" :gedcom="gedcom" :settings="settings" :data="couple.husband" :gedcom_data="gedcom_data"
+                                :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
+                            <individual v-if="couple.wife" :gedcom="gedcom" :settings="settings" :data="couple.wife" :gedcom_data="gedcom_data"
+                                :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
+                        </template>
+                    </div>
+                </template>
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data"],
+    props: ["gedcom", "settings", "data", "gedcom_data"],
     data: function () {
         return {
             colHeight: 0,

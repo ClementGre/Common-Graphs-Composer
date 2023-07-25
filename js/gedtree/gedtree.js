@@ -20,6 +20,7 @@ const app = new Vue({
             .then(Gedcom.readGedcom);
 
         promise.then(gedcom => {
+            console.log(gedcom)
             this.gedcom = gedcom;
         });
     },
@@ -64,8 +65,8 @@ const app = new Vue({
             const queryTokens = tokenize(query);
 
             let individuals = this.gedcom.getIndividualRecord().filterSelect(individual => {
-                const names = individual.getName().valueAsParts()[0];
-                if(names !== null) {
+                const names = individual.getName()?.valueAsParts()?.[0];
+                if(names) {
                     const namesTokens = names.filter(v => v).flatMap(tokenize);
                     return queryTokens.every(s => namesTokens.some(n => utf8ToAscii(n.toLowerCase()).includes(utf8ToAscii(s.toLowerCase()))));
                 }
@@ -76,8 +77,8 @@ const app = new Vue({
             for (let i = 0; i < individuals.length; i++) {
                 let result = individuals.arraySelect()[i];
                 results.push({
-                    lastname: result.getName().valueAsParts()[0][1].toUpperCase(),
-                    firstname: result.getName().valueAsParts()[0][0],
+                    lastname: result.getName().valueAsParts()[0]?.[1]?.toUpperCase(),
+                    firstname: result.getName().valueAsParts()[0]?.[0],
                     birth: getDateToJSDate(result.getEventBirth().getDate())?.getFullYear(),
                     death: getDateToJSDate(result.getEventDeath().getDate())?.getFullYear(),
                     pointer: result.pointer()[0],

@@ -338,17 +338,28 @@ window.constants = {
             },
             places: {
                 name: "Places",
+                placeFormat: {
+                    name: "Places format (use keys among the ones configured in the gedcom head)",
+                    type: 2, value: "Commune, Département, Pays",
+                    placeholder: "Commune, Code_INSEE, Code_Postal, Département, Région, Pays"
+                },
+                countryKey: {
+                    name: "Country key",
+                    type: 2, value: "Pays", placeholder: "Pays",
+                    separator: true
+                },
                 countryDifferentFrom: {
                     name: "Show country if different from",
                     type: 2, value: "France", placeholder: "France",
+                    separator: true
                 },
-                showDepartment: {
-                    name: "Show department",
-                    type: 3, value: true
+                departmentKey: {
+                    name: "Department key",
+                    type: 2, value: "Département", placeholder: "Département",
                 },
-                showCity: {
-                    name: "Show city",
-                    type: 3, value: true,
+                departmentDifferentFrom: {
+                    name: "Show department if different from",
+                    type: 2, value: "Paris", placeholder: "Paris",
                     separator: true
                 },
             }
