@@ -3,9 +3,19 @@
 #tree{
     line-height: 1;
 }
-#tree > .content{
+#tree-content {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+#tree-content > .header p {
+    width: 100%;
+    text-align: center;
+}
+#tree-columns {
+    flex-grow: 1;
     display: flex;
     align-items: stretch;
 }
@@ -42,7 +52,6 @@
 }
 #tree .column .child-group > .vline{
     right: 0;
-    height: 66.666%;
     transform: translateX(50%) translateY(-50%);
 }
 #tree .column .couple > .vline{
@@ -76,6 +85,16 @@
     min-width: 0;
     overflow: hidden;
 }
+#tree .individual p {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: ellipsis;
+    margin: 0;
+
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 12px;
+}
 #tree .individual .hline{
     position: absolute;
     top: 50%;
@@ -83,16 +102,6 @@
     width: 100%;
     height: 0;
     z-index: 10;
-}
-#tree .individual p {
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    margin: 0;
-
-    font-family: 'Lora', serif;
-    font-weight: 400;
-    font-size: 12px;
 }
 #tree .individual p.name {
 }

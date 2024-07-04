@@ -4,10 +4,10 @@ const app = new Vue({
     data: {
         gedcom: null,
         renderData: {},
-        settings: !get_local_data('gedtree-settings') ? {} : get_local_data('gedtree-settings'),
+        settings: get_local_data('gedtree-settings') ?? {},
         settingsDetails: constants.settingsDetails,
         ui: {
-            currentTab:  !get_local_data('gedtree-ui-lasttab') ? "settings" : get_local_data('gedtree-ui-lasttab'),
+            currentTab:  get_local_data('gedtree-ui-lasttab') ?? "settings",
             search_query: "",
         },
         temp: {
@@ -15,7 +15,7 @@ const app = new Vue({
         }
     },
     created: function(){
-        const promise = fetch('example.ged')
+        const promise = fetch('Grennerat.ged')
             .then(r => r.arrayBuffer())
             .then(Gedcom.readGedcom);
 

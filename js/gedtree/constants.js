@@ -207,7 +207,7 @@ window.constants = {
                 name: "Border",
                 borderWidth: {
                     name: "Width",
-                    type: 1, value: 2, isFloat: true,
+                    type: 1, value: 1, isFloat: true,
                     min: 0, max: 10, step: 0.25
                 },
                 borderColor: {
@@ -218,6 +218,87 @@ window.constants = {
                     name: "Border radius",
                     type: 1, value: 5,
                     min: 0, max: 20, step: 1,
+                    separator: true
+                }
+            },
+            title: {
+                name: "Title",
+                titleText: {
+                    name: "Title text",
+                    type: 2, value: "Family tree", placeholder: "Empty for no title",
+                },
+                titleColor: {
+                    name: "Title color",
+                    type: 0, value: "rgba(73,71,63,1)"
+                },
+                titleFont: {
+                    name: "Title font",
+                    type: 2, value: "Apple Chancery", placeholder: "Font name",
+                },
+                titleFontWeight: {
+                    name: "Title font weight",
+                    type: 1, value: 400,
+                    min: 100, max: 900, step: 100
+                },
+                titleFontStyle: {
+                    name: "Title font style",
+                    type: 2, value: "italic", placeholder: "normal, italic, oblique"
+                },
+                titleFontSize: {
+                    name: "Title font size (px)",
+                    type: 1, value: 33,
+                    min: 1, max: 300, step: 2
+                },
+                titleLineHeight: {
+                    name: "Title line height (%)",
+                    type: 1, value: 50, isFloat: true,
+                    min: 10, max: 200, step: 1
+                },
+                titleSmallCaps: {
+                    name: "Title small caps",
+                    type: 3, value: true,
+                    separator: true
+                },
+                subtitleText: {
+                    name: "Subtitle text",
+                    type: 2, value: "", placeholder: "Empty for no subtitle",
+                },
+                subtitleColor: {
+                    name: "Subtitle color",
+                    type: 0, value: "rgba(73,71,63,1)"
+                },
+                subtitleFont: {
+                    name: "Subtitle font",
+                    type: 2, value: "Apple Chancery", placeholder: "Font name",
+                },
+                subtitleFontWeight: {
+                    name: "Subtitle font weight",
+                    type: 1, value: 400,
+                    min: 100, max: 900, step: 100
+                },
+                subtitleFontStyle: {
+                    name: "Subtitle font style",
+                    type: 2, value: "italic", placeholder: "normal, italic, oblique"
+                },
+                subtitleFontSize: {
+                    name: "Subtitle font size (px)",
+                    type: 1, value: 17,
+                    min: 1, max: 300, step: 2
+                },
+                subtitleLineHeight: {
+                    name: "Subtitle line height (%)",
+                    type: 1, value: 50, isFloat: true,
+                    min: 10, max: 200, step: 1
+                },
+                subtitleSmallCaps: {
+                    name: "Subtitle small caps",
+                    type: 3, value: false,
+                    separator: true
+                },
+                titleSubTitleSpacing: {
+                    name: "Title-Subtitle spacing (px)",
+                    type: 1, value: 14,
+                    min: 0, max: 50, step: 0
                 }
             }
         },

@@ -36,6 +36,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
 
         let brotherCouples = brothers.map(brother => constituteCouple(brother, !middleCol.showBrothersChildren,
             false, true, middleCol.showBrothersChildren && leftCols.length > 0));
+
         columns[0].childGroups[0].couples = columns[0].childGroups[0].couples.concat(brotherCouples);
 
         // Sort brothers by birthdate
@@ -80,7 +81,6 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         return col;
     })
     console.log('After conversion', columns)
-
 
     return {gedcom_data, columns};
 }

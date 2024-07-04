@@ -2,8 +2,14 @@ window.treeComp = {
     name: "tree",
     template: `
         <div id="tree" :style="rootStyle">
-            <div class="content" :style="contentStyle">
-                <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col" :gedcom_data="data.gedcom_data"></column>
+            <div id="tree-content" :style="contentStyle">
+                <div class="header" v-if="settings.decoration.title.titleText">
+                    <p class="title" :style="titleStyle">{{settings.decoration.title.titleText}}</p>
+                    <p class="subtitle" :style="subtitleStyle">{{settings.decoration.title.subtitleText}}</p>
+                </div>
+                <div id="tree-columns">
+                    <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col" :gedcom_data="data.gedcom_data"></column>
+                </div>
             </div>
         </div>
         `,
@@ -33,6 +39,29 @@ window.treeComp = {
                 padding: this.convertLength(this.settings.decoration.margins.innerMargin),
                 border: this.convertLength(this.settings.decoration.border.borderWidth) + ' solid ' + this.settings.decoration.border.borderColor,
                 'border-radius': this.convertLength(this.settings.decoration.border.borderBorderRadius),
+            };
+        },
+        titleStyle: function(){
+            return {
+                color: this.settings.decoration.title.titleColor,
+                fontFamily: this.settings.decoration.title.titleFont,
+                fontWeight: this.settings.decoration.title.titleFontWeight,
+                fontStyle: this.settings.decoration.title.titleFontStyle,
+                fontSize: this.convertLength(this.settings.decoration.title.titleFontSize),
+                fontVariant: this.settings.decoration.title.titleSmallCaps ? 'small-caps' : 'normal',
+                lineHeight: this.settings.decoration.title.titleLineHeight + '%',
+                marginBottom: this.convertLength(this.settings.decoration.title.titleSubTitleSpacing),
+            };
+        },
+        subtitleStyle: function(){
+            return {
+                color: this.settings.decoration.title.subtitleColor,
+                fontFamily: this.settings.decoration.title.subtitleFont,
+                fontWeight: this.settings.decoration.title.subtitleFontWeight,
+                fontStyle: this.settings.decoration.title.subtitleFontStyle,
+                fontSize: this.convertLength(this.settings.decoration.title.subtitleFontSize),
+                fontVariant: this.settings.decoration.title.subtitleSmallCaps ? 'small-caps' : 'normal',
+                lineHeight: this.settings.decoration.title.subtitleLineHeight + '%',
             };
         }
     },
