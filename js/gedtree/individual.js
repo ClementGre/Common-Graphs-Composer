@@ -7,7 +7,7 @@ window.individualComp = {
             <div v-if="isImageVisible" class="img" :style="imgStyle"></div>
             <div class="content" :style="contentStyle">
                 <div class="top" :style="topStyle">
-                    <p class="name" :style="nameStyle">{{firstNames}} {{lastName}}</p>
+                    <p class="name" :style="nameStyle">{{firstNames}} <span :style="lastNameStyle">{{lastName}}</span></p>
                     <p class="occupation" v-if="data?.occupation" :style="occupationStyle">{{data?.occupation}}</p>
                 </div>
                 <div v-if="!layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
@@ -103,6 +103,11 @@ window.individualComp = {
                 'color': this.settings.individual.displayName.color,
                 'width': this.layout.forceWrapOccupation ? '100%' : false,
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.imageNameSpacing) : false,
+            };
+        },
+        lastNameStyle: function(){
+            return {
+                'font-variant-caps': this.settings.individual.displayName.smallCapsSurname ? 'small-caps' : 'normal',
             };
         },
         occupationStyle: function(){

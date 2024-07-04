@@ -105,6 +105,10 @@
 }
 #tree .individual p.name {
 }
+#tree .individual p.name span {
+    font: inherit;
+    color: inherit;
+}
 #tree .individual p.occupation {
     font-style: italic;
     font-size: 9px;

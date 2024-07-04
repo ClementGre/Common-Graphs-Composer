@@ -344,6 +344,10 @@ window.constants = {
                     name: "Upper case Surname",
                     type: 3, value: false
                 },
+                smallCapsSurname: {
+                    name: "Small caps Surname",
+                    type: 3, value: true
+                },
                 color: {
                     name: "Color",
                     type: 0, value: "rgba(73,71,63,1)"
