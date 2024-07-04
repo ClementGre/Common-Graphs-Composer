@@ -1,7 +1,7 @@
 window.individualComp = {
     name: "individual",
     template: `
-        <div :class="individualClasses" :style="individualStyle">
+        <div :class="individualClasses" :style="individualStyle" @click="selectIndividual">
             <div v-if="layout.verticalDisplay" class="virtual-top"></div>
             <div v-if="layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
             <div v-if="isImageVisible" class="img" :style="imgStyle"></div>
@@ -17,7 +17,8 @@ window.individualComp = {
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data", "gedcom_data", "layout", "chGroupCount", "hasChild"],
+    props: ["gedcom", "settings", "data", "gedcom_data", "layout", "chGroupCount", "hasChild", "selected"],
+    emits: ['update-selected'],
     computed: {
         firstNames: function(){
             if (this.settings.individual.displayName.cutMiddleNames){
@@ -57,6 +58,7 @@ window.individualComp = {
         individualClasses: function(){
             return {
                 individual: true,
+                selected: this.selected?.id === this.data?.id,
             };
         },
         individualStyle: function(){
@@ -223,6 +225,10 @@ window.individualComp = {
             }
 
             return result;
+        },
+        selectIndividual(e){
+            e.stopPropagation();
+            this.$emit('update-selected', this.data)
         }
     }
 }

@@ -8,12 +8,13 @@ window.treeComp = {
                     <p class="subtitle" :style="subtitleStyle">{{settings.decoration.title.subtitleText}}</p>
                 </div>
                 <div id="tree-columns">
-                    <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col" :gedcom_data="data.gedcom_data"></column>
+                    <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col" :gedcom_data="data.gedcom_data" :selected="selected" @update-selected="updateSelected"></column>
                 </div>
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data"],
+    props: ["gedcom", "settings", "data", "selected"],
+    emits: ["update-selected"],
     computed: {
         rootStyle: function(){
             let styles = {
@@ -69,6 +70,9 @@ window.treeComp = {
         convertLength(length){
             // Lengths are expressed in ‰ (per mille) of the width of the tree
             return length/1000 * this.settings.size.width + 'px';
+        },
+        updateSelected: function (selected){
+            this.$emit('update-selected', selected);
         }
     },
     components: {

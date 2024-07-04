@@ -265,7 +265,7 @@ window.constants = {
                 },
                 subtitleColor: {
                     name: "Subtitle color",
-                    type: 0, value: "rgba(73,71,63,1)"
+                    type: 0, value: "rgba(83,81,72,1)"
                 },
                 subtitleFont: {
                     name: "Subtitle font",
@@ -278,7 +278,7 @@ window.constants = {
                 },
                 subtitleFontStyle: {
                     name: "Subtitle font style",
-                    type: 2, value: "italic", placeholder: "normal, italic, oblique"
+                    type: 2, value: "normal", placeholder: "normal, italic, oblique"
                 },
                 subtitleFontSize: {
                     name: "Subtitle font size (px)",
@@ -474,7 +474,7 @@ window.constants = {
                 name: "Horizontal Layout",
                 imageLeftMargin: {
                     name: "Image left margin",
-                    type: 1, value: 60,
+                    type: 1, value: 50,
                     min: 0, max: 100, step: 1
                 },
                 textLeftMargin: {

@@ -164,6 +164,7 @@ function coupleToData(couple) {
 function getIndividualData(record) {
     if (!record || record.length === 0) return null;
     return {
+        id: record.pointer()[0],
         firstName: record.getName().valueAsParts()[0][0],
         lastName: record.getName().valueAsParts()[0][1],
         occupation: record.getAttributeOccupation()[0]?.value,

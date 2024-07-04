@@ -9,6 +9,7 @@ const app = new Vue({
         ui: {
             currentTab:  get_local_data('gedtree-ui-lasttab') ?? "settings",
             search_query: "",
+            selected: undefined
         },
         temp: {
             settingsEditCount: 0,
@@ -180,6 +181,9 @@ const app = new Vue({
             });
             return result;
         },
+        updateSelected: function (selected){
+            this.ui.selected = selected;
+        }
     },
     watch: {
         settings: {

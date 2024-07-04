@@ -66,6 +66,10 @@
     position: relative;
     min-height: 0;
 }
+#tree .column .couple .individual.selected {
+    box-shadow: 0 0 10px rgba(52, 152, 219, 1);
+    border-radius: 2px;
+}
 #tree .column .couple .individual .content {
     flex-basis: 100%;
 

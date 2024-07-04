@@ -67,9 +67,9 @@
     </header>
 
     <main>
-        <div class="render">
+        <div class="render" @click="ui.selected = undefined">
             <div class="margins">
-                <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings"
+                <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings" :selected="ui.selected" @update-selected="updateSelected"
                       :data="gedcomStructuredData"></tree>
                 <center v-else>
                     <br>
@@ -90,6 +90,10 @@
                 <p v-bind:class="ui.currentTab === 'settings' ? 'selected' : ''"
                    v-on:click="ui.currentTab = 'settings'">
                     Settings
+                </p>
+                <p v-bind:class="ui.currentTab === 'individual' ? 'selected' : ''"
+                   v-on:click="ui.currentTab = 'individual'">
+                    Individual
                 </p>
             </div>
 
@@ -147,13 +151,50 @@
                                     v-on:manage="manageSettings"></app-settings-group>
 
             </div>
-
-
+            <div class="pane individual-pane wide" v-show="ui.currentTab === 'individual'">
+                <!-- NO SELECTED OVERFLOW -->
+                <div class="pane-filter" v-if="!(ui.selected)">
+                    <div><h3>Click on someone to edit it specifically</h3></div>
+                </div>
+                <!-- PANES -->
+                <div class="title">
+                    <div class="content">
+                        <table>
+                            <tr>
+                                <td>Title</td>
+                                <td>
+                                    <input type="text"
+                                           placeholder="Event Title" id="event-title-input" style="width: 310px;"
+                                           maxlength="100"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="debug">
+                    <div class="content">
+                        <table>
+                            <tr>
+                                <td>Description</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ui.selected}}
+                                    <p v-if="ui.selected">
+                                        {{ gedcom.getIndividualRecord(ui.selected.id).arraySelect()[0].getName().valueAsParts()[0] }}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <footer><h5>Copyright &copy Common Graphs Composer 2020</h5><h5>Developed by <a href="https://github.com/ClementGre"
-                                                                                    target="_blank">Clément Grennerat</a>
+    <footer><h5>Copyright &copy Common Graphs Composer 2020 – 2024</h5><h5>Developed by <a
+            href="https://github.com/ClementGre"
+            target="_blank">Clément Grennerat</a>
     </h5></footer>
 </div>
 </body>

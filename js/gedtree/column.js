@@ -9,19 +9,20 @@ window.columnComp = {
                         <template v-if="couple">
                             <div v-if="couple.hasChild" class="vline" :style="colVlineStyle"></div>
                             <individual v-if="couple.husband" :gedcom="gedcom" :settings="settings" :data="couple.husband" :gedcom_data="gedcom_data"
-                                :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
+                                :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild" :selected="selected" @update-selected="updateSelected"></individual>
                             <individual v-if="couple.wife" :gedcom="gedcom" :settings="settings" :data="couple.wife" :gedcom_data="gedcom_data"
-                                :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild"></individual>
+                                :layout="data.layout" :chGroupCount="chGroupCount" :hasChild="couple.hasChild" :selected="selected" @update-selected="updateSelected"></individual>
                         </template>
                     </div>
                 </template>
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data", "gedcom_data"],
+    props: ["gedcom", "settings", "data", "gedcom_data", "selected"],
     data: function () {
         return {
             colHeight: 0,
+            selectedIndividual: undefined
         };
     },
     computed: {
@@ -75,8 +76,6 @@ window.columnComp = {
             let barHeight =  100 - 100 / childGroup.couples.length * (1 + 0.25 * (shouldContractTop + shouldContractBottom - shouldExpandBottom - shouldExpandTop))
             let barTop = 50 + 100 / childGroup.couples.length * 0.125 * (shouldContractTop + shouldExpandBottom - shouldExpandTop - shouldContractBottom)
 
-            console.log('barHeight', barHeight, 'barTrY', barTop, 'shouldExpandTop', shouldExpandTop, 'shouldContractTop', shouldContractTop, 'shouldExpandBottom', shouldExpandBottom, 'shouldContractBottom', shouldContractBottom)
-
             return {
                 'height': 'calc(' + barHeight + '% + ' + this.linkLinesWidth + 'px)',
                 'border-left': this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
@@ -87,6 +86,9 @@ window.columnComp = {
         convertLength(length) {
             // Lengths are expressed in ‰ (per thousand) of the width of the tree
             return length / 1000 * this.settings.size.width + 'px';
+        },
+        updateSelected: function (selected){
+            this.$emit('update-selected', selected);
         }
     },
     components: {

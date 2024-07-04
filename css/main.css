@@ -274,3 +274,27 @@ footer a:hover {
         transform: rotate(720deg);
     }
 }
+
+/************************/
+/******** COMMON ********/
+/************************/
+
+/* Filter */
+main .panel .pane .pane-filter {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+main .panel .pane .pane-filter h3 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+}
