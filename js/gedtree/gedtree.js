@@ -5,9 +5,11 @@ const app = new Vue({
         gedcom: null,
         renderData: {},
         settings: get_local_data('gedtree-settings') ?? {},
+        perIndividualSettings: get_local_data('gedtree-individual-settings') ?? {},
+        savedConfigs: get_local_data('gedtree-saved-configs') ?? {},
         settingsDetails: constants.settingsDetails,
         ui: {
-            currentTab:  get_local_data('gedtree-ui-lasttab') ?? "settings",
+            currentTab: get_local_data('gedtree-ui-lasttab') ?? "settings",
             search_query: "",
             selected: undefined
         },
@@ -27,7 +29,7 @@ const app = new Vue({
     },
     computed: {
         gedcom_search: function(){
-            if (this.gedcom === null) return "";
+            if(this.gedcom === null) return "";
 
             let query = this.ui.search_query;
             let data = [];
@@ -37,26 +39,26 @@ const app = new Vue({
             return data;
         },
         rootIndividual: function(){
-            if (this.gedcom === null) return null;
+            if(this.gedcom === null) return null;
             return this.gedcom.getIndividualRecord(this.settings.hidden.rootIndividualId).arraySelect()[0];
         },
         gedcomStructuredData: function(){
             if(!this.rootIndividual) return null;
 
             let leftCols = []
-            for (let i = 0; i < this.settings.size.leftColumns; i++) {
-                leftCols.push({...this.settings.columns.leftColumns['n' + (i+1)]})
+            for(let i = 0; i < this.settings.size.leftColumns; i++){
+                leftCols.push({...this.settings.columns.leftColumns['n' + (i + 1)]})
             }
             let middleCol = {
                 ...this.settings.columns.middleColumn
             }
             let rightCols = []
-            for (let i = 0; i < this.settings.size.rightColumns; i++) {
-                rightCols.push({...this.settings.columns.rightColumns['n' + (i+1)]})
+            for(let i = 0; i < this.settings.size.rightColumns; i++){
+                rightCols.push({...this.settings.columns.rightColumns['n' + (i + 1)]})
             }
             return structureGedcomData(this.gedcom, this.settings.hidden.rootIndividualId, leftCols, middleCol, rightCols);
         },
-        gedcomStructuredDataHtml: function() {
+        gedcomStructuredDataHtml: function(){
             return prettyPrintJSONtoHTML(this.gedcomStructuredData);
         }
     },
@@ -67,7 +69,7 @@ const app = new Vue({
 
             let individuals = this.gedcom.getIndividualRecord().filterSelect(individual => {
                 const names = individual.getName()?.valueAsParts()?.[0];
-                if(names) {
+                if(names){
                     const namesTokens = names.filter(v => v).flatMap(tokenize);
                     return queryTokens.every(s => namesTokens.some(n => utf8ToAscii(n.toLowerCase()).includes(utf8ToAscii(s.toLowerCase()))));
                 }
@@ -75,7 +77,7 @@ const app = new Vue({
             });
 
             let results = [];
-            for (let i = 0; i < individuals.length; i++) {
+            for(let i = 0; i < individuals.length; i++){
                 let result = individuals.arraySelect()[i];
                 results.push({
                     lastname: result.getName().valueAsParts()[0]?.[1]?.toUpperCase(),
@@ -93,13 +95,13 @@ const app = new Vue({
             this.saveSettings();
         },
         format_individual_name: function(individual){
-            if (!individual) return undefined;
+            if(!individual) return undefined;
             return individual.getName().valueAsParts()[0][1].toUpperCase() + ' ' + individual.getName().valueAsParts()[0][0];
         },
 
         //     SETTINGS
         manageSettings: function(action, data){
-            switch (action) {
+            switch(action){
                 case "edit-setting":
                     this.editSetting(data);
                     break;
@@ -119,17 +121,15 @@ const app = new Vue({
                 if(data.rindex !== undefined){
                     if(!this.settings[data.section][data.name]['n' + data.rindex]) this.settings[data.section][data.name]['n' + data.rindex] = {};
                     this.$set(this.settings[data.section][data.name]['n' + data.rindex], data.subname, data.value);
-                }
-                else this.$set(this.settings[data.section][data.name], data.subname, data.value);
-            }
-            else this.$set(this.settings[data.section], data.name, data.value);
+                }else this.$set(this.settings[data.section][data.name], data.subname, data.value);
+            }else this.$set(this.settings[data.section], data.name, data.value);
             this.saveSettings()
         },
-        saveSettings: function() {
+        saveSettings: function(){
             this.temp.settingsEditCount++;
             const lastEditCount = this.temp.settingsEditCount;
             setTimeout(() => {
-                if (lastEditCount === this.temp.settingsEditCount) {
+                if(lastEditCount === this.temp.settingsEditCount){
                     set_local_data('gedtree-settings', this.settings);
                 }
             }, 1000);
@@ -181,8 +181,59 @@ const app = new Vue({
             });
             return result;
         },
-        updateSelected: function (selected){
+        updateSelected: function(selected){
             this.ui.selected = selected;
+        },
+        saveConfigWithName: function(name){
+            this.$set(this.savedConfigs, name, {
+                settings: {...this.settings},
+                perIndividualSettings: {...this.perIndividualSettings},
+            });
+            console.log('saving settings', name, this.settings)
+            set_local_data('gedtree-saved-configs', this.savedConfigs);
+        },
+        saveConfig: function(){
+            name = document.getElementById('save-config-input').value;
+            if(!name){
+                alert('Please enter a name for the configuration')
+                return
+            }
+            this.settings.hidden.currentConfig = name;
+            this.saveConfigWithName(name);
+            displayCheckFloater();
+        },
+        loadConfig: function(){
+            name = document.getElementById('config-selector').value;
+            if(!(name in this.savedConfigs)){
+                alert('Configuration not found')
+                return
+            }
+            if(this.settings.hidden.syncSettings && this.settings.hidden.currentConfig !== undefined && this.settings.hidden.currentConfig !== name){
+                this.saveConfigWithName(this.settings.hidden.currentConfig);
+            }
+            let config = get_local_data('gedtree-saved-configs')[name];
+            config.settings.hidden.currentConfig = name;
+
+            console.log('loading settings', name, config.settings)
+            this.$set(this, 'settings', config.settings);
+            console.log('loading perIndividualSettings', name, config.perIndividualSettings)
+            this.$set(this, 'perIndividualSettings', config.perIndividualSettings);
+            this.saveSettings();
+            displayCheckFloater();
+        },
+        deleteConfig: function(){
+            name = document.getElementById('config-selector').value;
+            if(!(name in this.savedConfigs)){
+                alert('Configuration not found')
+                return
+            }
+            if(confirm('Are you sure you want to delete the configuration "' + name + '"?')){
+                this.$delete(this.savedConfigs, name);
+                set_local_data('gedtree-saved-configs', this.savedConfigs);
+                this.settings.hidden.currentConfig = undefined;
+                this.saveSettings();
+                displayCheckFloater();
+            }
         }
     },
     watch: {
@@ -191,6 +242,13 @@ const app = new Vue({
             handler: function(){
                 if(_.isEmpty(this.settings)) this.settings = this.generateSettings(this.settingsDetails);
                 else this.checkSettings(this.settings, this.settingsDetails);
+            }
+        },
+        perIndividualSettings: {
+            immediate: true,
+            deep: true,
+            handler: function(){
+                set_local_data('gedtree-individual-settings', this.perIndividualSettings);
             }
         },
         'ui.currentTab': {

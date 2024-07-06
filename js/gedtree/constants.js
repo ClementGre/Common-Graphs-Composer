@@ -11,6 +11,16 @@ window.constants = {
                 name: "Root individual ID",
                 type: 2,
                 value: '',
+            },
+            syncSettings: {
+                name: "Sync settings with saved configs",
+                type: 3,
+                value: true,
+            },
+            currentConfig: {
+                name: "Current config",
+                type: 2,
+                value: undefined,
             }
         },
         size: {

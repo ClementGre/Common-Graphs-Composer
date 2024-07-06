@@ -111,12 +111,13 @@ main .panel .pane table td ~ td {
     margin-left: 10px;
 }
 
-main .panel .pane input {
+main .panel .pane input, main .panel .pane select{
     height: 25px;
     border: none;
     border-radius: 3px;
     background-color: white;
 }
+
 
 main .panel .pane textarea {
     border: none;

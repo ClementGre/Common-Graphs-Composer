@@ -131,6 +131,45 @@
                             </td>
                         </tr>
                     </table>
+                    <h3 style="padding-top: 10px;">Configuration saving</h3>
+                    <table>
+                        <tr style="width: 100%;">
+                            <td style="width: 100%; padding-bottom: 5px;">
+                                Settings are automatically saved, but can <br>
+                                be stored in a configuration to switch easily <br>
+                                between settings for different trees.<br>
+                            </td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 100%; padding-bottom: 5px;">
+                                <label for="save-config-input">Name:&nbsp;</label>
+                                <input type="text" id="save-config-input" style="width: 200px" :value="settings.hidden.currentConfig">
+                                <button v-on:click="saveConfig">Save</button>
+                            </td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 100%; padding-bottom: 5px;">
+                                <label for="config-selector">Load:&nbsp;</label>
+                                {{this.settings.hidden.currentConfig}}
+                                <select id="config-selector" style="width: 150px">
+                                        <option value="" selected>-- select a config --</option>
+                                        <option v-for="(config, name) in savedConfigs" :value="name" :key="name">{{name}}</option>
+                                </select>
+                                <button v-on:click="loadConfig">Load</button>
+                                <button v-on:click="deleteConfig">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="sync-settings-input" v-model:value="settings.hidden.syncSettings" v-on:change="saveSettings()" style="width: 22px; margin-right: 10px;">
+                                <label for="sync-settings-input">
+                                    Save old configuration<br>
+                                    before loading another.
+                                </label>
+                            </td>
+                        </tr>
+
+                    </table>
                 </div>
 
                 <app-settings-group :settings="settings" section-name="size" :section="settingsDetails.size"
