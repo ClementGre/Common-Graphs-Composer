@@ -172,7 +172,7 @@ function getIndividualData(record) {
         death: getDateToJSDate(record.getEventDeath().getDate()),
         birthPlace: record.getEventBirth().getPlace()?.valueAsParts()?.[0],
         deathPlace: record.getEventDeath().getPlace()?.valueAsParts()?.[0],
-        multimediaPaths: record.getMultimedia()?.getMultimediaRecord().getFileReference()?.value(),
+        picturePath: record.getMultimedia()?.getMultimediaRecord().getFileReference()?.value()[0],
     }
 }
 

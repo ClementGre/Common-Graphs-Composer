@@ -69,7 +69,8 @@
     <main>
         <div class="render" @click="ui.selected = undefined">
             <div class="margins">
-                <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings" :selected="ui.selected" @update-selected="updateSelected"
+                <tree v-if="gedcom && rootIndividual" :gedcom="gedcom" :settings="settings" :selected="ui.selected"
+                      @update-selected="updateSelected"
                       :data="gedcomStructuredData"></tree>
                 <center v-else>
                     <br>
@@ -143,7 +144,8 @@
                         <tr style="width: 100%;">
                             <td style="width: 100%; padding-bottom: 5px;">
                                 <label for="save-config-input">Name:&nbsp;</label>
-                                <input type="text" id="save-config-input" style="width: 200px" :value="settings.hidden.currentConfig">
+                                <input type="text" id="save-config-input" style="width: 200px"
+                                       :value="settings.hidden.currentConfig">
                                 <button v-on:click="saveConfig">Save</button>
                             </td>
                         </tr>
@@ -152,8 +154,9 @@
                                 <label for="config-selector">Load:&nbsp;</label>
                                 {{this.settings.hidden.currentConfig}}
                                 <select id="config-selector" style="width: 150px">
-                                        <option value="" selected>-- select a config --</option>
-                                        <option v-for="(config, name) in savedConfigs" :value="name" :key="name">{{name}}</option>
+                                    <option value="" selected>-- select a config --</option>
+                                    <option v-for="(config, name) in savedConfigs" :value="name" :key="name">{{name}}
+                                    </option>
                                 </select>
                                 <button v-on:click="loadConfig">Load</button>
                                 <button v-on:click="deleteConfig">Delete</button>
@@ -161,7 +164,9 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="sync-settings-input" v-model:value="settings.hidden.syncSettings" v-on:change="saveSettings()" style="width: 22px; margin-right: 10px;">
+                                <input type="checkbox" id="sync-settings-input"
+                                       v-model:value="settings.hidden.syncSettings" v-on:change="saveSettings()"
+                                       style="width: 22px; margin-right: 10px;">
                                 <label for="sync-settings-input">
                                     Save old configuration<br>
                                     before loading another.
@@ -190,44 +195,12 @@
                                     v-on:manage="manageSettings"></app-settings-group>
 
             </div>
-            <div class="pane individual-pane wide" v-show="ui.currentTab === 'individual'">
-                <!-- NO SELECTED OVERFLOW -->
-                <div class="pane-filter" v-if="!(ui.selected)">
-                    <div><h3>Click on someone to edit it specifically</h3></div>
-                </div>
-                <!-- PANES -->
-                <div class="title">
-                    <div class="content">
-                        <table>
-                            <tr>
-                                <td>Title</td>
-                                <td>
-                                    <input type="text"
-                                           placeholder="Event Title" id="event-title-input" style="width: 310px;"
-                                           maxlength="100"/>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div class="debug">
-                    <div class="content">
-                        <table>
-                            <tr>
-                                <td>Description</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    {{ui.selected}}
-                                    <p v-if="ui.selected">
-                                        {{ gedcom.getIndividualRecord(ui.selected.id).arraySelect()[0].getName().valueAsParts()[0] }}
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <per-individual-settings v-show="ui.currentTab === 'individual'"
+                                     :selected="ui.selected"
+                                     :ind-settings="perIndividualSettings"
+                                     :gedcom="gedcom"
+                                     :settings="settings"
+                                     v-on:update-ind-settings="updateIndSettings"></per-individual-settings>
         </div>
     </main>
 
@@ -240,6 +213,7 @@
 <script src="js/gedtree/constants.js"></script>
 <script src="js/gedtree/utils.js"></script>
 <script src="js/gedtree/settings.js"></script>
+<script src="js/gedtree/perIndividualSettings.js"></script>
 <script src="js/gedtree/gedcomStructurer.js"></script>
 <script src="js/gedtree/individual.js"></script>
 <script src="js/gedtree/column.js"></script>

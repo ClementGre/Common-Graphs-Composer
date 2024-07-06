@@ -234,6 +234,9 @@ const app = new Vue({
                 this.saveSettings();
                 displayCheckFloater();
             }
+        },
+        updateIndSettings: function(data){
+            this.$set(this, 'perIndividualSettings', data);
         }
     },
     watch: {
@@ -261,5 +264,6 @@ const app = new Vue({
     components: {
         "app-settings-group": appSettingsGroupComp,
         "tree": treeComp,
+        "per-individual-settings": perIndividualSettingsComp,
     }
 });

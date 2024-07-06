@@ -146,7 +146,7 @@ window.individualComp = {
             return this.layout.showPictures || this.layout.verticalDisplay
         },
         imageUrl: function(){
-            return this.data?.multimediaPaths?.[0]
+            return this.data?.picturePath
         }
     },
     methods: {
