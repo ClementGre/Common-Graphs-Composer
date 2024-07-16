@@ -107,6 +107,17 @@
     height: 0;
     z-index: 10;
 }
+#tree .individual p {
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 12px;
+}
 #tree .individual p.name {
 }
 #tree .individual p.name span {

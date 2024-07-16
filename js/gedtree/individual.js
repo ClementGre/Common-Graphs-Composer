@@ -101,6 +101,7 @@ window.individualComp = {
         nameStyle: function(){
             return {
                 'font-size': this.getFontSize(this.settings.individual.displayName.fontSize),
+                'letter-spacing': this.getLetterSpacing(this.settings.individual.displayName.letterSpacing),
                 'font-weight': this.settings.individual.displayName.fontWeight,
                 'color': this.settings.individual.displayName.color,
                 'width': this.layout.forceWrapOccupation ? '100%' : false,
@@ -115,6 +116,7 @@ window.individualComp = {
         occupationStyle: function(){
             return {
                 'font-size': this.getFontSize(this.settings.individual.occupation.fontSize, this.settings.individual.occupation.decreaseDifference),
+                'letter-spacing': this.getLetterSpacing(this.settings.individual.occupation.letterSpacing),
                 'font-weight': this.settings.individual.occupation.fontWeight,
                 'color': this.settings.individual.occupation.color,
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.nameOccupationSpacing) : false,
@@ -123,6 +125,7 @@ window.individualComp = {
         datesAndPlacesStyle: function(){
             return {
                 'font-size': this.getFontSize(this.settings.individual.datesAndPlaces.fontSize, this.settings.individual.datesAndPlaces.decreaseDifference),
+                'letter-spacing': this.getLetterSpacing(this.settings.individual.datesAndPlaces.letterSpacing),
                 'font-weight': this.settings.individual.datesAndPlaces.fontWeight,
                 'color': this.settings.individual.datesAndPlaces.color,
                 'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.occupationDateSpacing) : false,
@@ -152,7 +155,7 @@ window.individualComp = {
     methods: {
         convertLength(length){
             // Lengths are expressed in ‰ (per mille) of the width of the tree
-            return length/1000 * this.settings.size.width+ 'px';
+            return length/1000 * this.settings.size.width + 'px';
         },
         convertMargin(length){
             // Margins depends on the font size (expressed in per fifty of font size in px)
@@ -160,6 +163,9 @@ window.individualComp = {
         },
         getFontSize(scale = 100, decreaseDifference= false){
             return this.getFontSizeRaw(scale, decreaseDifference) + 'px';
+        },
+        getLetterSpacing(font_spacing){
+            return (font_spacing / 100.0) + 'em';
         },
         getFontSizeRaw(scale = 100, decreaseDifference= false){
             let size = 23;

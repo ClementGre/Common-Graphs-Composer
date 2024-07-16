@@ -367,6 +367,11 @@ window.constants = {
                     type: 1, value: 100,
                     min: 1, max: 300, step: 2
                 },
+                letterSpacing: {
+                    name: "Letter spacing (%)",
+                    type: 1, value: 0,
+                    min: -20, max: 20, step: 1
+                },
                 fontWeight: {
                     name: "Font Weight",
                     type: 1, value: 700,
@@ -384,6 +389,11 @@ window.constants = {
                     name: "Relative font size",
                     type: 1, value: 80,
                     min: 1, max: 300, step: 2
+                },
+                letterSpacing: {
+                    name: "Letter spacing (%)",
+                    type: 1, value: 0,
+                    min: -20, max: 20, step: 1
                 },
                 decreaseDifference: {
                     name: "Limit scale when font size decreases",
@@ -406,6 +416,11 @@ window.constants = {
                     name: "Relative font size",
                     type: 1, value: 80,
                     min: 1, max: 300, step: 2
+                },
+                letterSpacing: {
+                    name: "Letter spacing (%)",
+                    type: 1, value: 0,
+                    min: -20, max: 20, step: 1
                 },
                 decreaseDifference: {
                     name: "Limit scale when font size decreases",
