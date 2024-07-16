@@ -17,7 +17,7 @@ window.individualComp = {
             </div>
         </div>
         `,
-    props: ["gedcom", "settings", "data", "gedcom_data", "layout", "chGroupCount", "hasChild", "selected"],
+    props: ["gedcom", "settings", "data", "gedcom_data", "layout", "individualCount", "hasChild", "hasParents", "selected"],
     emits: ['update-selected'],
     computed: {
         firstNames: function(){
@@ -85,17 +85,11 @@ window.individualComp = {
             };
         },
         imgStyle: function(){
-            let height = 70;
-            if (!this.layout.verticalDisplay){
-                height = 50 * Math.pow(0.75, Math.log2(this.chGroupCount/4));
-            }
-            height *= this.layout.pictureSize/100
-            let url = this.imageUrl;
             return {
-                background: this.settings.decoration.background.backgroundColor + ' url("' + url + '") center center/cover no-repeat',
-                width: url === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.convertLength(height * 0.7),
-                height: url === undefined ? 0 : this.convertLength(height),
-                border: url === undefined ? "none" : (this.linkLinesWidth * this.settings.individual.image.borderRelativeWidth / 100.0) + 'px solid ' + this.settings.individual.linkLines.color,
+                background: this.settings.decoration.background.backgroundColor + ' url("' + this.imageUrl + '") center center/cover no-repeat',
+                width: this.imageUrl === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.convertLength(this.getImageWidth()),
+                height: this.imageUrl === undefined ? 0 : this.convertLength(this.getImageHeight()),
+                border: this.imageUrl === undefined ? "none" : (this.linkLinesWidth * this.settings.individual.image.borderRelativeWidth / 100.0) + 'px solid ' + this.settings.individual.linkLines.color,
             };
         },
         nameStyle: function(){
@@ -133,11 +127,19 @@ window.individualComp = {
             };
         },
         hlineStyle: function(){
-            let widthPercent = 100;
-            if (this.layout.verticalDisplay && !this.hasChild) widthPercent = 50;
+            let rightShift = !this.hasParents ? this.convertMargin(60) : '0px'
+            let width = 'calc(100% - ' + this.linkLinesWidth + 'px - ' + rightShift + ')'
+            if (!this.hasChild) {
+                if(this.layout.verticalDisplay) width = 'calc(50% - ' + this.linkLinesWidth + 'px - ' + rightShift + ')'
+                else{
+                    let imageWidth2 = this.imageUrl === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.getImageWidth()/2
+                    width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
+                        + this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin) + ' - ' + this.convertLength(imageWidth2) + ' - ' + rightShift + ')'
+                }
+            }
             return {
-                'right': this.linkLinesWidth/2 + 'px',
-                'width': 'calc(' + widthPercent + '% - ' + this.linkLinesWidth + 'px)',
+                'right': 'calc(' + this.linkLinesWidth/2 + 'px + ' + rightShift + ')',
+                'width': width,
                 'border-bottom': this.linkLinesWidth + 'px solid ' + this.settings.individual.linkLines.color,
             };
         },
@@ -153,6 +155,16 @@ window.individualComp = {
         }
     },
     methods: {
+        getImageHeight(){
+            let height = 70;
+            if (!this.layout.verticalDisplay){
+                height = 50 * Math.pow(0.75, Math.log2(this.individualCount/8));
+            }
+            return height * this.layout.pictureSize/100;
+        },
+        getImageWidth(){
+            return this.getImageHeight() * 0.7;
+        },
         convertLength(length){
             // Lengths are expressed in ‰ (per mille) of the width of the tree
             return length/1000 * this.settings.size.width + 'px';
@@ -170,7 +182,7 @@ window.individualComp = {
         getFontSizeRaw(scale = 100, decreaseDifference= false){
             let size = 23;
             if (!this.layout.verticalDisplay){
-                size = 23 * 2/3 * Math.pow(0.9, Math.log2(this.chGroupCount/4));
+                size = 23 * 2/3 * Math.pow(0.9, Math.log2(this.individualCount/8));
             }
             if (decreaseDifference){
                 let a = 23/(scale * (1 - Math.log(0.23 * scale)/Math.log(23)));

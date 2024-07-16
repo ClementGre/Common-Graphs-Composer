@@ -8,7 +8,7 @@ window.treeComp = {
                     <p class="subtitle" :style="subtitleStyle">{{settings.decoration.title.subtitleText}}</p>
                 </div>
                 <div id="tree-columns">
-                    <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col" :gedcom_data="data.gedcom_data" :selected="selected" @update-selected="updateSelected"></column>
+                    <column v-for="(col, i) in data.columns" :key="i" :gedcom="gedcom" :settings="settings" :data="col" :colCount="i - settings.size.leftColumns" :gedcom_data="data.gedcom_data" :selected="selected" @update-selected="updateSelected"></column>
                 </div>
             </div>
         </div>

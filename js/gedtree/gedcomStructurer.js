@@ -15,9 +15,7 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         childGroups: [
             {
                 couples: [
-                    {
-                        ...rootCouple
-                    }
+                    rootCouple
                 ]
             }
         ],
@@ -31,13 +29,8 @@ window.structureGedcomData = function structureGedcomData(gedcom, rootIndPtr, le
         }
     })
     if (middleCol.showBrothers) {
-        let brothers = root.getFamilyAsChild().getChild().arraySelect().map(child => child.getIndividualRecord())
-            .filter(ind => ind[0].pointer !== root[0].pointer);
-
-        let brotherCouples = brothers.map(brother => constituteCouple(brother, !middleCol.showBrothersChildren,
-            false, true, middleCol.showBrothersChildren && leftCols.length > 0));
-
-        columns[0].childGroups[0].couples = columns[0].childGroups[0].couples.concat(brotherCouples);
+        columns[0].childGroups[0].couples = columns[0].childGroups[0].couples.concat(
+            getBrothers(root, middleCol.showBrothersChildren, middleCol.showBrothersChildren && leftCols.length > 0));
 
         // Sort brothers by birthdate
         columns[0].childGroups[0].couples = _.sortBy(columns[0].childGroups[0].couples, [function(c) {
@@ -111,11 +104,51 @@ function generateRightColumn(gedcom, previousColData, rightCol){
             let wifeParentCouple = getParentCouple(couple.wife);
 
             if(couple.doAscendSpouse || couple.wasMen){
-                if(husbandParentCouple) rightColumn.childGroups.push({couples: [husbandParentCouple]})
+                if(husbandParentCouple) {
+                    let couples = []
+                    if(rightCol.showBrothers){
+                        let husband_father = couple.husband?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord()
+                        let brothers = getBrothers(husband_father, rightCol.showBrothersChildren, false);
+                        brothers = _.sortBy(brothers, [function(c) {
+                            return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
+                        }]);
+                        couples = couples.concat(brothers);
+                    }
+                    couples.push(husbandParentCouple);
+                    if(rightCol.showBrothers){
+                        let husband_mother = couple.husband?.getFamilyAsChild().arraySelect()?.[0]?.getWife()?.getIndividualRecord()
+                        let brothers = getBrothers(husband_mother, rightCol.showBrothersChildren, false);
+                        brothers = _.sortBy(brothers, [function(c) {
+                            return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
+                        }]);
+                        couples = couples.concat(brothers);
+                    }
+                    rightColumn.childGroups.push({couples});
+                }
                 else rightColumn.childGroups.push({couples: [undefined]})
             }
             if(couple.doAscendSpouse || !couple.wasMen){
-                if(wifeParentCouple) rightColumn.childGroups.push({couples: [wifeParentCouple]})
+                if(wifeParentCouple){
+                    let couples = []
+                    if(rightCol.showBrothers){
+                        let wife_father = couple.wife?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord()
+                        let brothers = getBrothers(wife_father, rightCol.showBrothersChildren, false);
+                        brothers = _.sortBy(brothers, [function(c) {
+                            return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
+                        }]);
+                        couples = couples.concat(brothers);
+                    }
+                    couples.push(wifeParentCouple);
+                    if(rightCol.showBrothers){
+                        let wife_mother = couple.wife?.getFamilyAsChild().arraySelect()?.[0]?.getWife()?.getIndividualRecord()
+                        let brothers = getBrothers(wife_mother, rightCol.showBrothersChildren, false);
+                        brothers = _.sortBy(brothers, [function(c) {
+                            return c.wasMen ? getDateToJSDate(c.husband?.getEventBirth().getDate()) : getDateToJSDate(c.wife?.getEventBirth().getDate());
+                        }]);
+                        couples = couples.concat(brothers);
+                    }
+                    rightColumn.childGroups.push({couples});
+                }
                 else rightColumn.childGroups.push({couples: [undefined]})
             }
         }
@@ -123,6 +156,16 @@ function generateRightColumn(gedcom, previousColData, rightCol){
 
     return rightColumn;
 }
+function getBrothers(root, showSpouse, hasChild){
+
+    let brothers = root.getFamilyAsChild().getChild().arraySelect().map(child => child.getIndividualRecord())
+        .filter(ind => ind[0].pointer !== root[0].pointer);
+
+    return brothers.map(brother => constituteCouple(brother, !showSpouse,
+        false, true, hasChild));
+
+}
+
 function getParentCouple(record) {
     let husband = record?.getFamilyAsChild().arraySelect()?.[0]?.getHusband()?.getIndividualRecord();
     if (!husband || husband.length === 0) return null;
@@ -156,6 +199,7 @@ function coupleToData(couple) {
     return {
         wasMen: couple.wasMen,
         hasChild: couple.hasChild,
+        isBrother: couple.isBrother,
         husband: getIndividualData(couple.husband),
         wife: getIndividualData(couple.wife),
     }
