@@ -4,7 +4,7 @@ window.individualComp = {
         <div :class="individualClasses" :style="individualStyle" @click="selectIndividual">
             <div v-if="layout.verticalDisplay" class="virtual-top"></div>
             <div v-if="layout.verticalDisplay" class="hline" :style="hlineStyle"></div>
-            <div v-if="isImageVisible" class="img" :style="imgStyle"></div>
+            <div v-if="doShowImage" class="img" :style="imgStyle"></div>
             <div class="content" :style="contentStyle">
                 <div class="top" :style="topStyle">
                     <p class="name" :style="nameStyle">{{firstNames}} <span :style="lastNameStyle">{{lastName}}</span></p>
@@ -62,34 +62,36 @@ window.individualComp = {
             };
         },
         individualStyle: function(){
-            return {
-                'padding-left': (!this.layout.verticalDisplay && this.isImageVisible) ? this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin) : false,
+            // The left padding is either the one of the image if an image is visible or should be with the
+            // keepAlignmentWhenNoImage option, or the text left margin.
+            const has_gap = this.isImageVisible || (this.doShowImage && this.settings.individual.image.keepAlignmentWhenNoImage);
+            return this.layout.verticalDisplay ? {} : {
+                'padding-left': this.convertMargin(this.doShowImage
+                    ? this.settings.margins.horizontalLayout.imageLeftMargin
+                    : this.settings.margins.horizontalLayout.textLeftMargin),
+                'gap': has_gap ? this.convertMargin(this.settings.margins.horizontalLayout.textLeftMargin) : 0,
             };
         },
         contentStyle: function(){
             return {
-                gap: !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.linkLineMargin*2) : false,
+                gap: !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.linkLineMargin*2) : 0,
             };
         },
         topStyle: function(){
             return {
-                gap: !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.nameOccupationSpacing) : false,
-                'padding-left': !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.textLeftMargin) : false,
-
+                gap: !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.nameOccupationSpacing) : 0,
             };
         },
         bottomStyle: function(){
             return {
-                'padding-left': !this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.horizontalLayout.textLeftMargin) : false,
-
             };
         },
         imgStyle: function(){
             return {
                 background: this.settings.decoration.background.backgroundColor + ' url("' + this.imageUrl + '") center center/cover no-repeat',
-                width: this.imageUrl === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.convertLength(this.getImageWidth()),
-                height: this.imageUrl === undefined ? 0 : this.convertLength(this.getImageHeight()),
-                border: this.imageUrl === undefined ? "none" : (this.linkLinesWidth * this.settings.individual.image.borderRelativeWidth / 100.0) + 'px solid ' + this.settings.individual.linkLines.color,
+                width: !this.isImageVisible && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.convertLength(this.getImageWidth()),
+                height: !this.isImageVisible ? 0 : this.convertLength(this.getImageHeight()),
+                border: !this.isImageVisible ? "none" : (this.linkLinesWidth * this.settings.individual.image.borderRelativeWidth / 100.0) + 'px solid ' + this.settings.individual.linkLines.color,
             };
         },
         nameStyle: function(){
@@ -99,7 +101,7 @@ window.individualComp = {
                 'font-weight': this.settings.individual.displayName.fontWeight,
                 'color': this.settings.individual.displayName.color,
                 'width': this.layout.forceWrapOccupation ? '100%' : false,
-                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.imageNameSpacing) : false,
+                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.imageNameSpacing) : 0,
             };
         },
         lastNameStyle: function(){
@@ -113,7 +115,7 @@ window.individualComp = {
                 'letter-spacing': this.getLetterSpacing(this.settings.individual.occupation.letterSpacing),
                 'font-weight': this.settings.individual.occupation.fontWeight,
                 'color': this.settings.individual.occupation.color,
-                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.nameOccupationSpacing) : false,
+                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.nameOccupationSpacing) : 0,
             };
         },
         datesAndPlacesStyle: function(){
@@ -122,7 +124,7 @@ window.individualComp = {
                 'letter-spacing': this.getLetterSpacing(this.settings.individual.datesAndPlaces.letterSpacing),
                 'font-weight': this.settings.individual.datesAndPlaces.fontWeight,
                 'color': this.settings.individual.datesAndPlaces.color,
-                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.occupationDateSpacing) : false,
+                'margin-top': this.layout.verticalDisplay ? this.convertMargin(this.settings.margins.verticalLayout.occupationDateSpacing) : 0,
                 'line-height': this.settings.individual.datesAndPlaces.lineHeight + "%",
             };
         },
@@ -132,12 +134,12 @@ window.individualComp = {
             if (!this.hasChild) {
                 if(this.layout.verticalDisplay) width = 'calc(50% - ' + this.linkLinesWidth + 'px - ' + rightShift + ')'
                 else{
-                    if(this.isImageVisible && this.imageUrl !== undefined){
+                    if(this.isImageVisible){
                         // Has a visible image
                         width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
                             + this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin)
                             + ' - ' + this.convertLength(this.getImageWidth()/2) + ' - ' + rightShift + ')'
-                    }else if(this.isImageVisible && this.imageUrl === undefined && this.settings.individual.image.keepAlignmentWhenNoImage){
+                    }else if(this.doShowImage && this.settings.individual.image.keepAlignmentWhenNoImage){
                         // Has no image but have the left padding
                         width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
                             + this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin)
@@ -160,8 +162,11 @@ window.individualComp = {
             // Returns an even number of pixels so it can be divided by 2 safely
             return Math.ceil(this.settings.individual.linkLines.width / 1000 * this.settings.size.width / 2) * 2;
         },
+        doShowImage: function(){
+            return this.layout.showPictures || this.layout.verticalDisplay;
+        },
         isImageVisible: function(){
-            return this.layout.showPictures || this.layout.verticalDisplay
+            return this.doShowImage && this.imageUrl !== undefined;
         },
         imageUrl: function(){
             return this.data?.picturePath
