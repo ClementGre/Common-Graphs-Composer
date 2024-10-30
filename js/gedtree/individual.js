@@ -132,9 +132,22 @@ window.individualComp = {
             if (!this.hasChild) {
                 if(this.layout.verticalDisplay) width = 'calc(50% - ' + this.linkLinesWidth + 'px - ' + rightShift + ')'
                 else{
-                    let imageWidth2 = this.imageUrl === undefined && !this.settings.individual.image.keepAlignmentWhenNoImage ? "0" : this.getImageWidth()/2
-                    width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
-                        + this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin) + ' - ' + this.convertLength(imageWidth2) + ' - ' + rightShift + ')'
+                    if(this.isImageVisible && this.imageUrl !== undefined){
+                        // Has a visible image
+                        width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
+                            + this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin)
+                            + ' - ' + this.convertLength(this.getImageWidth()/2) + ' - ' + rightShift + ')'
+                    }else if(this.isImageVisible && this.imageUrl === undefined && this.settings.individual.image.keepAlignmentWhenNoImage){
+                        // Has no image but have the left padding
+                        width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
+                            + this.convertMargin(this.settings.margins.horizontalLayout.imageLeftMargin)
+                            + ' - ' + this.convertLength(this.getImageWidth()) + ' - ' + rightShift + ')'
+                    }else{
+                        width = 'calc(100% - ' + this.linkLinesWidth + 'px - '
+                            + this.convertMargin(this.settings.margins.horizontalLayout.textLeftMargin)
+                            + ' - ' + rightShift + ')'
+                    }
+
                 }
             }
             return {

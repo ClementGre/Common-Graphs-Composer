@@ -46,7 +46,7 @@ window.columnComp = {
         },
         individualCount: function () {
               return this.data.childGroups.map(childGroup =>
-                childGroup.couples.map(couple => couple.husband && couple.wife ? 2 : 1).reduce((a, b) => a + b, 0)
+                childGroup.couples.map(couple => couple?.husband && couple?.wife ? 2 : 1).reduce((a, b) => a + b, 0)
               ).reduce((a, b) => a + b, 0);
         },
         verticalDisplay: function () {

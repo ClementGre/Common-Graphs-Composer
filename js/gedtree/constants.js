@@ -52,14 +52,9 @@ window.constants = {
             leftColumns: {
                 name: "Left cloumn",
                 repeat: {section: 'size', name: 'leftColumns'},
-                showBrothers: {
-                    name: "Show brothers",
+                showSpouse: {
+                    name: "Show spouse",
                     type: 3, value: false,
-                },
-                showBrothersChildren: {
-                    name: "Show brothers children",
-                    type: 3, value: false,
-                    require: 'showBrothers'
                 },
                 verticalDisplay: {
                     name: "Vertical display",
